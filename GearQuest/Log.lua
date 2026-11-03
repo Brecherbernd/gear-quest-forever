@@ -10690,7 +10690,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     creditsBody:Hide()
     frame.settingsCreditsBody = creditsBody
 
-    local discordInvite = "https://discord.gg/jQ2GdDEeN"
+    local discordInvite = "https://discord.gg/gQSVunBsR"
 
     local discordHeader = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     discordHeader:SetPoint("TOPLEFT", creditsBody, "BOTTOMLEFT", 0, -22)

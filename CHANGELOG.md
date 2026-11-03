@@ -2,17 +2,13 @@
 
 Forked from [GearQuest](https://github.com/Henrik8210/gear-quest) `v0.1.1-beta.3-bcc` for **World of Warcraft: Forever**.
 
-## v1.0.6
+## v1.0.7
 
-The window title reads **GearQuest Forever v1.0.6**. The AddOn List shows the loot sack on GearQuest Forever, and each class row shows that class's icon.
+The window title reads **GearQuest Forever v1.0.7**. Settings → The GearQuest Community now shows the current Discord invite, `https://discord.gg/gQSVunBsR`. That is the same link as on the CurseForge addon description. The old invite had expired.
 
-### AddOn List
+### v1.0.6
 
-Open the AddOn List from the character selection screen. **GearQuest Forever** uses the loot sack, the same picture as the minimap button.
-
-Under it, one row per class reads **GearQuest Forever: Druid**, **Hunter**, **Mage**, **Paladin**, **Priest**, **Rogue**, **Shaman**, **Warlock**, and **Warrior**. Each row uses that class's icon. Each one still says **Only loadable on demand**. GearQuest loads a class when you play it, and when you simulate it.
-
-The pictures are only on that list. They do not change the minimap button, the hunts, the parchment, or the knight. A missing picture would show the red question mark again, and the addon would still run.
+The window title reads **GearQuest Forever v1.0.6**. The AddOn List shows the loot sack on GearQuest Forever, the same picture as the minimap button. Druid, Hunter, Mage, Paladin, Priest, Rogue, Shaman, Warlock, and Warrior each use that class's icon.
 
 ### v1.0.5
 

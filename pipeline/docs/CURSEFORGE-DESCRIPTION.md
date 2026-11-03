@@ -272,7 +272,7 @@ Open it and press **Remove**. Restore brings it back.
 
 The window title is the version to quote in a comment. Include class, spec, level, faction, and the item.
 
-Questions and weight ideas also go to the [Discord](https://discord.gg/jQ2GdDEeN).
+Questions and weight ideas also go to the [Discord](https://discord.gg/gQSVunBsR).
 
 ---
 
