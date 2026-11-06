@@ -34,7 +34,7 @@ On the AddOn List, **GearQuest Forever** uses that same loot sack. Each class ro
 
 *Screenshot 1 — the log, one slot open.*
 
-Each row is a piece for that slot, two lines tall, with a larger icon and a gap before the next hunt. The grey number is its rank. It matches the (i) list, including #4 and later once you already have an earlier piece. The first line is the item name. The second line says **New at this level**, or **Since level N** when that hunt was already on the list. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line.
+Each row is a piece for that slot, two lines tall, with a larger icon and a gap before the next hunt. The grey number is its rank. It matches the (i) list, including #4 and later once you already have an earlier piece. The first line is the item name. The second line says **New at this level**, or **Since level N** when that hunt was already on the list. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line. A small source icon sits at the right of each hunt, drawn a little soft. It is the same picture as the filter and the map pin. Hovering it names the source. Boss drop is the skull, Dungeon & Raid trash is the red raid mark, a quest is the yellow exclamation, a vendor is the sack, a world drop is the sunset, a profession is the book, a rare is the silver dragon, a container is the chest, and Unsourced is an orange circle.
 
 **Recommended** sits after the item name. It marks up to three rank #1 upgrades, the ones that beat what you are wearing by the most. **- Rank #1 BiS acquired** means you already have the best piece in that slot.
 
@@ -80,7 +80,7 @@ A quest reward says the level it can be picked up, and the level GearQuest recom
 
 A reputation vendor also says the standing this character has. **Ratchet Wristwraps** reads **Requires Friendly with Ratchet. Your standing is Neutral.** That clause is red while you are short and green once you have reached it. **You have not met this faction yet** appears only when your reputation list has no row for that faction.
 
-If Auctionator is enabled, the hunt hover adds its price lines under the Forever tooltip. The GearQuest score stays underneath. Nothing is added when Auctionator is off.
+If Auctionator is enabled, the hunt hover adds its price lines under the item tooltip. The GearQuest score stays underneath. Nothing is added when Auctionator is off.
 
 ---
 
@@ -120,7 +120,7 @@ The two dungeon cards turn each other off. The other five can be on with either.
 
 *Screenshot 5 — the filter menu, with a dungeon flyout open.*
 
-Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash are separate lists. Each flyout has **Select all** and **Deselect all** for the boxes on that list. The button on the main filter still changes every source at once. The rank number does not change because a filter is on.
+Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash are separate lists. Each flyout has **Select all** and **Deselect all** for the boxes on that list. The button on the main filter still changes every source at once. The rank number does not change because a filter is on. Horde does not get a checkbox for The Stockade or Hall of Thanes. Alliance does not get one for Ragefire Chasm or Ruins of Lordaeron. Those hunts are not on that faction's list.
 
 ---
 
@@ -128,7 +128,7 @@ Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash 
 
 *Screenshot 6 — an item tooltip with the GearQuest score.*
 
-Hover gear in your bags, on the character panel, in chat, or on a hunt. The line is a score for this level: best in the slot is 100, worst is 0. The arrow compares it to what you have equipped.
+Hover gear in your bags, on the character panel, in chat, or on a hunt. The item itself is the game client's tooltip. GearQuest adds the score under it: best in the slot is 100, worst is 0. The arrow compares it to what you have equipped. A random green shows the base piece, and one line names the jackpot roll and the chance. When the client has no tooltip for that item, the hover shows the Wowhead Forever tooltip, and two red lines under it say Wowhead Forever lists the item and this game client does not have it yet. The parchment says the same.
 
 *Screenshot 7 — the score bar in the log header.*
 
@@ -238,7 +238,7 @@ Open the log, the gear icon, **General**, **Hide minimap icon**. Drag the button
 Update to **v0.6.0-beta** and `/reload`. Neutral still counts. **Ratchet Wristwraps** says **Your standing is Neutral** in red until you are Friendly. **You have not met this faction yet** is only when that faction is missing from this character's reputation list.
 
 **The hunt tooltip has no auction price.**
-Enable Auctionator and `/reload`. The hunt hover adds Auctionator's price lines under the Forever tooltip. The GearQuest score stays underneath. If Auctionator is off, those lines are left out.
+Enable Auctionator and `/reload`. The hunt hover adds Auctionator's price lines under the item tooltip. The GearQuest score stays underneath. If Auctionator is off, those lines are left out.
 
 **A starter rare still drops a white.**
 Update to **v0.6.0-beta**. **Ice-covered Bracers**, **Royal Frostmane Girdle**, **Wendigo Fur Cloak**, **Wispy Cloak**, **Ghostly Bracers**, **Lithe Boots**, **Fingerless Gloves**, and **Ratty Old Belt** are green. **Wispy Cloak** requires level 5. **Ratty Old Belt** drops from Narg the Taskmaster.

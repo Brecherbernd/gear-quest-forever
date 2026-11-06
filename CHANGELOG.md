@@ -2,47 +2,39 @@
 
 Forked from [GearQuest](https://github.com/Henrik8210/gear-quest) `v0.1.1-beta.3-bcc` for **World of Warcraft: Forever**.
 
-## v1.0.8
+## v1.0.9
 
-The window title reads **GearQuest Forever v1.0.8**. All nine classes were scored again from the current Wowhead Forever pages.
+The window title reads **GearQuest Forever v1.0.9**.
 
-**The hunt list**
+**Where a hunt comes from**
 
-Each hunt is two lines tall, with a larger gear icon and a small gap before the next hunt. The first line is the item name. **Recommended** sits after that name. The second line says **New at this level** when the hunt just entered the list, or **Since level N** when it was already there. N is the first level of this run where that piece was inside **Hunts per gear slot**. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line.
+Each hunt has a small picture at the right of the row, drawn a little soft. It is the same picture as the filter and the map pin. Hover it and the tooltip names the source. Boss drop is the skull. Dungeon & Raid trash is the red raid mark. A quest is the yellow exclamation. A vendor is the sack. A world drop is the sunset. A profession is the book. A rare is the silver dragon. A container is the chest. Unsourced is an orange circle. A click on the picture still opens the hunt, and the mouse wheel still scrolls the list.
 
-**The parchment**
+**Dungeons in the other faction's city**
 
-The name beside the reward icon is the full name. The box widens up to the parchment, and a longer name wraps onto the next line. **Blackened Defias Boots** is no longer cut off. A quest you can pick up without finishing another one first says **No prequests. You can pick this quest up without finishing another quest first.** **Weather-worn Boots** say that for Princess Must Die! in Elwynn Forest, feet, level 6. **Militia Shortsword** says it for Brotherhood of Thieves in Northshire, main hand, level 2.
+Horde no longer sees hunts from **The Stockade** or **Hall of Thanes**. Alliance no longer sees hunts from **Ragefire Chasm** or **Ruins of Lordaeron**. That covers boss drops, dungeon trash, rares, and quest rewards filed in those dungeons. The Boss drop flyout and the Dungeon & Raid trash flyout leave those dungeons off, because the hunts are gone. A piece that also drops somewhere the other faction can reach stays. All nine classes were scored again, so the ranks close up.
 
-A quest that needs earlier steps lists every step from the first quest through the one that rewards the item. A finished step ends in green **completed**. **Lion-stamped Gloves** (Goldtooth, Elwynn Forest, hands, level 5) lists Lost Necklace, Pie for Billy, Back to Billy, then Goldtooth. **Archeus** (A Daughter's Love, Duskwood, staff, level 28) lists The Weathered Grave, Morgan Ladimore, Mor'Ladim, The Daughter Who Lived, then A Daughter's Love. **Traveler's Wraps** (To Valanaar, Zephras Isle, hands, level 6) lists Infiltrating the Cult, Falaath Village, Among the Faithful, Havoc in the Highlands, then To Valanaar. A quest that has not been checked stays quiet.
+**Catacomb Cloak** and **Deepgrave Trousers**, from An Ancient Grudge, are Hall of Thanes. They stay on the Alliance list.
 
-**Deviate Scale Belt**
+**Item tooltips**
 
-**Deviate Scale Belt** is the pattern from **Deviate Eradication**. Ebru offers it at the Wailing Caverns entrance in the Barrens, as a choice with Sizzle Stick and Dagmire Gauntlets. The objective is 7 Deviate Ravagers, 7 Deviate Vipers, 7 Deviate Shamblers, and 7 Deviate Dreadfangs. The belt is crafted afterwards with Leatherworking 90. Druid, hunter, paladin, rogue, shaman, and warrior hunts use that quest. The belt equips at 18. The quest can be picked up at 15.
+The hunt hover, the lookup, and the reward on the parchment use the tooltip from the game client. Bags, the character panel, chat, and the quest log already did. GearQuest still adds the recommended enchantment, the rank line, and the GearQuest score under that tooltip.
 
-**Weapons**
+A random green shows the base piece. One line under it names the jackpot suffix and the chance. **Bonelink Gauntlets of the Monkey** shows Bonelink Gauntlets, then the line for of the Monkey.
 
-Before a hunter learns Dual Wield at 20, a one-hand weapon is ranked in the main hand, and it stays through its item level. **Harpy Skinner**, from Serena Bloodfeather, is a Horde hunter main-hand hunt from 12 through 19 for Beast Mastery, Marksmanship, and Survival.
+On a client in another language, the item name and the stats are that language. The GearQuest lines stay English.
 
-For a priest, a mage, a warlock, a balance or restoration druid, and an elemental or restoration shaman, a one-hand rank line names the off-hand it is worn with: **(only when combined with …)**. A staff stays on its own. The green arrow is still that weapon by itself.
+When the game client has no tooltip for the item, the hover shows the Wowhead Forever tooltip instead. Two red lines sit under it:
 
-**A controller on the character panel**
+Wowhead Forever lists this item.
 
-While the paper doll is open and the log is not using the pad, clicking the right stick opens the upgrade list for the focused slot, or the slot you last hovered. The same click closes that list. The log still uses the right stick to scroll the parchment.
+This game client does not have it yet.
 
-**New and updated gear**
+The parchment says the same sentence on one line. **Marsh Serpent's Scales** and **Dawnstalker Handguards** are hunts Wowhead Forever lists, and this client does not have a tooltip for them yet. While the client is still loading an item, the hover says it is retrieving it. The Wowhead tooltip is only the fallback after the client says the item is not there.
 
-**Bladewhisper's Namesake** is a new green thrown weapon. It requires 37, and it is an Arms ranged hunt from 37 for both factions. Wowhead has not listed a source yet. It has the New in Forever mark.
+### v1.0.8
 
-The level 60 Watcher's Signets are the same rings with new names: Initiate's, Tracker's, Watcher's, and Warden's Signet of Ferocity, of Brilliance, of Resolve, and of Vigilance. **Warden's Signet of Ferocity** is the old Ferocious Watcher's Signet.
-
-140 pieces left the lists because Forever no longer has them. That includes the high-level sets Glory, Justice, Conviction, Spiritcaller, Grovekeeper, Manaflare, Grimstitch, Demonheart, and Wildstalker, plus **Ouroboros Ring**, **Guardian Staff**, and **Dank Shoulderpads**.
-
-Seven pieces are uncommon now: **Encroacher's Claim**, **Pathfinder's Clearway**, **Saltseer's Helm**, **Traveler's Shawl**, **South Seas Shroud**, **Mutinous Cuffs**, and **Rusted Troll War Belt**. **Encroacher's Claim** is 15.2 dps. **Pathfinder's Clearway** is 7.6 dps.
-
-Five weapons do less damage: **Keen Skinning Knife** (6.0), **Wildgore Greatsword** (11.8), **Walton's Second-Favorite Gun** (7.1), **Cheese Knife** (5.5), and **Serrated Knife** (7.5).
-
-**Scout Ranger's Boots** drop from Snapbeak the Quick on Zephras Isle. They are a feet hunt from level 5. **Al'Aketh Shoes** still come from Brother Zendraas on Zephras Isle, and they also drop from Al'Aketh Pillager. **Rezlak's Spare Knife** is the Horde quest Stormy Potential, from Rezlak in Durotar, and it requires 7. It is not a ranged hunt.
+The window title reads **GearQuest Forever v1.0.8**. Hunt rows are two lines tall, and the parchment shows the full reward name. A quest chain lists every step, and a quest with no earlier step says there are no prequests. **Deviate Scale Belt** is the pattern from Deviate Eradication. A hunter ranks a one-hander in the main hand until Dual Wield at 20. A caster's one-hand rank names the off-hand it is worn with. The right stick opens a paper-doll slot. **Bladewhisper's Namesake** is a new thrown weapon, the Watcher's Signets were renamed, and 140 pieces left the lists.
 
 ### v1.0.7
 

@@ -183,6 +183,18 @@ HORDE_ZONES={"Valley of Trials","Durotar","Razor Hill","Orgrimmar","Mulgore","Ca
  "Camp Mojache","Hammerfall","Kargath",
  "Stonard","Grom'gol Base Camp","Brackenwall Village","Splintertree Post","Zoram'gar Outpost",
  "Valormok","Crossroads","Taurajo"}
+# Dungeons inside a faction capital. The other side cannot walk in. These
+# names are not leveling zones, and zone_ok skips rares, so a Stockade rare
+# and a Hall of Thanes boss were scoring for Horde. A piece whose hunt is
+# filed in another dungeon stays, even when one of its droppers is in here.
+CITY_DUNGEON_FACTION={
+ "The Stockade":"Alliance", "Hall of Thanes":"Alliance",
+ "Ragefire Chasm":"Horde", "Ruins of Lordaeron":"Horde",
+}
+def city_dungeon_ok(zone, faction):
+    side=CITY_DUNGEON_FACTION.get(zone or "")
+    return side is None or side==faction
+
 # TBC race hubs and Outland towns do not exist in Forever. Deny both factions so
 # leftover item zones cannot leak after those names left the faction lists.
 # Zephras Isle is the shared Skyborne start and stays unlisted (reachable by both).
@@ -472,6 +484,8 @@ def eligible(it, cls, spec, level, faction, prof, wsubs):
     # zoneOpen is a world drop that was listed under a subzone name (Tower of
     # Ilgalar). The label is now the parent zone, and the drop stays listed.
     if src.get("zone") in GONE_ZONES:
+        return False
+    if not city_dungeon_ok(src.get("zone"), faction):
         return False
     if (src.get("sourceType") != "rare_npc" and not src.get("zoneOpen")
             and not zone_ok(src.get("zone"), faction)):

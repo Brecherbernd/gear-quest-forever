@@ -2519,7 +2519,9 @@ function GQ.Data:ApplyImbueTooltipLines(tooltip, itemId)
     end
 end
 
--- Paint the Wowhead Forever tooltip. The client still shows Classic Equip:
+-- Stored Wowhead tip. The hunt hover does not call this. It uses the
+-- client tooltip. Kept for a caller that still wants the stored lines.
+-- The client still shows Classic Equip:
 -- "Increases damage and healing done by up to N" for items that Wowhead
 -- already prints as +N Spell Power / Damage Done / Healing Done.
 function GQ.Data:ShowForeverItemTooltip(tooltip, entry)
@@ -4318,9 +4320,10 @@ function GQ.Data:RefreshPendingTooltip(tooltip, entry, forceFallback)
     tooltip.gqScoreLineAdded = nil
     tooltip.gqEnchantAdded = nil
     if forceFallback then
-        if not self:ShowForeverItemTooltip(tooltip, entry) then
-            self:ShowFactFallbackTooltip(tooltip, entry)
+        if entry.itemId then
+            self:NoteClientItemMissing(entry.itemId)
         end
+        self:ShowClientMissingTooltip(tooltip, entry)
         self:ClearPendingItemTooltip(tooltip)
     else
         self:PopulateEntryItemTooltip(tooltip, entry)
@@ -4498,20 +4501,32 @@ function GQ.Data:ShowClientItemTooltip(tooltip, entry)
     if not tooltip or not entry or not entry.itemId then
         return false
     end
-    if entry.suffix and entry.suffix ~= "" then
-        return self:TryShowSuffixTargetTooltip(tooltip, entry)
-    end
+    -- A random green's client tooltip is the base piece. The suffix line
+    -- under it names the roll. The suffix link comes back as that base too.
     if not self:SetTooltipItem(tooltip, entry.itemId) or self:TooltipLooksRetrieving(tooltip) then
         return false
     end
     return true
 end
 
+function GQ.Data:AppendRandomEnchantLine(tooltip, entry)
+    if not tooltip or not entry or not entry.suffix or entry.suffix == "" then
+        return
+    end
+    local suffixHint = self:GetSuffixHint(entry)
+    if not suffixHint or suffixHint == "" then
+        return
+    end
+    tooltip:AddLine(" ")
+    tooltip:AddLine("Target random enchant: " .. suffixHint, 0.7, 0.9, 1)
+end
+
 function GQ.Data:EntryUsesRebuiltTooltip(entry)
     if not entry then
         return false
     end
-    -- Random-suffix greens keep the rebuilt jackpot tooltip.
+    -- The hover no longer paints this. A suffix still means the client
+    -- tooltip is only the base piece, and AppendRandomEnchantLine names it.
     if entry.suffix and entry.suffix ~= "" then
         return true
     end
@@ -4540,6 +4555,63 @@ function GQ.Data:AppendImbueCombineLine(tooltip, entry)
     tooltip:AddLine(line, 0, 1, 0, true)
 end
 
+function GQ.Data:AppendClientMissingLines(tooltip)
+    if not tooltip then
+        return
+    end
+    tooltip:AddLine(" ")
+    tooltip:AddLine("Wowhead Forever lists this item.", 1, 0.2, 0.2)
+    tooltip:AddLine("This game client does not have it yet.", 1, 0.2, 0.2)
+end
+
+-- The stored Wowhead tip, without the GearQuest rank lines. Used when the
+-- client has no item. The red notice is added under it.
+function GQ.Data:ShowStoredForeverTooltip(tooltip, entry)
+    if not tooltip or not entry then
+        return false
+    end
+    local audit = self:GetForeverAudit(entry.itemId)
+    if not audit or not audit.tip or audit.tip == "" then
+        return false
+    end
+
+    local displayName = self:GetEntryDisplayName(entry) or audit.name or ("Item " .. tostring(entry.itemId))
+    local quality = self:GetItemQualityForDisplay(entry.itemId)
+    local r, g, b = 1, 0.82, 0
+    local c = ITEM_QUALITY_COLORS and quality and ITEM_QUALITY_COLORS[quality]
+    if c then
+        r, g, b = c.r, c.g, c.b
+    elseif quality then
+        r, g, b = GetItemQualityColor(quality)
+    end
+
+    tooltip:ClearLines()
+    tooltip:SetText(displayName, r, g, b)
+
+    local lines = self:ForeverTooltipLines(audit.tip)
+    local clientSet, setPending
+    if not self:TipLinesHaveSetBonus(lines) then
+        clientSet, setPending = self:GetClientSetBlock(entry.itemId)
+        if clientSet and clientSet.bonuses and #clientSet.bonuses > 0 then
+            lines = self:ApplyClientSetBlock(lines, clientSet)
+        end
+    end
+    self._pendingClientSet = setPending and self:LinesHaveSetHeader(lines)
+    self:AddForeverTooltipLines(tooltip, lines, displayName, audit.name)
+    self:AppendImbueOrProc(tooltip, entry)
+    return true
+end
+
+function GQ.Data:ShowClientMissingTooltip(tooltip, entry)
+    if self:ShowStoredForeverTooltip(tooltip, entry) then
+        self:AppendRandomEnchantLine(tooltip, entry)
+        self:AppendClientMissingLines(tooltip)
+        return
+    end
+    self:ShowClientWaitTooltip(tooltip, entry, true)
+    self:AppendRandomEnchantLine(tooltip, entry)
+end
+
 function GQ.Data:ShowClientWaitTooltip(tooltip, entry, missing)
     local displayName = self:GetEntryDisplayName(entry) or ("Item " .. tostring(entry.itemId))
     local quality = self:GetItemQualityForDisplay(entry.itemId)
@@ -4553,7 +4625,8 @@ function GQ.Data:ShowClientWaitTooltip(tooltip, entry, missing)
     tooltip:ClearLines()
     tooltip:SetText(displayName, r, g, b)
     if missing then
-        tooltip:AddLine("Not found in the client", 1, 0.2, 0.2)
+        tooltip:AddLine("Wowhead Forever lists this item.", 1, 0.2, 0.2)
+        tooltip:AddLine("This game client does not have it yet.", 1, 0.2, 0.2)
     else
         tooltip:AddLine(RETRIEVING_ITEM_INFO or "Retrieving item information", 1, 1, 1)
     end
@@ -4622,46 +4695,25 @@ function GQ.Data:PopulateEntryItemTooltip(tooltip, entry)
         return false
     end
 
-    -- Green world drops keep the rebuilt jackpot tooltip. Every other item
-    -- uses the Wowhead tip. A missing client item must not replace that hover.
-    if self:EntryUsesRebuiltTooltip(entry) then
-        if self:ShowForeverItemTooltip(tooltip, entry) then
-            if self._pendingClientSet then
-                self:TrackPendingItemTooltip(tooltip, entry)
-            else
-                self:ClearPendingItemTooltip(tooltip)
-            end
-            return true
-        end
-
-        if self:ShowClientItemTooltip(tooltip, entry) then
-            self:ClearPendingItemTooltip(tooltip)
-            return true
-        end
-
-        self:ShowFactFallbackTooltip(tooltip, entry)
-        self:TrackPendingItemTooltip(tooltip, entry)
-        return true
-    end
-
-    -- Quest, dungeon, and set pieces use the Wowhead tip. The client item
-    -- is often missing until that level, and that must not replace the tip.
-    if self:ShowForeverItemTooltip(tooltip, entry) then
+    -- The client tooltip is the body. GearQuest lines are added by the caller.
+    -- A random green is that same base tooltip, plus the suffix line.
+    -- When the client has no item, the stored Wowhead tip is the body and
+    -- the red notice sits under it.
+    if self:IsClientItemMissing(entry.itemId) then
+        self:ShowClientMissingTooltip(tooltip, entry)
         self:ClearPendingItemTooltip(tooltip)
         return true
     end
 
-    -- No stored tip. The client tooltip has the armor and stats when the
-    -- item is known. Scored stats fill in only the lines still missing.
-    if self:ShowClientItemTooltip(tooltip, entry) and not self:TooltipLooksRetrieving(tooltip) then
-        self:AppendScoredStatLines(tooltip, entry.itemId)
+    if self:ShowClientItemTooltip(tooltip, entry) then
+        self:AppendRandomEnchantLine(tooltip, entry)
         self:ClearPendingItemTooltip(tooltip)
         return true
     end
 
-    self:ShowFactFallbackTooltip(tooltip, entry)
-    self:AppendScoredStatLines(tooltip, entry.itemId)
-    self:ClearPendingItemTooltip(tooltip)
+    self:ShowClientWaitTooltip(tooltip, entry, false)
+    self:AppendRandomEnchantLine(tooltip, entry)
+    self:TrackPendingItemTooltip(tooltip, entry)
     return true
 end
 

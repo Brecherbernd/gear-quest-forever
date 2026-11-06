@@ -366,13 +366,17 @@ Chain Legguards +34 Agi and no AP, Jouster's Crest 1051+50 armor) keep stale
 stats until you sync.
 
 Scoring reads `items.json`. `foreverAudit.tip` is still stored for class
-gates and the random-suffix rebuild. Hovers use that Wowhead Forever tip.
-Do not replace it with the client tooltip, and do not paint "Not found in
-the client" on the hover. If the client has no such item, the hunt
-description may say `Not found in the client yet.` A random-suffix green
-keeps the rebuilt jackpot tooltip. A fixed green, including a world drop
-or a rare, takes the Forever tip, weapon damage included. An imbued weapon
-still greys the scroll effect and adds `Use: Combine the <base> and <scroll>.`
+gates and the random-suffix score. The hunt hover uses the client item
+tooltip. GearQuest adds the recommended enchantment, the rank line, and the
+score after it. A random-suffix green uses that same client tooltip, which
+is the base piece, and one line under it names the jackpot suffix and the
+chance. Do not paint the stored Wowhead tip on the hover when the client has
+the item. If the client has no such item, the hover shows that stored
+tip, and two red lines under it read `Wowhead Forever lists this item.`
+and `This game client does not have it yet.` The hunt description says
+the same sentence in one line. A hover that is still waiting on the client
+says it is retrieving the item. That wait is not the fallback.
+An imbued weapon greys the scroll effect when that line is on the tooltip. The parchment adds `Use: Combine the <base> and <scroll>.` The Wowhead fallback adds that combine line too.
 
 **A tip sync that only walks the Forever index is not a tip sync.** Classic
 hunt ids (Ghostly Mantle **3324**, Slime-encrusted Pads **6461**) are not in
@@ -383,9 +387,11 @@ Done` instead of the Equip sentence). Do not run `sync_forever_item_stats.py`
 to invent green `+N Damage Done` lines from a rebuild string.
 
 `emit_forever_audit.py` `keep_rebuilt_tip` copies the previous audit line for
-a random enchant and Greater Magic Wand **11288**. Those hovers stay the
-jackpot tooltip and the client **17.5** DPS wand. Everything else takes the
-nether tip. A quality-2 world drop is not a reason to keep the old line.
+a random enchant and Greater Magic Wand **11288**. That stored line is what
+the score uses for the jackpot roll. The hover is the client tooltip. A
+random enchant adds the suffix line under it. Greater Magic Wand stays the
+client **17.5** DPS. A quality-2 world drop is not a reason to keep the old
+line on the hover.
 Heavy Shortbow was still showing classic 17–33 (10.00 DPS) after Forever
 had moved it to 10–20 (6.00 DPS). Daryl's Hunting Rifle **2904** is the
 Forever gun: 11–21, 6.40 DPS. The classic 18–35 (10.60 DPS) line is a
@@ -791,15 +797,25 @@ The source **Filter** closes on a click outside the menu. The Profession
   has the same flyout, but only for dungeons that have a boss-drop hunt in
   the current level window, including ranks below the top 3. Dungeon & Raid
   trash has the same flyout for trash hunts in that window, and those boxes
-  are separate from Boss drop. Hall of Thanes,
-  Ruins of Lordaeron, and Excavation Site are dungeons on that list. Other
-  is bosses that are not in an instance. The flyouts do not scroll. A cleared box
+  are separate from Boss drop. Hall of Thanes and The Stockade are Alliance
+  city dungeons, so those hunts stay off the Horde list and off the Horde
+  flyouts. Ragefire Chasm and Ruins of Lordaeron are Horde city dungeons, so
+  those hunts stay off the Alliance list and off the Alliance flyouts. Boss
+  drops, trash, rares, and quest rewards filed in that dungeon follow the
+  same gate (`CITY_DUNGEON_FACTION` in `score.py`). A piece whose hunt is
+  filed in another dungeon stays, even when one dropper is also in the city
+  dungeon. Ranks close up. Excavation Site stays on both. Other is bosses
+  that are not in an instance. The flyouts do not scroll. A cleared box
   stays cleared. Select all / Deselect all on the filter menu covers the source
   list and the profession, boss, trash, and vendor sub-filters. Each of those
   flyouts has the same button, and it covers only the boxes on that flyout. Menu text uses the Filter button's font.
   Each main-list row draws the source icon after the checkbox and before
   the name, 18px, the same art as the world-map pin. Flyout rows keep the
   chevron and do not get an icon. The row's hit width includes the icon.
+  Each hunt row draws that same picture at the right, 14px, alpha 0.7
+  (`row.sourceMark`). Hovering it names the source. A click still selects
+  the hunt, and the mouse wheel still scrolls the list. Unsourced is
+  `GearQuest/Art/GQ-Unsourced.png`, the orange circle.
   Checking Profession, Boss drop, or Dungeon & Raid trash opens that flyout
   on the click. You do not have to leave the row and come back.
 - **Play style** is the button at the bottom of the log
@@ -1126,7 +1142,7 @@ Hunt-id probe (`pipeline/scripts/probe_forever_hunt_tooltips.py`) labels 200 vs 
 
 **Coldspire Staff** (271215) is Rath'Mael's drop, required level 19. The Forever tooltip is +13 Frost Resistance and +32 frost spell damage. It does not have the old "damage and healing by up to 26" line. Drop chance 29.69%. Frost, both factions, stays rank 1 at 19 (score 29.83). Enhancement Alliance 19-20 is rank 23 (score 272.78). Priest, druid, and warlock were re-scored without that healing and generic spell-damage line, and the staff left their lists.
 
-**Coldflame Saber (276631)** is on the same pin list: `boss_drop`, Baron Silverlaine, Shadowfang Keep. It was `world_drop` with "Source not listed yet" because the listview names no source. The Blade of Silverlaine it is made from drops there too. The log description adds `Use: Combine the Blade of Silverlaine and Imbue Blade.` The hover does not — it stays the Wowhead tip. A re-score reads the pin from `sources.json`, so the generated mage file does not need a hand edit after one.
+**Coldflame Saber (276631)** is on the same pin list: `boss_drop`, Baron Silverlaine, Shadowfang Keep. It was `world_drop` with "Source not listed yet" because the listview names no source. The Blade of Silverlaine it is made from drops there too. The log description adds `Use: Combine the Blade of Silverlaine and Imbue Blade.` The hover is the client tooltip, and that combine line is added on it. A re-score reads the pin from `sources.json`, so the generated mage file does not need a hand edit after one.
 
 **Faction zone pins** live in `pipeline/data/forever_faction_zones.json`. `apply_pinned_faction_zones` sets `zone` only. `zone_ok` is what gates the faction; quest text that names Stormwind does nothing if zone is null. Stormwind City and Teldrassil are Alliance. Thunder Bluff is Horde. Wailing Caverns is both.
 
@@ -1740,8 +1756,10 @@ VanCleef has none), so a missing flag does not make a boss into trash.
 `dungeon_entrances.json` `bossNpcs` and sets the zone to that dungeon.
 "(rare spawn)" and a "(rare elite)" that is not one of those bosses is
 `rare_npc` ("Rare NPC"). The pin is where that rare spawns. A rare inside a
-dungeon uses the entrance. A green from a world drop or a rare keeps the
-rebuilt jackpot tooltip. Do not replace that hover with the base Wowhead tip.
+dungeon uses the entrance. A green from a world drop or a rare uses the
+client tooltip. When it is a random suffix, the line under that tooltip
+names the jackpot roll. Paint the stored Wowhead tip only when the client
+has no such item, with the two red lines under it.
 
 **Lookie's Spyglass** (273298) is `boss_drop`, "Drops from Cookie.", zone
 The Deadmines, npc Cookie. Do not patch that by replacing the first shared
@@ -1857,7 +1875,7 @@ does not clear the icon's anchors, so a filter icon keeps its own point.
 | Profession | `Interface\QuestFrame\UI-QuestLog-BookIcon` |
 | Quest reward | `Interface\GossipFrame\AvailableQuestIcon` |
 | Rare NPC | atlas `nameplates-icon-elite-silver`, else a crop of `UI-TargetingFrame-Rare` |
-| Unsourced | `Interface\RaidFrame\ReadyCheck-NotReady` |
+| Unsourced | `GearQuest/Art/GQ-Unsourced.png` (orange circle). The old ready-check mark is not used. |
 | Vendor | `Interface\Cursor\Buy` (the buy-cursor sack) |
 | World drop | `GearQuest/Art/GQ-WorldDrop.png` (sunset over dark hills). `Interface\Icons\Spell_Nature_FarSight` is not in this client, so that path draws nothing. |
 

@@ -123,7 +123,8 @@ local function GetListRowTextMaxWidth(row, leftInset)
     if not width or width <= 0 then
         width = LEFT_COLUMN_WIDTH - (PANEL_INSET * 2)
     end
-    return math.max(40, width - leftInset - LIST_ROW_RIGHT_PAD)
+    local right = (row and row._huntRightPad) or LIST_ROW_RIGHT_PAD
+    return math.max(40, width - leftInset - right)
 end
 
 local function ApplyHuntRowHighlight(tex)
@@ -5658,6 +5659,40 @@ function GQ.Log:CreateListRow(index)
         row.meta:SetMaxLines(1)
     end
     row.meta:Hide()
+
+    row.sourceMark = CreateFrame("Button", nil, row)
+    row.sourceMark:SetSize(14, 14)
+    row.sourceMark:SetPoint("RIGHT", row, "RIGHT", -4, 0)
+    row.sourceMark:SetFrameLevel(row:GetFrameLevel() + 4)
+    row.sourceMark:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    row.sourceMark:EnableMouseWheel(true)
+    row.sourceMark.icon = row.sourceMark:CreateTexture(nil, "OVERLAY")
+    row.sourceMark.icon:SetAllPoints()
+    row.sourceMark:SetAlpha(0.7)
+    row.sourceMark:SetScript("OnEnter", function(self)
+        HideItemTooltip()
+        local label = GQ.GetSourceLabel and GQ:GetSourceLabel(self.kind) or self.kind
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(label or "")
+        GameTooltip:Show()
+    end)
+    row.sourceMark:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+    row.sourceMark:SetScript("OnMouseWheel", function(_, delta)
+        local log = _G.GearQuest and _G.GearQuest.Log
+        if log and log.frame and log.frame.scroll then
+            ScrollFrameOnMouseWheel(log.frame.scroll, delta)
+        end
+    end)
+    row.sourceMark:SetScript("OnClick", function(self)
+        local parent = self:GetParent()
+        local click = parent and parent:GetScript("OnClick")
+        if click then
+            click(parent, "LeftButton")
+        end
+    end)
+    row.sourceMark:Hide()
 
     row.highlight = row:CreateTexture(nil, "BACKGROUND")
     row.highlight:SetAllPoints()
@@ -12529,6 +12564,33 @@ function GQ.Log:RankMarkWidth()
     return width
 end
 
+function GQ.Log:PlaceHuntSourceMark(row, entry)
+    local mark = row and row.sourceMark
+    row._huntRightPad = nil
+    if not mark then
+        return
+    end
+    if not entry then
+        mark:Hide()
+        return
+    end
+    local kind = entry.sourceType or ""
+    if GQ.NormalizeSourceType then
+        kind = GQ:NormalizeSourceType(kind)
+    end
+    if kind == "" then
+        kind = "unsourced"
+    end
+    mark.kind = kind
+    if mark.icon and GQ.Pins and GQ.Pins.ApplyIcon then
+        GQ.Pins:ApplyIcon(mark.icon, kind)
+    end
+    mark:SetAlpha(0.7)
+    mark:Show()
+    -- 4px from the edge, the 14px mark, and 4px before the words.
+    row._huntRightPad = 22
+end
+
 function GQ.Log:PlaceHuntItemIcon(row, itemId, left)
     local icon = row and row.itemIcon
     left = left or LIST_ROW_ITEM_LEFT
@@ -12582,7 +12644,7 @@ function GQ.Log:SetHuntNameLine(row, nameLeft, name, r, g, b, reserveRight)
     row._huntNameLeft = nameLeft
     row.text:ClearAllPoints()
     row.text:SetPoint("TOPLEFT", row, "TOPLEFT", nameLeft, -1)
-    row.text:SetPoint("TOPRIGHT", row, "TOPRIGHT", -LIST_ROW_RIGHT_PAD, -1)
+    row.text:SetPoint("TOPRIGHT", row, "TOPRIGHT", -(row._huntRightPad or LIST_ROW_RIGHT_PAD), -1)
     row.text:SetJustifyH("LEFT")
     row.text:SetJustifyV("MIDDLE")
     row.text:SetWordWrap(false)
@@ -12605,7 +12667,7 @@ function GQ.Log:PlaceHuntName(row, nameLeft, name, entry, r, g, b)
         rowWidth = LEFT_COLUMN_WIDTH - (PANEL_INSET * 2)
     end
     local textWidth = row.text:GetStringWidth() or 0
-    if nameLeft + textWidth + tail + LIST_ROW_RIGHT_PAD > rowWidth then
+    if nameLeft + textWidth + tail + (row._huntRightPad or LIST_ROW_RIGHT_PAD) > rowWidth then
         self:SetHuntNameLine(row, nameLeft, name, r, g, b, tail)
     end
     self:PlaceRecommend(row)
@@ -12658,7 +12720,7 @@ function GQ.Log:PlaceHuntNotes(row, nameLeft, entry, status, showNewLabel)
     local midTop = math.floor((tightTop + lowTop) / 2 + 0.5)
     meta:ClearAllPoints()
     meta:SetPoint("TOPLEFT", row, "TOPLEFT", nameLeft, -midTop)
-    meta:SetPoint("TOPRIGHT", row, "TOPRIGHT", -LIST_ROW_RIGHT_PAD, -midTop)
+    meta:SetPoint("TOPRIGHT", row, "TOPRIGHT", -(row._huntRightPad or LIST_ROW_RIGHT_PAD), -midTop)
     meta:Show()
 end
 
@@ -12697,6 +12759,10 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
     end
     if row.weaponArrow then
         row.weaponArrow:Hide()
+    end
+    row._huntRightPad = nil
+    if row.sourceMark then
+        row.sourceMark:Hide()
     end
 
     if rowType == "header" then
@@ -12807,6 +12873,7 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
         row.icon:SetTexture(NOTABLE_LIST_ICON)
         row.icon:SetVertexColor(1, 1, 1)
         local nameLeft = LIST_ROW_NOTABLE_LEFT + ((self.HUNT_ICON_SIZE or 28) - 16)
+        self:PlaceHuntSourceMark(row, entry)
         self:PlaceHuntName(row, nameLeft, name, entry, r, g, b)
         self:PlaceHuntNotes(row, nameLeft, entry, status, false)
 
@@ -12843,6 +12910,7 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
         end
         local nameLeft = self:PlaceHuntItemIcon(row, entry.itemId, iconLeft)
         local showNewLabel = listTab == "active" and not isObtained and status ~= "completed"
+        self:PlaceHuntSourceMark(row, entry)
         self:PlaceHuntName(row, nameLeft, name, entry, r, g, b)
         self:PlaceHuntNotes(row, nameLeft, entry, status, showNewLabel)
 
@@ -12950,11 +13018,8 @@ function GQ.Log:BuildDetailLines(entry)
         table.insert(lines, "\nHas not been datamined yet")
     end
 
-    local hasStoredTip = audit and audit.tip and audit.tip ~= ""
-    if entry.itemId and GQ.Data and GQ.Data.IsClientItemMissing and GQ.Data:IsClientItemMissing(entry.itemId)
-        and not hasStoredTip
-        and not (GQ.Data.EntryUsesRebuiltTooltip and GQ.Data:EntryUsesRebuiltTooltip(entry)) then
-        table.insert(lines, "\nNot found in the client yet.")
+    if entry.itemId and GQ.Data and GQ.Data.IsClientItemMissing and GQ.Data:IsClientItemMissing(entry.itemId) then
+        table.insert(lines, "\nWowhead Forever lists this item. This game client does not have it yet.")
     end
 
     local suffixHint = GQ.Data:GetSuffixHint(entry)

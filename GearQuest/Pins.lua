@@ -15,7 +15,7 @@ local PIN_ICONS = {
         path = "Interface\\TargetingFrame\\UI-TargetingFrame-Rare",
         coord = { 0, 0.22, 0, 0.62 },
     },
-    unsourced = { path = "Interface\\RaidFrame\\ReadyCheck-NotReady" },
+    unsourced = { path = "Interface\\AddOns\\" .. ADDON_NAME .. "\\Art\\GQ-Unsourced.png" },
     vendor = { path = "Interface\\Cursor\\Buy" },
     -- Far Sight is not in this client, so the sunset ships with the addon.
     world_drop = { path = "Interface\\AddOns\\" .. ADDON_NAME .. "\\Art\\GQ-WorldDrop.png" },
