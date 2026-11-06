@@ -52,6 +52,7 @@ QUEST_START_DOOR = {
     6522: "Razorfen Kraul",  # An Unholy Alliance — Small Scroll from Charlga Razorflank
     6564: "Blackfathom Deeps",  # Allegiance to the Old Gods
     7461: "Dire Maul",  # The Madness Within — Shen'dralar Ancient
+    1487: "Wailing Caverns",  # Deviate Eradication — Ebru. Pattern: Deviate Scale Belt
 }
 # Wowhead's series on the reward is one faction's chain. The other faction
 # starts the same rewards at these quests. Pin those starts too.

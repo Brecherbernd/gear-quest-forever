@@ -2,7 +2,49 @@
 
 Forked from [GearQuest](https://github.com/Henrik8210/gear-quest) `v0.1.1-beta.3-bcc` for **World of Warcraft: Forever**.
 
-## v1.0.7
+## v1.0.8
+
+The window title reads **GearQuest Forever v1.0.8**. All nine classes were scored again from the current Wowhead Forever pages.
+
+**The hunt list**
+
+Each hunt is two lines tall, with a larger gear icon and a small gap before the next hunt. The first line is the item name. **Recommended** sits after that name. The second line says **New at this level** when the hunt just entered the list, or **Since level N** when it was already there. N is the first level of this run where that piece was inside **Hunts per gear slot**. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line.
+
+**The parchment**
+
+The name beside the reward icon is the full name. The box widens up to the parchment, and a longer name wraps onto the next line. **Blackened Defias Boots** is no longer cut off. A quest you can pick up without finishing another one first says **No prequests. You can pick this quest up without finishing another quest first.** **Weather-worn Boots** say that for Princess Must Die! in Elwynn Forest, feet, level 6. **Militia Shortsword** says it for Brotherhood of Thieves in Northshire, main hand, level 2.
+
+A quest that needs earlier steps lists every step from the first quest through the one that rewards the item. A finished step ends in green **completed**. **Lion-stamped Gloves** (Goldtooth, Elwynn Forest, hands, level 5) lists Lost Necklace, Pie for Billy, Back to Billy, then Goldtooth. **Archeus** (A Daughter's Love, Duskwood, staff, level 28) lists The Weathered Grave, Morgan Ladimore, Mor'Ladim, The Daughter Who Lived, then A Daughter's Love. **Traveler's Wraps** (To Valanaar, Zephras Isle, hands, level 6) lists Infiltrating the Cult, Falaath Village, Among the Faithful, Havoc in the Highlands, then To Valanaar. A quest that has not been checked stays quiet.
+
+**Deviate Scale Belt**
+
+**Deviate Scale Belt** is the pattern from **Deviate Eradication**. Ebru offers it at the Wailing Caverns entrance in the Barrens, as a choice with Sizzle Stick and Dagmire Gauntlets. The objective is 7 Deviate Ravagers, 7 Deviate Vipers, 7 Deviate Shamblers, and 7 Deviate Dreadfangs. The belt is crafted afterwards with Leatherworking 90. Druid, hunter, paladin, rogue, shaman, and warrior hunts use that quest. The belt equips at 18. The quest can be picked up at 15.
+
+**Weapons**
+
+Before a hunter learns Dual Wield at 20, a one-hand weapon is ranked in the main hand, and it stays through its item level. **Harpy Skinner**, from Serena Bloodfeather, is a Horde hunter main-hand hunt from 12 through 19 for Beast Mastery, Marksmanship, and Survival.
+
+For a priest, a mage, a warlock, a balance or restoration druid, and an elemental or restoration shaman, a one-hand rank line names the off-hand it is worn with: **(only when combined with …)**. A staff stays on its own. The green arrow is still that weapon by itself.
+
+**A controller on the character panel**
+
+While the paper doll is open and the log is not using the pad, clicking the right stick opens the upgrade list for the focused slot, or the slot you last hovered. The same click closes that list. The log still uses the right stick to scroll the parchment.
+
+**New and updated gear**
+
+**Bladewhisper's Namesake** is a new green thrown weapon. It requires 37, and it is an Arms ranged hunt from 37 for both factions. Wowhead has not listed a source yet. It has the New in Forever mark.
+
+The level 60 Watcher's Signets are the same rings with new names: Initiate's, Tracker's, Watcher's, and Warden's Signet of Ferocity, of Brilliance, of Resolve, and of Vigilance. **Warden's Signet of Ferocity** is the old Ferocious Watcher's Signet.
+
+140 pieces left the lists because Forever no longer has them. That includes the high-level sets Glory, Justice, Conviction, Spiritcaller, Grovekeeper, Manaflare, Grimstitch, Demonheart, and Wildstalker, plus **Ouroboros Ring**, **Guardian Staff**, and **Dank Shoulderpads**.
+
+Seven pieces are uncommon now: **Encroacher's Claim**, **Pathfinder's Clearway**, **Saltseer's Helm**, **Traveler's Shawl**, **South Seas Shroud**, **Mutinous Cuffs**, and **Rusted Troll War Belt**. **Encroacher's Claim** is 15.2 dps. **Pathfinder's Clearway** is 7.6 dps.
+
+Five weapons do less damage: **Keen Skinning Knife** (6.0), **Wildgore Greatsword** (11.8), **Walton's Second-Favorite Gun** (7.1), **Cheese Knife** (5.5), and **Serrated Knife** (7.5).
+
+**Scout Ranger's Boots** drop from Snapbeak the Quick on Zephras Isle. They are a feet hunt from level 5. **Al'Aketh Shoes** still come from Brother Zendraas on Zephras Isle, and they also drop from Al'Aketh Pillager. **Rezlak's Spare Knife** is the Horde quest Stormy Potential, from Rezlak in Durotar, and it requires 7. It is not a ranged hunt.
+
+### v1.0.7
 
 The window title reads **GearQuest Forever v1.0.7**. Settings → The GearQuest Community now shows the current Discord invite, `https://discord.gg/gQSVunBsR`. That is the same link as on the CurseForge addon description. The old invite had expired.
 

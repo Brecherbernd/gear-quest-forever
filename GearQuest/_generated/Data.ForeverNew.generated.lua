@@ -2819,6 +2819,7 @@ GQ.Data.foreverNew = {
     [287069] = true,
     [287070] = true,
     [287071] = true,
+    [287072] = true,
     [287090] = true,
     [287620] = true,
     [287621] = true,

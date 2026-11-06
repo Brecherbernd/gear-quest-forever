@@ -337,7 +337,7 @@ GQ.Data.priestEarly1to9Facts = {
     [277076]={name="Al'Aketh Handwraps",quality=2,ilvl=10,reqLevel=5,sourceType="vendor",instructions="Bought from Brother Zendraas.",zone="Zephras Isle",npc="Brother Zendraas"},
     [277077]={name="Al'Aketh Cord",quality=2,ilvl=9,reqLevel=4,sourceType="vendor",instructions="Bought from Brother Zendraas.",zone="Zephras Isle",npc="Brother Zendraas"},
     [277078]={name="Al'Aketh Leggings",quality=2,ilvl=11,reqLevel=6,sourceType="vendor",instructions="Bought from Brother Zendraas.",zone="Zephras Isle",npc="Brother Zendraas"},
-    [277079]={name="Al'Aketh Shoes",quality=2,ilvl=10,reqLevel=5,sourceType="vendor",instructions="Bought from Brother Zendraas.",zone="Zephras Isle",npc="Brother Zendraas"},
+    [277079]={name="Al'Aketh Shoes",quality=2,ilvl=10,reqLevel=5,sourceType="world_drop",instructions="Drops from Al'Aketh Pillager. Bought from Brother Zendraas.",zone="Zephras Isle",npc="Al'Aketh Pillager"},
     [277098]={name="Zephrali Vest",quality=1,ilvl=14,reqLevel=9,sourceType="vendor",instructions="Bought from Taliaa Brightsky.",zone="Zephras Isle",npc="Taliaa Brightsky"},
     [277099]={name="Zephrali Cuffs",quality=1,ilvl=14,reqLevel=9,sourceType="vendor",instructions="Bought from Taliaa Brightsky.",zone="Zephras Isle",npc="Taliaa Brightsky"},
     [277100]={name="Zephrali Handwraps",quality=1,ilvl=14,reqLevel=9,sourceType="vendor",instructions="Bought from Taliaa Brightsky.",zone="Zephras Isle",npc="Taliaa Brightsky"},

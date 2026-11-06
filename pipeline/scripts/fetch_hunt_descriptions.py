@@ -245,11 +245,14 @@ def main() -> None:
             linked = (cache["item"].get(str(item_id)) or {}).get("quests") or []
             if not linked:
                 linked = item_fact(item_id, cache).get("quests") or []
+        if not linked:
+            continue
         best = 1
         for quest_id in linked:
             best = max(best, quest_steps(int(quest_id), cache))
-        if best >= 2:
-            chain_out[item_id] = best
+        # 1 means the reward quest is the whole series. The log says there
+        # are no prequests. A later step stays the chain length.
+        chain_out[item_id] = best
         if n % 25 == 0:
             save_cache(cache)
             emit(vendor_out, chain_out)

@@ -3153,7 +3153,13 @@ end
 
 function GQ.Data:QuestChainLines(entry)
     local steps = self.questChain and entry and entry.itemId and self.questChain[entry.itemId]
-    if type(steps) ~= "number" or steps < 2 then
+    if type(steps) ~= "number" then
+        return nil, nil
+    end
+    if steps < 2 then
+        if steps == 1 then
+            return "No prequests. You can pick this quest up without finishing another quest first.", nil
+        end
         return nil, nil
     end
     return "Part of a quest chain.", string.format("%d quests until you get this.", math.floor(steps))
@@ -5680,6 +5686,115 @@ function GQ.Data:IsEntryNewForPlayer(entry)
     return not previous[key]
 end
 
+-- First level of the current run on the hunt list. A row counts when its
+-- stored rank was inside the hunt count, or at least as good as the row
+-- showing now. A gap ends the run.
+function GQ.Data:EntryListSinceLevel(entry)
+    local function flagsMatch(a, b)
+        if a == b then
+            return true
+        end
+        if not a or not b then
+            return false
+        end
+        for key, value in pairs(a) do
+            if value and not b[key] then
+                return false
+            end
+        end
+        for key, value in pairs(b) do
+            if value and not a[key] then
+                return false
+            end
+        end
+        return true
+    end
+    if not entry or not entry.itemId then
+        return nil
+    end
+    local level = GQ:GetEffectiveLevel() or 1
+    local limit = 3
+    if GQ.Log and GQ.Log.HuntsPerSlot then
+        limit = GQ.Log:HuntsPerSlot()
+    end
+    local rankLine = entry.curatedRank or limit
+    if rankLine < limit then
+        rankLine = limit
+    end
+    local classFile = GQ.GetEffectiveClass and GQ:GetEffectiveClass()
+    local slot = self.NormalizeSlotName and self:NormalizeSlotName(entry.slot) or entry.slot
+    local suffix = entry.suffix or ""
+    if classFile and self.IsClassExpanded and not self:IsClassExpanded(classFile) then
+        return entry.minLevel or level
+    end
+    local cacheKey = table.concat({
+        tostring(entry.id),
+        tostring(level),
+        tostring(limit),
+        tostring(rankLine),
+        tostring(classFile),
+        tostring(slot),
+        suffix,
+    }, ":")
+    self._sinceLevel = self._sinceLevel or {}
+    local cached = self._sinceLevel[cacheKey]
+    if cached ~= nil then
+        if cached == false then
+            return nil
+        end
+        return cached
+    end
+    local spans = {}
+    local rows = self:GetEntriesByItemId(entry.itemId)
+    for i = 1, #rows do
+        local row = rows[i]
+        local rowSlot = self.NormalizeSlotName and self:NormalizeSlotName(row.slot) or row.slot
+        if rowSlot == slot
+            and (row.suffix or "") == suffix
+            and (not row.classes or not classFile or row.classes[classFile])
+            and flagsMatch(row.specs, entry.specs)
+            and flagsMatch(row.factions, entry.factions)
+        then
+            local lo = row.minLevel or 1
+            local hi = row.maxLevel or lo
+            local covers = level >= lo and level <= hi
+            local rank = row.curatedRank or 99
+            if covers or rank <= rankLine then
+                spans[#spans + 1] = { lo, hi }
+            end
+        end
+    end
+    if #spans == 0 then
+        local fallback = entry.minLevel or level
+        self._sinceLevel[cacheKey] = fallback
+        return fallback
+    end
+    local since = level
+    local cursor = level
+    local guard = 0
+    while cursor >= 1 and guard < 80 do
+        guard = guard + 1
+        local found
+        for i = 1, #spans do
+            local lo = spans[i][1]
+            local hi = spans[i][2]
+            if lo <= cursor and hi >= cursor and (not found or lo < found) then
+                found = lo
+            end
+        end
+        if not found then
+            break
+        end
+        since = found
+        if found <= 1 then
+            break
+        end
+        cursor = found - 1
+    end
+    self._sinceLevel[cacheKey] = since
+    return since
+end
+
 -- Active-band candidates the player can equip now (required level uses GetEffectiveLevel).
 -- Runs inside one class/level/faction/spec snapshot (GQ:WithContextSnapshot).
 function GQ.Data:GetCandidatesForSlot(slotName)
@@ -6325,6 +6440,12 @@ function GQ.Data:GearScoreTooltipLine(entry)
     else
         rankText = nil
     end
+    if rankText and GQ.Log and GQ.Log.OffHandPairNote then
+        local pairNote = GQ.Log:OffHandPairNote(entry)
+        if pairNote then
+            rankText = rankText .. " " .. pairNote
+        end
+    end
     local trail = ctx and self:GearScoreTrail(entry, ctx) or ""
     local note
     if entry.setPiece and entry.curatedRank == 1 and ctx and ctx.bestListScore
@@ -6955,6 +7076,21 @@ function GQ.Data:UsesTwoHandOnlyWeapons()
     local classFile = GQ.GetEffectiveClass and GQ:GetEffectiveClass()
     local spec = GQ.GetEffectiveSpec and GQ:GetEffectiveSpec()
     return classFile == "SHAMAN" and spec == "enhancement"
+end
+
+function GQ.Data:PairsWeaponWithOffHand()
+    local classFile = GQ.GetEffectiveClass and GQ:GetEffectiveClass()
+    local spec = self.RuleSpec and self:RuleSpec() or (GQ.GetEffectiveSpec and GQ:GetEffectiveSpec())
+    if classFile == "PRIEST" or classFile == "MAGE" or classFile == "WARLOCK" then
+        return true
+    end
+    if classFile == "DRUID" and spec ~= "feral" then
+        return true
+    end
+    if classFile == "SHAMAN" and (spec == "elemental" or spec == "restoration") then
+        return true
+    end
+    return false
 end
 
 function GQ.Data:UsesBothWeaponStyles()

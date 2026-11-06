@@ -1269,17 +1269,20 @@ def run(cls, spec_key, levels=range(1,70), factions=("Alliance","Horde")):
                     ranked_all = [r for r in ranked_all if is_either_hand(r[1]) or is_offhand_only(r[1])]
                     rows = ranked_all
                 split_hands = sl == "MainHand" and cls == "HUNTER"
+                dw_level = dual_wield_level(cls, spec_key)
                 enh_two_only = sl == "MainHand" and cls == "SHAMAN" and spec_key == "enhancement"
                 elem_both = sl == "MainHand" and (
                     (cls == "SHAMAN" and spec_key in ("elemental", "restoration"))
                     or (cls == "PALADIN" and spec_key in ("holy", "shockadin"))
                 )
                 if split_hands:
-                    # Two-handers, then main-hand-only one-handers. An either-hand
-                    # weapon (InventoryType 13) is an off-hand pick, not this list.
+                    # Two-handers, then one-handers. Before Dual Wield a One-Hand
+                    # weapon is worn in the main hand, so it joins this list from
+                    # the level it can be equipped. After that it is the off hand.
                     two = unique_name_rows([r for r in ranked_all if is_two_hand_item(r[1])], 4)
-                    main_only = unique_name_rows([r for r in ranked_all if is_mainhand_only(r[1])], 4)
-                    rows = two + main_only
+                    one = unique_name_rows(
+                        [r for r in ranked_all if hunter_main_one_hand(r[1], level, dw_level)], 4)
+                    rows = two + one
                 elif enh_two_only:
                     rows = unique_name_rows([r for r in ranked_all if is_two_hand_item(r[1])], 8)
                 elif elem_both:
@@ -1303,13 +1306,15 @@ def run(cls, spec_key, levels=range(1,70), factions=("Alliance","Horde")):
                 # their score earns. There is no separate notable shelf.
                 if sl == "MainHand" and style == "twohand_or_onehand" and not split_hands:
                     rows = pair_weapon_styles(rows)
-                per[(faction,level,sl)]=rows[:8]
-                # Alternates for the source filter. The shipped top 3 (and the
-                # rest of this 8) stay exactly as ranked above. These are only
-                # the next items of each source, so a filtered list can still
-                # fill three hunts without changing the unfiltered order.
-                held_ids={r[1]["id"] for r in rows[:8]}
-                held_names={r[1]["name"] for r in rows[:8]}
+                rows = rows[:8] + carry_through_ilvl(
+                    per.get((faction, level - 1, sl)), rows[:8], level, sl, cls, spec_key)
+                per[(faction,level,sl)]=rows
+                # Alternates for the source filter. The shipped top stays as
+                # ranked above. The tail is weapons kept through their item
+                # level. These extras are the next items of each source, so a
+                # filtered list can still fill three hunts.
+                held_ids={r[1]["id"] for r in rows}
+                held_names={r[1]["name"] for r in rows}
                 skip_spell=not spec_uses_spell_power(wl)
                 counts={}; extra=[]
                 for r in ranked_all:
@@ -1317,7 +1322,15 @@ def run(cls, spec_key, levels=range(1,70), factions=("Alliance","Horde")):
                     if it["id"] in FOREVER_MISSING or it["id"] in held_ids or it["name"] in held_names:
                         continue
                     if cls == "HUNTER" and sl == "MainHand" and not is_two_hand_item(it) and not is_mainhand_only(it):
-                        continue
+                        if not hunter_main_one_hand(it, level, dw_level):
+                            continue
+                    # Past its item level, a weapon stays only when the score
+                    # already put it in the top of this hand. Do not pad the
+                    # later bands with a quest dagger that is no longer a real option.
+                    if sl in ("MainHand", "SecondaryHand"):
+                        ilvl = it.get("ilvl") or 0
+                        if ilvl and ilvl < level:
+                            continue
                     if cls == "HUNTER" and sl == "SecondaryHand" and not is_either_hand(it):
                         continue
                     if cls == "ROGUE" and sl == "SecondaryHand" and not (is_either_hand(it) or is_offhand_only(it)):
@@ -1469,6 +1482,56 @@ def is_offhand_only(it):
         return False
     return it.get("slot") == "OffHand" or it.get("inv") == 22
 
+def hunter_main_one_hand(it, level, dw):
+    """Before Dual Wield, a One-Hand weapon is worn in the main hand."""
+    if is_mainhand_only(it):
+        return True
+    return dw is not None and level < dw and is_either_hand(it)
+
+def hand_still_legal(it, sl, cls, spec_key, level, dw):
+    """The hand this weapon was kept on is still a hand it can use."""
+    if cls == "HUNTER" and sl == "MainHand":
+        if is_two_hand_item(it) or is_mainhand_only(it):
+            return True
+        return is_either_hand(it) and dw is not None and level < dw
+    if cls == "HUNTER" and sl == "SecondaryHand":
+        return is_either_hand(it)
+    if cls == "ROGUE" and sl == "SecondaryHand":
+        return is_either_hand(it) or is_offhand_only(it)
+    if cls == "SHAMAN" and spec_key == "enhancement":
+        if sl == "SecondaryHand":
+            return False
+        if sl == "MainHand":
+            return is_two_hand_item(it)
+    return True
+
+def carry_through_ilvl(prev_rows, rows, level, sl, cls, spec_key):
+    """Keep a weapon that earned a place until the character passes its item level.
+
+    The next level's top slice used to drop a quest sword the moment one
+    newer weapon took the last slot. Past the item level it has to earn
+    the place again, so a weak dagger does not linger for ten more levels.
+    """
+    if sl not in ("MainHand", "SecondaryHand") or not prev_rows:
+        return []
+    dw = dual_wield_level(cls, spec_key)
+    held = {r[1]["id"] for r in rows}
+    names = {r[1]["name"] for r in rows}
+    out = []
+    for r in prev_rows:
+        it = r[1]
+        if it["id"] in held or it["name"] in names:
+            continue
+        ilvl = it.get("ilvl") or 0
+        if not ilvl or ilvl < level:
+            continue
+        if not hand_still_legal(it, sl, cls, spec_key, level, dw):
+            continue
+        held.add(it["id"])
+        names.add(it["name"])
+        out.append(r)
+    return out
+
 def weapon_hand(it, sl):
     """two = two-hand, main = Main Hand, one = One-Hand, off = Off Hand."""
     if sl == "MainHand":
@@ -1585,7 +1648,10 @@ def style_band_key(rows):
         picked = two[:3]
     else:
         picked = rows[:3]
-    return tuple((r[1]["id"], r[2]) for r in picked)
+    # The tail is the weapons kept through their item level. When one of
+    # them ages out, the band ends, so the earlier levels still list it.
+    tail = tuple(r[1]["id"] for r in rows[8:])
+    return (tuple((r[1]["id"], r[2]) for r in picked), tail)
 
 def collapse(per, factions, slots, levels):
     """merge adjacent levels whose top-3 pick is identical"""
@@ -1597,7 +1663,7 @@ def collapse(per, factions, slots, levels):
                 rows=per.get((faction,lv,sl),[]) if lv else []
                 key=style_band_key(rows) if rows else None
                 if key!=run_key:
-                    if run_key: bands.append((faction,sl,start,prev,run_key,per[(faction,prev,sl)][:8]))
+                    if run_key: bands.append((faction,sl,start,prev,run_key,per[(faction,prev,sl)]))
                     run_key=key; start=lv
                 prev=lv
     return bands
