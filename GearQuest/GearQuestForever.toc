@@ -15,6 +15,7 @@ Locales/frFR.lua
 Locales/frFR.rules.lua
 Locales/frFR.sentences.lua
 Locales/frFR.names.lua
+Locales/frFR.quests.lua
 Core.lua
 Spec.lua
 CustomSpec.lua
