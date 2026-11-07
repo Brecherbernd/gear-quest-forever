@@ -578,3 +578,115 @@ end)
 add("^The (%a[%a ]-) pattern is the drop%.$", function(prof)
     return "Le butin est le patron (" .. L[prof] .. ")."
 end)
+
+-- Wowhead tooltip lines, shown when the client does not know the item.
+-- Worded like the French client's own tooltips.
+local CLASS_FR = {
+    Warrior = "Guerrier", Paladin = "Paladin", Hunter = "Chasseur", Rogue = "Voleur", Priest = "Prêtre",
+    Shaman = "Chaman", Mage = "Mage", Warlock = "Démoniste", Druid = "Druide",
+}
+local CREATURE_FR = {
+    Beasts = "les Bêtes", Humanoids = "les Humanoïdes", Undead = "les Morts-vivants", Demons = "les Démons",
+    Dragonkin = "les Draconiens", Elementals = "les Élémentaires", Giants = "les Géants", Mechanicals = "les Machines",
+}
+local SPELL_SCHOOL = {
+    Fire = "de Feu", Frost = "de Givre", Nature = "de Nature", Shadow = "d'Ombre", Arcane = "des Arcanes", Holy = "du Sacré",
+}
+local function Tip(pattern, fn)
+    add(pattern, fn)
+end
+Tip("^Item Level (%d+)$", function(n) return "Niveau d'objet " .. n end)
+Tip("^Requires Level (%d+)$", function(n) return "Niveau " .. n .. " requis" end)
+Tip("^(%d+) Armor$", function(n) return "Armure : " .. n end)
+Tip("^(%d+) Block$", function(n) return "Bloquer : " .. n end)
+Tip("^Durability (%d+) / (%d+)$", function(a, b) return "Durabilité " .. a .. " / " .. b end)
+Tip("^Speed ([%d%.]+)$", function(n) return "Vitesse " .. n:gsub("%.", ",") end)
+Tip("^%(([%d%.]+) damage per second%)$", function(n) return "(" .. n:gsub("%.", ",") .. " dégâts par seconde)" end)
+Tip("^(%d+) %- (%d+) Damage$", function(a, b) return "Dégâts : " .. a .. " - " .. b end)
+Tip("^%+?%s?(%d+) %- (%d+) (%a+) Damage$", function(a, b, school)
+    return SPELL_SCHOOL[school] and ("+" .. a .. " - " .. b .. " points de dégâts " .. SPELL_SCHOOL[school])
+end)
+Tip("^Sell Price: (.+)$", function(coin) return "Prix de vente : " .. coin end)
+Tip("^Drop Chance: ([%d%.]+%%)$", function(p) return "Chances de butin : " .. p end)
+Tip("^Dropped by: (.+)$", function(who) return "Butin de : " .. Any(who) end)
+Tip("^Binds when picked up$", function() return "Lié quand ramassé" end)
+Tip("^Binds when equipped$", function() return "Lié quand équipé" end)
+Tip("^Binds when used$", function() return "Lié quand utilisé" end)
+Tip("^Quest Item$", function() return "Objet de quête" end)
+Tip("^Unique%-Equipped$", function() return "Unique - Équipé" end)
+Tip("^(%d+) Charges$", function(n) return n .. " charges" end)
+Tip("^Classes: (.+)$", function(list)
+    local names = {}
+    for class in (list .. ", "):gmatch("(.-), ") do
+        local client = type(LOCALIZED_CLASS_NAMES_MALE) == "table" and LOCALIZED_CLASS_NAMES_MALE[class:upper()]
+        names[#names + 1] = type(client) == "string" and client or CLASS_FR[class] or class
+    end
+    return "Classes : " .. table.concat(names, ", ")
+end)
+Tip("^Requires (%a[%a ]-) %((%d+)%)$", function(skill, n) return "Nécessite " .. L[skill] .. " (" .. n .. ")" end)
+Tip("^%+(%d+) (%a+) Resistance%.?$", function(n, school)
+    return SPELL_SCHOOL[school] and ("+" .. n .. " à la résistance " .. (school == "Holy" and "au Sacré" or SPELL_SCHOOL[school]:gsub("^de ", "au "):gsub("^d'", "à l'"):gsub("^des ", "aux ")))
+end)
+Tip("^%+(%d+) Spell Penetration$", function(n) return "+" .. n .. " à la pénétration des sorts" end)
+Tip("^%+(%d+) Attack Power against (%a+)%.?$", function(n, who)
+    return CREATURE_FR[who] and ("+" .. n .. " à la puissance d'attaque contre " .. CREATURE_FR[who] .. ".")
+end)
+Tip("^%((%d+)%) Set ?: (.+)$", function(n, rest) return "(" .. n .. ") Ensemble : " .. Rest(rest) end)
+Tip("^Increases damage and healing done by magical spells and effects by up to (%d+)%.?$", function(n)
+    return "Augmente les dégâts et les soins produits par les sorts et effets magiques de " .. n .. " au maximum."
+end)
+Tip("^Increases healing done by up to (%d+) and damage done by up to (%d+) for all magical spells and effects%.?$", function(h, d)
+    return "Augmente les soins prodigués d'un maximum de " .. h .. " et les dégâts d'un maximum de " .. d .. " pour tous les sorts et effets magiques."
+end)
+Tip("^Increases healing done by magical spells and effects by up to (%d+)%.?$", function(n)
+    return "Augmente les soins prodigués par les sorts et effets magiques de " .. n .. " au maximum."
+end)
+Tip("^Increases healing done by spells and effects by up to (%d+)%.?$", function(n)
+    return "Augmente les soins prodigués par les sorts et effets de " .. n .. " au maximum."
+end)
+Tip("^Increases damage done by magical spells and effects by up to (%d+)%.?$", function(n)
+    return "Augmente les dégâts infligés par les sorts et effets magiques de " .. n .. " au maximum."
+end)
+Tip("^Increases damage done by (%a+) spells and effects by up to (%d+)%.?$", function(school, n)
+    return SPELL_SCHOOL[school] and ("Augmente les dégâts infligés par les sorts et effets " .. SPELL_SCHOOL[school] .. " de " .. n .. " au maximum.")
+end)
+Tip("^Increases damage done to (%a+) by magical spells and effects by up to (%d+)%.?$", function(who, n)
+    return CREATURE_FR[who] and ("Augmente les dégâts infligés à " .. CREATURE_FR[who] .. " par les sorts et effets magiques de " .. n .. " au maximum."):gsub(" à les ", " aux ")
+end)
+Tip("^Increased Defense %+(%d+)%.?$", function(n) return "Défense augmentée de +" .. n .. "." end)
+Tip("^Increased (%a+) %+(%d+)%.?$", function(skill, n)
+    local name = L[skill]
+    return name ~= skill and ("Compétence " .. name .. " augmentée de +" .. n .. ".")
+end)
+Tip("^Increases all Resistances by (%d+)%.?$", function(n) return "Augmente toutes les résistances de " .. n .. "." end)
+Tip("^Restores %+?(%d+) health per (%d+) sec%.?$", function(n, s) return "Rend " .. n .. " points de vie toutes les " .. Secs(s) .. "." end)
+Tip("^Restores %+?(%d+) mana per (%d+) sec%.?$", function(n, s) return "Rend " .. n .. " points de mana toutes les " .. Secs(s) .. "." end)
+Tip("^Lasts (%d+) sec%.?$", function(n) return "Dure " .. Secs(n) .. "." end)
+Tip("^Lasts (%d+) min%.?$", function(n) return "Dure " .. n .. " min." end)
+Tip("^Can only occur once every (%d+) sec%.?$", function(n) return "Ne peut se produire qu'une fois toutes les " .. Secs(n) .. "." end)
+Tip("^%((%d+) Sec Cooldown%)$", function(n) return "(Recharge " .. Secs(n) .. ")" end)
+Tip("^Stacks up to (%d+) times%.?$", function(n) return "Cumulable jusqu'à " .. n .. " fois." end)
+Tip("^Does not stack with similar effects%.?$", function() return "Ne se cumule pas avec les effets similaires." end)
+Tip("^Only active outdoors%.?$", function() return "Actif uniquement en extérieur." end)
+Tip("^Absorbs (%d+) to (%d+) physical damage%.?$", function(a, b) return "Absorbe " .. a .. " à " .. b .. " points de dégâts physiques." end)
+Tip("^Increases your attack speed and casting speed by (%d+%%)%.?$", function(p)
+    return "Augmente votre vitesse d'attaque et d'incantation de " .. p .. "."
+end)
+Tip("^(.+) %((%d+)/(%d+)%)$", function(set, a, b)
+    local name = Any(set)
+    return name ~= set and (name .. " (" .. a .. "/" .. b .. ")")
+end)
+local TIP_WORDS = {
+    Head = "Tête", Neck = "Cou", Shoulder = "Épaule", Back = "Dos", Chest = "Torse", Shirt = "Chemise",
+    Tabard = "Tabard", Wrist = "Poignets", Hands = "Mains", Waist = "Taille", Legs = "Jambes", Feet = "Pieds",
+    Finger = "Doigt", Trinket = "Bijou", ["One-Hand"] = "À une main", ["Two-Hand"] = "Deux mains",
+    ["Main Hand"] = "Main droite", ["Off Hand"] = "Main gauche", ["Held In Off-hand"] = "Tenu en main gauche",
+    Ranged = "À distance", Relic = "Relique", Cloth = "Tissu", Leather = "Cuir", Mail = "Mailles",
+    Plate = "Plaques", Shield = "Bouclier", Idol = "Idole", Totem = "Totem", Libram = "Libram",
+    Sword = "Épée", Axe = "Hache", Mace = "Masse", Dagger = "Dague", Staff = "Bâton", Polearm = "Arme d'hast",
+    ["Fist Weapon"] = "Arme de pugilat", Bow = "Arc", Gun = "Arme à feu", Crossbow = "Arbalète",
+    Wand = "Baguette", Thrown = "Armes de jet", ["Fishing Pole"] = "Canne à pêche", Unique = "Unique",
+    Miscellaneous = "Divers", Projectile = "Projectile", Arrow = "Flèche", Bullet = "Balle", Quiver = "Carquois",
+    ["Ammo Pouch"] = "Giberne", Bag = "Sac", Ammo = "Munitions",
+}
+Tip("^([%a][%a%- ]*)$", function(word) return TIP_WORDS[word] end)

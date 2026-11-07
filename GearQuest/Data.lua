@@ -2060,7 +2060,7 @@ function GQ.Data:AddForeverTooltipLines(tooltip, lines, displayName, auditName)
 
     for _, line in ipairs(lines) do
         if type(line) == "table" then
-            tooltip:AddDoubleLine(line.left or "", line.right or "", 1, 1, 1, 1, 1, 1)
+            tooltip:AddDoubleLine(GQ.TL(line.left or ""), GQ.TL(line.right or ""), 1, 1, 1, 1, 1, 1)
             lastBlank = false
         else
             local isHeader = self:IsSetHeaderLine(line)
@@ -2102,6 +2102,11 @@ function GQ.Data:AddForeverTooltipLines(tooltip, lines, displayName, auditName)
                 end
 
                 local wrap = isBonus or (not isHeader and setPhase ~= "pieces" and not isTail)
+                if setPhase == "pieces" and not isHeader then
+                    text = text:gsub("^(%s*)(.-)$", function(pad, name) return pad .. GQ.TN("item", name) end)
+                else
+                    text = GQ.TL(text)
+                end
                 addText(text, lr, lg, lb, wrap)
                 lastBlank = false
             end
