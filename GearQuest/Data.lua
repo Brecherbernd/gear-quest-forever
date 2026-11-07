@@ -1532,12 +1532,16 @@ function GQ.Data:SanitizeText(text)
     text = text:gsub("\226\128\152", "'") -- left single quote
     text = text:gsub("\226\128\153", "'") -- right single quote
     text = text:gsub("\194\160", " ")
-    text = text:gsub("\147", "'") -- cp1252 left double quote
-    text = text:gsub("\148", "'") -- cp1252 right double quote
-    text = text:gsub("\145", "'")
-    text = text:gsub("\146", "'")
-    text = text:gsub("\151", "-")
-    text = text:gsub("\150", "-")
+    -- Stray cp1252 bytes, only after an ASCII byte. The same bytes are UTF-8
+    -- continuation bytes inside French letters (oe ligature C5 93, O circumflex C3 94).
+    text = "\0" .. text
+    text = text:gsub("([%z\1-\127])\147", "%1'") -- cp1252 left double quote
+    text = text:gsub("([%z\1-\127])\148", "%1'") -- cp1252 right double quote
+    text = text:gsub("([%z\1-\127])\145", "%1'")
+    text = text:gsub("([%z\1-\127])\146", "%1'")
+    text = text:gsub("([%z\1-\127])\151", "%1-")
+    text = text:gsub("([%z\1-\127])\150", "%1-")
+    text = text:sub(2)
     -- Wowhead quest text keeps HTML entities. &nbsp; is a space, and
     -- &lt;name&gt; is the character. Decode those before the parchment draws.
     local named = {
