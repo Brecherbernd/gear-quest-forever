@@ -15860,6 +15860,18 @@ function GQ.Log:LookupDisplayName(entry)
     return base
 end
 
+-- The data's own name, so an English search still finds the item.
+function GQ.Log:LookupEnglishName(entry)
+    local name = entry.name
+    local data = GQ.Data
+    if (not name or name == "") and data and entry.itemId then
+        local fact = data.GetItemFact and data:GetItemFact(entry.itemId)
+        local audit = data.GetForeverAudit and data:GetForeverAudit(entry.itemId)
+        name = (fact and fact.name) or (audit and audit.name)
+    end
+    return name and name ~= "" and GQ.FoldText(name) or nil
+end
+
 -- The catalog is every level band for the class. Walking it on the search
 -- click froze the frame. Two thousand rows a frame stays inside the budget.
 function GQ.Log:EnsureLookupIndex(classFile, onReady)
@@ -15948,7 +15960,8 @@ function GQ.Log:StepLookupIndex()
                     key = key,
                     itemId = entry.itemId,
                     name = name,
-                    nameLower = string.lower(name),
+                    nameLower = GQ.FoldText(name),
+                    englishLower = self:LookupEnglishName(entry),
                     entries = {},
                 }
                 items[key] = row
@@ -16539,14 +16552,19 @@ function GQ.Log:ApplyLookupHits(classFile, query)
         local index = self._lookupIndex or {}
         for i = 1, #index do
             local item = index[i]
-            local name = item.nameLower or ""
             local rank
-            if name == query then
-                rank = 0
-            elseif name:sub(1, #query) == query then
-                rank = 1
-            elseif name:find(query, 1, true) then
-                rank = 2
+            for _, name in ipairs({ item.nameLower or "", item.englishLower or "" }) do
+                local found
+                if name == query then
+                    found = 0
+                elseif name:sub(1, #query) == query then
+                    found = 1
+                elseif name:find(query, 1, true) then
+                    found = 2
+                end
+                if found and (not rank or found < rank) then
+                    rank = found
+                end
             end
             if rank then
                 hits[#hits + 1] = { item = item, rank = rank }
@@ -16591,7 +16609,7 @@ function GQ.Log:RunLookup()
     end
     local _, classFile = self:LookupClassName()
     local query = self.frame.lookupBox:GetText() or ""
-    query = string.lower((strtrim and strtrim(query)) or query:gsub("^%s+", ""):gsub("%s+$", ""))
+    query = GQ.FoldText((strtrim and strtrim(query)) or query:gsub("^%s+", ""):gsub("%s+$", ""))
     self._lookupSerial = (self._lookupSerial or 0) + 1
     local serial = self._lookupSerial
     if query == "" then

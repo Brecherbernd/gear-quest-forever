@@ -168,6 +168,21 @@ function GQ.TX(text)
     return GQ.TN("zone", text)
 end
 
+-- Search key: lower case with accents dropped, so "epee" finds "Épée".
+-- string.lower only folds ASCII.
+local FOLD = {}
+for plain, letters in pairs({
+    a = "àâäáãåÀÂÄÁÃÅ", c = "çÇ", e = "éèêëÉÈÊË", i = "îïíìÎÏÍÌ", n = "ñÑ",
+    o = "ôöóòõÔÖÓÒÕ", u = "ùûüúÙÛÜÚ", y = "ÿýŸÝ", oe = "œŒ", ae = "æÆ",
+}) do
+    for letter in letters:gmatch("[\192-\255][\128-\191]*") do
+        FOLD[letter] = plain
+    end
+end
+function GQ.FoldText(text)
+    return (string.lower(text):gsub("[\192-\255][\128-\191]*", FOLD))
+end
+
 local function TranslateSentence(sentence)
     local exact = GQ.LocaleSentences[sentence]
     if exact then
