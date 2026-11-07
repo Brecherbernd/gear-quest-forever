@@ -13425,6 +13425,20 @@ function GQ.Log:BuildDetailLines(entry)
     return lines
 end
 
+-- A search row waiting on the client's name for this item: paint it again.
+function GQ.Log:RefreshLookupRowName(itemId)
+    if not itemId or self:GetPageTab() ~= "lookup" then
+        return
+    end
+    local results = self._lookupResults or {}
+    for i = 1, #results do
+        if results[i].itemId == itemId and not results[i].clientNamed then
+            self:PaintLookupRows()
+            return
+        end
+    end
+end
+
 function GQ.Log:EnsureItemInfoListener()
     if self.itemInfoListener then
         return
@@ -13442,6 +13456,7 @@ function GQ.Log:EnsureItemInfoListener()
         if success == false and itemId and GQ.Data and GQ.Data.NoteClientItemMissing then
             GQ.Data:NoteClientItemMissing(itemId)
         end
+        log:RefreshLookupRowName(itemId)
         local entry
         if log:GetPageTab() == "lookup" then
             entry = log.lookupEntry
@@ -15842,13 +15857,22 @@ function GQ.Log:LookupFactionLabel(entry)
     return "both"
 end
 
-function GQ.Log:LookupDisplayName(entry)
+function GQ.Log:LookupDisplayName(entry, useClient)
     local base = entry and entry.name
     if (not base or base == "") and entry and entry.itemId and GQ.Data and GQ.Data.GetItemFact then
         local fact = GQ.Data:GetItemFact(entry.itemId)
         base = fact and fact.name
     end
-    if not base or base == "" then
+    -- On screen, the client's name first, as on the detail page. The index
+    -- skips it: asking the client for every catalog item floods the server.
+    local clientName = useClient and entry and entry.itemId and GQ.Data and GQ.Data.GetItemDisplayName
+        and GQ.Data:GetItemDisplayName(entry.itemId)
+    local localized = entry and GQ.LocaleActive and GQ.LocaleItemNames and GQ.LocaleItemNames[entry.itemId]
+    if clientName and clientName ~= "" then
+        base = clientName
+    elseif localized then
+        base = localized
+    elseif not base or base == "" then
         base = "Item " .. tostring(entry and entry.itemId or "?")
     else
         base = GQ.TN("item", base)
@@ -16521,6 +16545,11 @@ function GQ.Log:PaintLookupRows()
                 row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
             end
             local r, g, b = GetListItemQualityColor(item.itemId)
+            if not item.clientNamed and row.entry and GetItemInfo and GetItemInfo(item.itemId) then
+                item.name = self:LookupDisplayName(row.entry, true)
+                item.nameLower = GQ.FoldText(item.name)
+                item.clientNamed = true
+            end
             row.text:SetText(item.name or "")
             row.text:SetTextColor(r, g, b)
             if item.key == self.lookupItemKey then
