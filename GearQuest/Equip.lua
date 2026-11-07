@@ -38,9 +38,40 @@ function GQ.Equip:PlayerHasSkill(skillName)
     return false
 end
 
+-- Item class and subclass ids, the same on every client language.
+local CLASS_WEAPON, CLASS_ARMOR = 2, 4
+local ARMOR_SUBCLASS_NAMES = {
+    [0] = "Miscellaneous", [1] = "Cloth", [2] = "Leather", [3] = "Mail", [4] = "Plate",
+    [6] = "Shields", [7] = "Librams", [8] = "Idols", [9] = "Totems",
+}
+-- Weapon subclasses that are a skill line (the skill shares the subclass name).
+local WEAPON_SKILL_SUBCLASS = {
+    [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [5] = true, [6] = true,
+    [7] = true, [8] = true, [10] = true, [13] = true, [15] = true, [18] = true, [19] = true,
+}
+
+local function ItemClassIds(itemId)
+    if not GetItemInfoInstant then
+        return nil
+    end
+    local ok, _, _, _, _, _, classID, subClassID = pcall(GetItemInfoInstant, itemId)
+    if ok then
+        return classID, subClassID
+    end
+    return nil
+end
+
 function GQ.Equip:PlayerHasWeaponSkill(itemId)
     self:PrimeItem(itemId)
     local _, _, _, _, _, class, subclass = GetItemInfo(itemId)
+    local classID, subClassID = ItemClassIds(itemId)
+    if classID then
+        -- The client names the subclass and the skill line in its own language.
+        if classID ~= CLASS_WEAPON or not subclass or not WEAPON_SKILL_SUBCLASS[subClassID] then
+            return true
+        end
+        return self:PlayerHasSkill(subclass)
+    end
     if class ~= "Weapon" or not subclass then
         return true
     end
@@ -309,6 +340,10 @@ function GQ.Equip:GetItemArmorSubclass(itemId)
     if not self:IsItemInfoLoaded(itemId) then
         return nil
     end
+    local classID, subClassID = ItemClassIds(itemId)
+    if classID then
+        return classID == CLASS_ARMOR and ARMOR_SUBCLASS_NAMES[subClassID] or nil
+    end
     local _, _, _, _, _, class, subclass = GetItemInfo(itemId)
     if class == "Armor" and subclass then
         return subclass
@@ -364,6 +399,10 @@ end
 function GQ.Equip:PeekItemArmorSubclass(itemId)
     if not itemId or not GetItemInfo then
         return nil
+    end
+    local classID, subClassID = ItemClassIds(itemId)
+    if classID then
+        return classID == CLASS_ARMOR and ARMOR_SUBCLASS_NAMES[subClassID] or nil
     end
     local _, _, _, _, _, class, subclass = GetItemInfo(itemId)
     if class == "Armor" and subclass and subclass ~= "" then
