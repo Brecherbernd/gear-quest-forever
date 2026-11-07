@@ -8,6 +8,8 @@
 ## SavedVariables: GearQuestForeverDB
 ## SavedVariablesPerCharacter: GearQuestForeverCharDB
 
+Locales/Locale.lua
+Locales/Zones.lua
 Core.lua
 Spec.lua
 CustomSpec.lua
