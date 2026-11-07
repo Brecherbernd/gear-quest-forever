@@ -1435,6 +1435,11 @@ function GQ.Data:GetItemDisplayName(itemId)
         return clientName
     end
 
+    local localized = GQ.LocaleActive and GQ.LocaleItemNames and GQ.LocaleItemNames[itemId]
+    if localized then
+        return localized
+    end
+
     local fact = self:GetItemFact(itemId)
     if fact and fact.name and not self:IsPlaceholderItemName(fact.name, itemId) then
         return GQ.TN("item", fact.name)
