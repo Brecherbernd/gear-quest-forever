@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Compare = GQ.Compare or {}
 
@@ -813,19 +814,19 @@ function GQ.Compare:ShowScoringWeightTooltip(owner)
     if GQ.Spec and GQ.Spec.GetSelectedSpecLabel then
         title = GQ.Spec:GetSelectedSpecLabel() or title
     end
-    GameTooltip:SetText(title or "Specialization", 1, 0.82, 0)
+    GameTooltip:SetText(title or L["Specialization"], 1, 0.82, 0)
 
     if not rows then
-        GameTooltip:AddLine("Click to change specialization.", 1, 1, 1, true)
+        GameTooltip:AddLine(L["Click to change specialization."], 1, 1, 1, true)
         GameTooltip:Show()
         return
     end
 
-    GameTooltip:AddLine("How GearQuest ranks gear for this spec.", 1, 1, 1, true)
+    GameTooltip:AddLine(L["How GearQuest ranks gear for this spec."], 1, 1, 1, true)
     GameTooltip:AddLine(" ")
 
     for i = 1, #rows do
-        GameTooltip:AddDoubleLine(rows[i].label, FormatScoringWeight(rows[i].value), 1, 1, 1, 1, 0.82, 0)
+        GameTooltip:AddDoubleLine(L[rows[i].label], FormatScoringWeight(rows[i].value), 1, 1, 1, 1, 0.82, 0)
     end
     GameTooltip:Show()
 end

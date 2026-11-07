@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Toast = GQ.Toast or {}
 
@@ -66,7 +67,7 @@ local function EnsureFrame()
     frame.title:SetPoint("TOPLEFT", frame.icon, "TOPRIGHT", 10, -2)
     frame.title:SetPoint("RIGHT", frame, "RIGHT", -22, 0)
     frame.title:SetJustifyH("LEFT")
-    frame.title:SetText("|cffffd200Hunt obtained|r")
+    frame.title:SetText(L["|cffffd200Hunt obtained|r"])
 
     frame.subtitle = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     frame.subtitle:SetPoint("TOPLEFT", frame.title, "BOTTOMLEFT", 0, -2)
@@ -95,7 +96,7 @@ local function EnsureFrame()
 
     frame.hint = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
     frame.hint:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 6)
-    frame.hint:SetText("Click to open log")
+    frame.hint:SetText(L["Click to open log"])
 
     frame:SetScript("OnClick", function(self)
         local entryId = self.entryId
@@ -185,7 +186,7 @@ function GQ.Toast:ApplyEntryVisuals(entry)
 
     local itemName = GQ.Data:GetEntryDisplayName(entry) or ("Item " .. entry.itemId)
     local title = GQ.Log and GQ.Log.ObtainToastTitle and GQ.Log:ObtainToastTitle(entry)
-    frame.title:SetText(title or "|cffffd200Hunt obtained|r")
+    frame.title:SetText(title or L["|cffffd200Hunt obtained|r"])
     frame.subtitle:SetText(itemName)
 
     if GQ.Data and GQ.Data.RequestItemInfo then

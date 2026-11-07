@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Map = GQ.Map or {}
 
@@ -179,12 +180,15 @@ function GQ.Map:Show(entry)
     end
     local spot = self:SpotForEntry(entry)
     local mapId = spot and spot.mapId or self:ZoneMap(entry.zone)
-    local label = entry.questName or entry.npc or entry.zone or "GearQuest"
+    local label = (entry.questName and GQ.TN("quest", entry.questName))
+        or (entry.npc and GQ.TN("npc", entry.npc))
+        or (entry.zone and GQ.TN("zone", entry.zone))
+        or "GearQuest"
 
     OpenToMap(mapId)
 
     if not spot then
-        GQ:Chat(PREFIX .. "No exact spot for this item.")
+        GQ:Chat(PREFIX .. L["No exact spot for this item."])
         return
     end
 
@@ -193,6 +197,6 @@ function GQ.Map:Show(entry)
     if C_Timer and C_Timer.After then
         C_Timer.After(0, GuardWaypointClipboard)
     end
-    local where = string.format("%s %.1f, %.1f", spot.map or label, spot.x, spot.y)
-    GQ:Chat(PREFIX .. where .. (pinned and " — pin placed" or ""))
+    local where = string.format("%s %.1f, %.1f", spot.map and GQ.TN("zone", spot.map) or label, spot.x, spot.y)
+    GQ:Chat(PREFIX .. where .. (pinned and L[" — pin placed"] or ""))
 end

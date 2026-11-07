@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Guide = GQ.Guide or {}
 
@@ -151,7 +152,7 @@ local function FormatYards(dist)
     if dist < HERE_YARDS then
         return "Here"
     end
-    return string.format("%d yards", dist + 0.5)
+    return string.format(L["%d yards"], dist + 0.5)
 end
 
 local function WrapPi(angle)
@@ -315,9 +316,9 @@ local CROSSINGS = {
 
 local function DockLabel(dock)
     if dock and dock.place and dock.place ~= "" then
-        return dock.kind .. " in " .. dock.place
+        return string.format(L["%s in %s"], L[dock.kind], GQ.TN("zone", dock.place))
     end
-    return dock and dock.kind or ""
+    return dock and L[dock.kind] or ""
 end
 
 local crossingById = {}
@@ -780,7 +781,8 @@ local function UpdateGuide(frame)
     end
     if frame.distance and frame.distanceText ~= text then
         frame.distanceText = text
-        frame.distance:SetText(text)
+        -- text stays English for the "Here" check below; translate only what is drawn.
+        frame.distance:SetText(GQ.TN("zone", L[text]))
     end
     if frame.arrow then
         frame.arrow:Show()
@@ -831,22 +833,23 @@ function GQ.Guide:Init()
             return
         end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        local name = GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(entry) or entry.questName or "Hunt"
+        local name = GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(entry) or (entry.questName and GQ.TN("quest", entry.questName)) or L["Hunt"]
         GameTooltip:SetText(name, GOLD_R, GOLD_G, GOLD_B)
         local spot = self.spot
         if spot and spot.map then
-            GameTooltip:AddLine(string.format("%s %.1f, %.1f", spot.map, spot.x or 0, spot.y or 0), 1, 1, 1)
+            GameTooltip:AddLine(string.format("%s %.1f, %.1f", GQ.TN("zone", spot.map), spot.x or 0, spot.y or 0), 1, 1, 1)
         end
         if self.crossing then
             local depart = self.crossing
             local dest = self.crossingTo
-            local line = depart.kind .. " in " .. (depart.place or depart.zone)
+            local line = string.format(L["%s in %s"], L[depart.kind], GQ.TN("zone", depart.place or depart.zone))
             if dest and dest.place and dest.id ~= depart.id then
-                line = line .. " to " .. dest.place
+                line = string.format(L["%s to %s"], line, GQ.TN("zone", dest.place))
             end
             GameTooltip:AddLine(line, 1, 1, 1)
         end
-        GameTooltip:AddLine("Drag to move", 0.75, 0.75, 0.75)
+        GameTooltip:AddLine(L["Drag to move"], 0.75, 0.75, 0.75)
+
         GameTooltip:Show()
     end)
     frame:SetScript("OnLeave", function()
@@ -886,7 +889,7 @@ function GQ.Guide:Init()
     end)
     close:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Remove the guide", 1, 1, 1)
+        GameTooltip:SetText(L["Remove the guide"], 1, 1, 1)
         GameTooltip:Show()
     end)
     close:SetScript("OnLeave", function()

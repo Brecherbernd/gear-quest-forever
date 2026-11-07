@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Minimap = GQ.Minimap or {}
 
@@ -84,7 +85,7 @@ local function WireMinimapButton(button)
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:SetText("GearQuest", 0.90, 0.75, 0.28)
-        GameTooltip:AddLine("Click to open GearQuest", 1, 1, 1)
+        GameTooltip:AddLine(L["Click to open GearQuest"], 1, 1, 1)
         GameTooltip:Show()
     end)
     button:SetScript("OnLeave", function()

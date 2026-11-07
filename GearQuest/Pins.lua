@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Pins = GQ.Pins or {}
 
@@ -80,12 +81,12 @@ local function ShowPinTooltip(frame)
     local name = GQ.Data and GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(entry)
     GameTooltip:AddLine(name or ("Item " .. tostring(entry.itemId)), 1, 0.82, 0)
     local info = C_Map and C_Map.GetMapInfo and C_Map.GetMapInfo(pin.mapId)
-    local zone = pin.map or (info and info.name) or entry.zone or ""
+    local zone = (pin.map and GQ.TN("zone", pin.map)) or (info and info.name) or (entry.zone and GQ.TN("zone", entry.zone)) or ""
     if zone ~= "" then
         GameTooltip:AddLine(string.format("%s %.1f, %.1f", zone, pin.x, pin.y), 0.6, 0.8, 1)
     end
-    GameTooltip:AddLine("Left-click to Guide", 0.75, 0.75, 0.75)
-    GameTooltip:AddLine("Right click to open Hunt", 0.75, 0.75, 0.75)
+    GameTooltip:AddLine(L["Left-click to Guide"], 0.75, 0.75, 0.75)
+    GameTooltip:AddLine(L["Right click to open Hunt"], 0.75, 0.75, 0.75)
     GameTooltip:Show()
 end
 

@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.PortraitGuide = GQ.PortraitGuide or {}
 
@@ -6,7 +7,7 @@ local GUIDE = GQ.PortraitGuide
 
 -- The automatic intro is once for the whole account. The portrait can start it again.
 local GUIDE_VERSION = 8
-local GUIDE_NAME = "The GearQuest Knight"
+local GUIDE_NAME = L["The GearQuest Knight"]
 
 -- The counter is the length of this list. Add a page here, and a matching
 -- sound in Sounds/, when the next line is ready.
@@ -111,7 +112,20 @@ local PAGES = {
     },
 }
 
+-- A locale can replace a page's text (GQ.LocaleGuidePages, by page number).
+-- {b}...{/b} marks bold and {info} is the info icon.
+if GQ.LocaleGuidePages then
+    for i = 1, #PAGES do
+        local text = GQ.LocaleGuidePages[i]
+        if text then
+            text = text:gsub("{info}", INFO_ICON)
+            PAGES[i].text = (text:gsub("{b}(.-){/b}", Bold))
+        end
+    end
+end
+
 -- The side handles stay on screen on every page, so their glow does too.
+
 local HANDLE_MARK = {
     log = true,
     lookup = true,
@@ -795,7 +809,7 @@ function GUIDE:HighlightPair(kind)
         if buttons then
             for i = 1, #buttons do
                 local btn = buttons[i]
-                if btn and btn.specLabel == "Arms" then
+                if btn and btn.specLabel == L["Arms"] then
                     widget = btn
                     break
                 end
@@ -1173,8 +1187,8 @@ function GUIDE:Ensure(frame)
             self.glow:Show()
         end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("GearQuest guide", 1, 0.82, 0)
-        GameTooltip:AddLine("Click the portrait to hear him again.", 1, 1, 1, true)
+        GameTooltip:SetText(L["GearQuest guide"], 1, 0.82, 0)
+        GameTooltip:AddLine(L["Click the portrait to hear him again."], 1, 1, 1, true)
         GameTooltip:Show()
     end)
     hit:SetScript("OnLeave", function(self)
@@ -1236,7 +1250,7 @@ function GUIDE:Ensure(frame)
     close:SetScript("OnEnter", function(self)
         closeText:SetTextColor(0.55, 0.12, 0.08)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Close")
+        GameTooltip:SetText(L["Close"])
         GameTooltip:Show()
     end)
     close:SetScript("OnLeave", function()
@@ -1275,7 +1289,7 @@ function GUIDE:Ensure(frame)
     yes:SetSize(88, 22)
     yes:SetPoint("BOTTOM", bubble, "BOTTOM", 0, 10)
     yes:SetFrameLevel(bubble:GetFrameLevel() + 2)
-    yes:SetText("Yes!")
+    yes:SetText(L["Yes!"])
     yes:SetScript("OnClick", function()
         GUIDE:SetPage(2)
     end)
@@ -1302,9 +1316,9 @@ function GUIDE:Ensure(frame)
     mute:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         if GUIDE:VoiceOn() then
-            GameTooltip:SetText("Mute the guide")
+            GameTooltip:SetText(L["Mute the guide"])
         else
-            GameTooltip:SetText("Let the guide speak")
+            GameTooltip:SetText(L["Let the guide speak"])
         end
         GameTooltip:Show()
     end)
@@ -1324,9 +1338,9 @@ function GUIDE:Ensure(frame)
             label:SetTextColor(0.55, 0.12, 0.08)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             if text == "+" then
-                GameTooltip:SetText("Turn the guide up")
+                GameTooltip:SetText(L["Turn the guide up"])
             else
-                GameTooltip:SetText("Turn the guide down")
+                GameTooltip:SetText(L["Turn the guide down"])
             end
             GameTooltip:Show()
         end)

@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Tracker = GQ.Tracker or {}
 
@@ -9,7 +10,7 @@ local MAX_HEIGHT = 1000
 local DEFAULT_WIDTH = 100
 local MIN_DESC_WORDS = 10
 local MAX_DESC_WORDS = 30
-local TITLE_TEXT = "GearQuest Tracker"
+local TITLE_TEXT = L["GearQuest Tracker"]
 local TITLE_COLOR = { 1, 0.82, 0 }
 local ENTRY_NAME_COLOR = { 1, 1, 1 }
 local ENTRY_DESC_COLOR = { 1, 1, 1, 0.72 }
@@ -463,9 +464,9 @@ function GQ.Tracker:EnsureCollapseButton(frame)
     collapseBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(collapseBtn, "ANCHOR_RIGHT")
         if GQ.Tracker:IsCollapsed() then
-            GameTooltip:SetText("Expand tracker", 1, 1, 1)
+            GameTooltip:SetText(L["Expand tracker"], 1, 1, 1)
         else
-            GameTooltip:SetText("Collapse tracker", 1, 1, 1)
+            GameTooltip:SetText(L["Collapse tracker"], 1, 1, 1)
         end
         GameTooltip:Show()
     end)
@@ -552,6 +553,7 @@ function GQ.Tracker:LayoutEntries(entries, descWordLimit)
                 instructions = vendorLine
             end
         end
+        instructions = GQ.TL(instructions)
         if GQ.Data and GQ.Data.SanitizeText then
             instructions = GQ.Data:SanitizeText(instructions) or instructions
         end
@@ -711,7 +713,7 @@ function GQ.Tracker:UpdateRowTooltipWatch()
 
     if GetTime() - row.gqTooltipStillSince >= ROW_TOOLTIP_STILL_DELAY then
         GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Click to open in GearQuest Log", 1, 1, 1)
+        GameTooltip:SetText(L["Click to open in GearQuest Log"], 1, 1, 1)
         GameTooltip:Show()
         row.gqTooltipShown = true
     end
@@ -772,7 +774,7 @@ function GQ.Tracker:EnsureEntryRows(count)
 
         row.guideLabel = CreateFontString(row, "GameFontHighlightSmall")
         row.guideLabel:SetPoint("LEFT", row.guideCheck, "RIGHT", 2, 0)
-        row.guideLabel:SetText("Enable Guide")
+        row.guideLabel:SetText(L["Enable Guide"])
         row.guideLabel:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
 
         row.guideHit = CreateFrame("Button", nil, row)
@@ -1296,9 +1298,9 @@ function GQ.Tracker:Init()
     collapseBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         if GQ.Tracker:IsCollapsed() then
-            GameTooltip:SetText("Expand tracker", 1, 1, 1)
+            GameTooltip:SetText(L["Expand tracker"], 1, 1, 1)
         else
-            GameTooltip:SetText("Collapse tracker", 1, 1, 1)
+            GameTooltip:SetText(L["Collapse tracker"], 1, 1, 1)
         end
         GameTooltip:Show()
     end)
@@ -1351,7 +1353,7 @@ function GQ.Tracker:Init()
         GQ.Tracker.resizeHandleHover = true
         GQ.Tracker:UpdateResizeHandleVisibility()
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText("Drag to resize", 1, 1, 1)
+        GameTooltip:SetText(L["Drag to resize"], 1, 1, 1)
         GameTooltip:Show()
     end)
     resizeHandle:SetScript("OnLeave", function()

@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Log = GQ.Log or {}
 
@@ -1878,22 +1879,23 @@ end
 function GQ.Log:GamepadHintPrompts(menu)
     if menu then
         return {
-            { key = "A", text = "Select" },
-            { key = "NAV", text = "Navigate" },
-            { key = "B", text = "Close" },
+            { key = "A", text = L["Select"] },
+            { key = "NAV", text = L["Navigate"] },
+            { key = "B", text = L["Close"] },
         }
     end
     local prompts = {
-        { key = "A", text = "Select" },
+        { key = "A", text = L["Select"] },
     }
     if self.GetPageTab and self:GetPageTab() == "log" and not self._padFilterMode then
-        prompts[#prompts + 1] = { key = "Y", text = "Filters" }
+        prompts[#prompts + 1] = { key = "Y", text = L["Filters"] }
     end
-    prompts[#prompts + 1] = { key = "NAV", text = "Navigate" }
-    local back = "Close"
+    prompts[#prompts + 1] = { key = "NAV", text = L["Navigate"] }
+    local back = L["Close"]
     if self._padFilterMode then
-        back = "Back"
+        back = BACK or "Back"
     end
+
     prompts[#prompts + 1] = { key = "B", text = back }
     return prompts
 end

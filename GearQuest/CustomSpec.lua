@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Custom = GQ.Custom or {}
 
@@ -700,7 +701,7 @@ function GQ.Custom:Finish(job)
         self._failed[job.specId] = true
         if GQ.Chat then
             local name = record.name or record.base or job.specId
-            GQ:Chat("|cffff0000GearQuest|r: custom spec " .. name .. " found no " .. tostring(record.base) .. " hunts to rescore.")
+            GQ:Chat("|cffff0000GearQuest|r: " .. string.format(L["custom spec %s found no %s hunts to rescore."], name, tostring(record.base)))
         end
     elseif generatedSeen == 0 and job.retried and GQ.Data and GQ.Data.IsClassExpanded and GQ.Data:IsClassExpanded(job.classFile) then
         self._failed = self._failed or {}
@@ -763,7 +764,7 @@ function GQ.Custom:EnsureWorking()
 
     local text = cover:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     text:SetPoint("TOP", holder, "BOTTOM", 0, -14)
-    text:SetText("Working on your BiS hunt lists...")
+    text:SetText(L["Working on your BiS hunt lists..."])
     text:SetTextColor(1, 0.82, 0)
     cover.text = text
     cover:SetScript("OnHide", function(self)
@@ -866,7 +867,7 @@ function GQ.Custom:Pump()
         if not ok and not job.consumeError then
             job.consumeError = err
             if GQ.Chat then
-                GQ:Chat("|cffff0000GearQuest|r: custom spec scoring failed: " .. tostring(err))
+                GQ:Chat("|cffff0000GearQuest|r: " .. L["custom spec scoring failed: "] .. tostring(err))
             end
         end
         job.i = job.i + 1
@@ -956,7 +957,7 @@ function GQ.Custom:CancelJob(classFile)
     local panel = self._editor
     if job.modal and panel and panel.saveButton then
         panel.saveButton:Enable()
-        panel.saveButton:SetText("Save and score items!")
+        panel.saveButton:SetText(L["Save and score items!"])
     end
 end
 
@@ -1044,9 +1045,9 @@ end
 local function FieldLabel(field)
     local labels = GQ.ScoringWeightLabels
     if labels and labels[field.key] then
-        return labels[field.key]
+        return L[labels[field.key]]
     end
-    return field.label
+    return L[field.label]
 end
 
 function GQ.Custom:EnsureEditor()
@@ -1079,13 +1080,13 @@ function GQ.Custom:EnsureEditor()
 
     local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOP", panel, "TOP", 0, -16)
-    title:SetText("Custom stat weights")
+    title:SetText(L["Custom stat weights"])
     title:SetTextColor(1, 0.82, 0)
     panel.title = title
 
     local nameLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     nameLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", 22, -52)
-    nameLabel:SetText("Name")
+    nameLabel:SetText(L["Name"])
     local nameBox = CreateFrame("EditBox", "GearQuestCustomSpecName", panel, "InputBoxTemplate")
     nameBox:SetSize(180, 22)
     nameBox:SetPoint("TOPLEFT", nameLabel, "BOTTOMLEFT", 6, -6)
@@ -1099,11 +1100,11 @@ function GQ.Custom:EnsureEditor()
 
     local specLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     specLabel:SetPoint("TOPLEFT", nameBox, "BOTTOMLEFT", -6, -16)
-    specLabel:SetText("Based on")
+    specLabel:SetText(L["Based on"])
     local specButton = CreateFrame("Button", "GearQuestCustomSpecBase", panel, "UIPanelButtonTemplate")
     specButton:SetSize(180, 22)
     specButton:SetPoint("TOPLEFT", specLabel, "BOTTOMLEFT", 0, -6)
-    specButton:SetText("Select a spec")
+    specButton:SetText(L["Select a spec"])
     specButton:SetScript("OnClick", function()
         GQ.Custom:ToggleBaseMenu()
     end)
@@ -1115,7 +1116,7 @@ function GQ.Custom:EnsureEditor()
     hint:SetJustifyH("LEFT")
     hint:SetJustifyV("TOP")
     hint:SetWordWrap(true)
-    hint:SetText("The grey number is the weight an empty box uses. Type a number to replace it, including 0. Right-click a custom spec in the list to edit it.")
+    hint:SetText(L["The grey number is the weight an empty box uses. Type a number to replace it, including 0. Right-click a custom spec in the list to edit it."])
     panel.hint = hint
 
     local errorText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -1137,7 +1138,7 @@ function GQ.Custom:EnsureEditor()
 
     local placeholder = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     placeholder:SetPoint("TOPLEFT", content, "TOPLEFT", 4, -4)
-    placeholder:SetText("Select a spec to see its weights.")
+    placeholder:SetText(L["Select a spec to see its weights."])
     panel.placeholder = placeholder
 
     for i = 1, #FIELDS do
@@ -1187,7 +1188,7 @@ function GQ.Custom:EnsureEditor()
     local deleteButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     deleteButton:SetSize(90, 24)
     deleteButton:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 18, 16)
-    deleteButton:SetText("Delete")
+    deleteButton:SetText(L["Delete"])
     deleteButton:SetScript("OnClick", function()
         GQ.Custom:DeleteEditing()
     end)
@@ -1197,7 +1198,7 @@ function GQ.Custom:EnsureEditor()
     local closeButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     closeButton:SetSize(80, 24)
     closeButton:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -18, 16)
-    closeButton:SetText("Close")
+    closeButton:SetText(L["Close"])
     closeButton:SetScript("OnClick", function()
         panel:Hide()
     end)
@@ -1205,7 +1206,7 @@ function GQ.Custom:EnsureEditor()
     local saveButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     saveButton:SetSize(180, 24)
     saveButton:SetPoint("RIGHT", closeButton, "LEFT", -8, 0)
-    saveButton:SetText("Save and score items!")
+    saveButton:SetText(L["Save and score items!"])
     saveButton:SetScript("OnClick", function()
         GQ.Custom:SaveAndScore()
     end)
@@ -1355,7 +1356,7 @@ function GQ.Custom:RefreshFields()
             value = EffectiveShipped(field.key, shipped.weights[field.key])
         end
         local shown = FormatWeight(value)
-        row.shipped:SetText("shipped " .. shown)
+        row.shipped:SetText(string.format(L["shipped %s"], shown))
         if row.ghost then
             row.ghost:SetText(shown)
         end
@@ -1399,15 +1400,15 @@ function GQ.Custom:ShowEditor(classFile, specId)
         panel.nameBox:SetText(record.name or "")
         panel.specButton:SetText(GQ.Spec:GetSpecLabel(record.base, classFile) or record.base)
         panel.deleteButton:Show()
-        panel.title:SetText("Edit stat weights")
+        panel.title:SetText(L["Edit stat weights"])
     else
         panel.editingId = nil
         panel.baseId = nil
         panel.overrides = {}
         panel.nameBox:SetText("")
-        panel.specButton:SetText("Select a spec")
+        panel.specButton:SetText(L["Select a spec"])
         panel.deleteButton:Hide()
-        panel.title:SetText("Custom stat weights")
+        panel.title:SetText(L["Custom stat weights"])
     end
     self:RefreshFields()
     panel:Show()
@@ -1442,31 +1443,31 @@ function GQ.Custom:SaveAndScore()
     local classFile = panel.classFile
     local name = Trim(panel.nameBox:GetText() or "")
     if name == "" then
-        panel.errorText:SetText("Name the spec.")
+        panel.errorText:SetText(L["Name the spec."])
         return
     end
     if #name > NAME_LIMIT then
-        panel.errorText:SetText("The name can be " .. NAME_LIMIT .. " characters.")
+        panel.errorText:SetText(string.format(L["The name can be %d characters."], NAME_LIMIT))
         return
     end
     if not panel.baseId then
-        panel.errorText:SetText("Select the spec this is based on.")
+        panel.errorText:SetText(L["Select the spec this is based on."])
         return
     end
     local existing = self:FindByName(classFile, name)
     if existing and existing ~= panel.editingId then
-        panel.errorText:SetText("This class already has a spec with that name.")
+        panel.errorText:SetText(L["This class already has a spec with that name."])
         return
     end
     local overrides, badField = self:ReadOverrides()
     if not overrides then
-        panel.errorText:SetText(badField .. " needs a number, or leave it empty.")
+        panel.errorText:SetText(string.format(L["%s needs a number, or leave it empty."], L[badField]))
         return
     end
 
     local store = self:Store()
     if not store then
-        panel.errorText:SetText("The addon save is not ready yet.")
+        panel.errorText:SetText(L["The addon save is not ready yet."])
         return
     end
     store[classFile] = store[classFile] or {}
@@ -1487,7 +1488,7 @@ function GQ.Custom:SaveAndScore()
         GQ.Data:EnsureClassLoaded(classFile)
     end
     panel.saveButton:Disable()
-    panel.saveButton:SetText("Scoring...")
+    panel.saveButton:SetText(L["Scoring..."])
     self._built = self._built or {}
     self._built[record.id] = nil
     self._failed = self._failed or {}
@@ -1496,13 +1497,13 @@ function GQ.Custom:SaveAndScore()
     self:StartBuild(classFile, specId, function(ok, err)
         if panel.saveButton then
             panel.saveButton:Enable()
-            panel.saveButton:SetText("Save and score items!")
+            panel.saveButton:SetText(L["Save and score items!"])
         end
         if not ok then
             if panel.errorText then
-                panel.errorText:SetText("Scoring failed.")
+                panel.errorText:SetText(L["Scoring failed."])
             end
-            GQ:Chat("|cffff0000GearQuest|r: custom spec scoring failed: " .. tostring(err))
+            GQ:Chat("|cffff0000GearQuest|r: " .. L["custom spec scoring failed: "] .. tostring(err))
             return
         end
         if GQ.Spec and GQ.Spec.SetSelectedSpec then
@@ -1512,7 +1513,7 @@ function GQ.Custom:SaveAndScore()
         if GQ.Log and GQ.Log.UpdateSpecButton then
             GQ.Log:UpdateSpecButton()
         end
-        GQ:Chat("|cff66ccffGearQuest|r: Saved |cff00ff00" .. name .. "|r and scored its hunt list.")
+        GQ:Chat("|cff66ccffGearQuest|r: " .. string.format(L["Saved |cff00ff00%s|r and scored its hunt list."], name))
     end, true)
 end
 
@@ -1522,7 +1523,7 @@ function GQ.Custom:DeleteSpec(classFile, specId)
     if not record then
         return
     end
-    local name = record.name or "that spec"
+    local name = record.name or L["that spec"]
     local base = record.base
     self:Forget(classFile, specId)
     if self._editor and self._editor.editingId == specId then
@@ -1540,7 +1541,8 @@ function GQ.Custom:DeleteSpec(classFile, specId)
     if GQ.Log and GQ.Log.RefreshSpecPickerRows and GQ.Log.frame and GQ.Log.frame.specPicker and GQ.Log.frame.specPicker:IsShown() then
         GQ.Log:RefreshSpecPickerRows()
     end
-    GQ:Chat("|cff66ccffGearQuest|r: Removed custom spec |cff00ff00" .. name .. "|r.")
+    GQ:Chat("|cff66ccffGearQuest|r: " .. string.format(L["Removed custom spec |cff00ff00%s|r."], name))
+
 end
 
 function GQ.Custom:DeleteEditing()

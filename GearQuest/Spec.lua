@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Spec = GQ.Spec or {}
 
@@ -20,55 +21,55 @@ local SPEC_BY_TAB = {
 -- classFile -> spec options (id, label, icon, default for leveling BiS, comingLater)
 GQ.Spec.CLASS_SPECS = {
     WARRIOR = {
-        { id = "arms", label = "Arms", icon = "Interface\\Icons\\Ability_Warrior_SavageBlow", default = true },
-        { id = "fury", label = "Fury", icon = "Interface\\Icons\\Ability_Warrior_InnerRage" },
-        { id = "protection", label = "Protection", icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance" },
+        { id = "arms", label = L["Arms"], icon = "Interface\\Icons\\Ability_Warrior_SavageBlow", default = true },
+        { id = "fury", label = L["Fury"], icon = "Interface\\Icons\\Ability_Warrior_InnerRage" },
+        { id = "protection", label = L["Protection"], icon = "Interface\\Icons\\Ability_Warrior_DefensiveStance" },
     },
     PALADIN = {
-        { id = "retribution", label = "Retribution", icon = "Interface\\Icons\\Spell_Holy_AuraOfLight", default = true },
-        { id = "holy", label = "Holy", icon = "Interface\\Icons\\Spell_Holy_HolyBolt" },
-        { id = "protection", label = "Protection", icon = "Interface\\Icons\\Spell_Holy_DevotionAura" },
-        { id = "shockadin", label = "Shockadin", icon = "Interface\\Icons\\Spell_Holy_HolySmite" },
+        { id = "retribution", label = L["Retribution"], icon = "Interface\\Icons\\Spell_Holy_AuraOfLight", default = true },
+        { id = "holy", label = L["Holy"], icon = "Interface\\Icons\\Spell_Holy_HolyBolt" },
+        { id = "protection", label = L["Protection"], icon = "Interface\\Icons\\Spell_Holy_DevotionAura" },
+        { id = "shockadin", label = L["Shockadin"], icon = "Interface\\Icons\\Spell_Holy_HolySmite" },
     },
     HUNTER = {
-        { id = "beast_mastery", label = "Beast Mastery", icon = "Interface\\Icons\\Ability_Hunter_BeastTaming", default = true },
-        { id = "marksmanship", label = "Marksmanship", icon = "Interface\\Icons\\Ability_Hunter_AimedShot" },
-        { id = "survival", label = "Survival", icon = "Interface\\Icons\\Ability_Hunter_SwiftStrike" },
+        { id = "beast_mastery", label = L["Beast Mastery"], icon = "Interface\\Icons\\Ability_Hunter_BeastTaming", default = true },
+        { id = "marksmanship", label = L["Marksmanship"], icon = "Interface\\Icons\\Ability_Hunter_AimedShot" },
+        { id = "survival", label = L["Survival"], icon = "Interface\\Icons\\Ability_Hunter_SwiftStrike" },
     },
     ROGUE = {
-        { id = "combat", label = "Combat", icon = "Interface\\Icons\\Ability_BackStab", default = true },
-        { id = "assassination", label = "Assassination", icon = "Interface\\Icons\\Ability_Rogue_Eviscerate" },
-        { id = "subtlety", label = "Subtlety", icon = "Interface\\Icons\\Ability_Stealth" },
+        { id = "combat", label = L["Combat"], icon = "Interface\\Icons\\Ability_BackStab", default = true },
+        { id = "assassination", label = L["Assassination"], icon = "Interface\\Icons\\Ability_Rogue_Eviscerate" },
+        { id = "subtlety", label = L["Subtlety"], icon = "Interface\\Icons\\Ability_Stealth" },
     },
     PRIEST = {
-        { id = "shadow", label = "Shadow", icon = "Interface\\Icons\\Spell_Shadow_ShadowWordPain", default = true },
-        { id = "discipline", label = "Discipline", icon = "Interface\\Icons\\Spell_Holy_PowerWordShield" },
-        { id = "holy", label = "Holy", icon = "Interface\\Icons\\Spell_Holy_Heal" },
+        { id = "shadow", label = L["Shadow"], icon = "Interface\\Icons\\Spell_Shadow_ShadowWordPain", default = true },
+        { id = "discipline", label = L["Discipline"], icon = "Interface\\Icons\\Spell_Holy_PowerWordShield" },
+        { id = "holy", label = L["Holy"], icon = "Interface\\Icons\\Spell_Holy_Heal" },
     },
     SHAMAN = {
-        { id = "elemental", label = "Elemental", icon = "Interface\\Icons\\Spell_Nature_Lightning", default = true },
-        { id = "enhancement", label = "Enhancement", icon = "Interface\\Icons\\Spell_Nature_LightningShield" },
-        { id = "enhancement_tank", label = "Enhancement Tank", icon = "Interface\\Icons\\INV_Shield_06" },
-        { id = "restoration", label = "Restoration", icon = "Interface\\Icons\\Spell_Nature_MagicImmunity" },
+        { id = "elemental", label = L["Elemental"], icon = "Interface\\Icons\\Spell_Nature_Lightning", default = true },
+        { id = "enhancement", label = L["Enhancement"], icon = "Interface\\Icons\\Spell_Nature_LightningShield" },
+        { id = "enhancement_tank", label = L["Enhancement Tank"], icon = "Interface\\Icons\\INV_Shield_06" },
+        { id = "restoration", label = L["Restoration"], icon = "Interface\\Icons\\Spell_Nature_MagicImmunity" },
     },
     MAGE = {
-        { id = "frost", label = "Frost", icon = "Interface\\Icons\\Spell_Frost_FrostBolt02", default = true },
-        { id = "arcane", label = "Arcane", icon = "Interface\\Icons\\Spell_Holy_ArcaneIntellect" },
-        { id = "fire", label = "Fire", icon = "Interface\\Icons\\Spell_Fire_FireBolt02" },
-        { id = "battlemage_frost", label = "Battle Mage (Frost)", icon = "Interface\\Icons\\INV_Sword_04" },
-        { id = "battlemage_fire", label = "Battle Mage (Fire)", icon = "Interface\\Icons\\INV_Sword_11" },
-        { id = "battlemage_arcane", label = "Battle Mage (Arcane)", icon = "Interface\\Icons\\INV_Sword_20" },
+        { id = "frost", label = L["Frost"], icon = "Interface\\Icons\\Spell_Frost_FrostBolt02", default = true },
+        { id = "arcane", label = L["Arcane"], icon = "Interface\\Icons\\Spell_Holy_ArcaneIntellect" },
+        { id = "fire", label = L["Fire"], icon = "Interface\\Icons\\Spell_Fire_FireBolt02" },
+        { id = "battlemage_frost", label = L["Battle Mage (Frost)"], icon = "Interface\\Icons\\INV_Sword_04" },
+        { id = "battlemage_fire", label = L["Battle Mage (Fire)"], icon = "Interface\\Icons\\INV_Sword_11" },
+        { id = "battlemage_arcane", label = L["Battle Mage (Arcane)"], icon = "Interface\\Icons\\INV_Sword_20" },
     },
     WARLOCK = {
-        { id = "affliction", label = "Affliction", icon = "Interface\\Icons\\Spell_Shadow_DeathCoil", default = true },
-        { id = "demonology", label = "Demonology", icon = "Interface\\Icons\\Spell_Shadow_SummonFelHunter" },
-        { id = "destruction", label = "Destruction", icon = "Interface\\Icons\\Spell_Shadow_RainOfFire" },
+        { id = "affliction", label = L["Affliction"], icon = "Interface\\Icons\\Spell_Shadow_DeathCoil", default = true },
+        { id = "demonology", label = L["Demonology"], icon = "Interface\\Icons\\Spell_Shadow_SummonFelHunter" },
+        { id = "destruction", label = L["Destruction"], icon = "Interface\\Icons\\Spell_Shadow_RainOfFire" },
     },
     DRUID = {
-        { id = "feral", label = "Feral (Cat)", icon = "Interface\\Icons\\Ability_Druid_CatForm", default = true },
-        { id = "bear", label = "Bear Tank", icon = "Interface\\Icons\\Ability_Druid_Maul" },
-        { id = "balance", label = "Balance", icon = "Interface\\Icons\\Spell_Nature_StarFall" },
-        { id = "restoration", label = "Restoration", icon = "Interface\\Icons\\Spell_Nature_HealingTouch" },
+        { id = "feral", label = L["Feral (Cat)"], icon = "Interface\\Icons\\Ability_Druid_CatForm", default = true },
+        { id = "bear", label = L["Bear Tank"], icon = "Interface\\Icons\\Ability_Druid_Maul" },
+        { id = "balance", label = L["Balance"], icon = "Interface\\Icons\\Spell_Nature_StarFall" },
+        { id = "restoration", label = L["Restoration"], icon = "Interface\\Icons\\Spell_Nature_HealingTouch" },
     },
 }
 
@@ -377,11 +378,11 @@ end
 function GQ.Spec:SetSelectedSpec(specId, classFile)
     classFile = NormalizeClassFile(classFile or GQ:GetEffectiveClass())
     if not classFile then
-        return false, "Could not determine your class."
+        return false, L["Could not determine your class."]
     end
     local options = self:GetOptions(classFile)
     if not options then
-        return false, "This class has no specialization options in GearQuest yet."
+        return false, L["This class has no specialization options in GearQuest yet."]
     end
 
     specId = self:ResolveSpecInput(specId, classFile)
@@ -404,11 +405,11 @@ function GQ.Spec:SetSelectedSpec(specId, classFile)
                 table.insert(names, opt.id)
             end
         end
-        return false, "Unknown spec. Use: " .. table.concat(names, ", ")
+        return false, L["Unknown spec. Use: "] .. table.concat(names, ", ")
     end
 
     if not self:IsSpecSelectable(matched.id, classFile) then
-        return false, matched.label .. " is coming later."
+        return false, string.format(L["%s is coming later."], matched.label)
     end
 
     if matched.custom and GQ.Custom and GQ.Custom.EnsureBuilt then
@@ -599,7 +600,7 @@ end
 function GQ.Spec:GetSelectedSpecLabel()
     local classFile = NormalizeClassFile(GQ:GetEffectiveClass())
     local specId = self:GetDisplaySpec(classFile) or self:GetEffectiveSpec()
-    return self:GetSpecLabel(specId, classFile) or "Specialization"
+    return self:GetSpecLabel(specId, classFile) or L["Specialization"]
 end
 
 function GQ.Spec:PrintSpecDebug()
