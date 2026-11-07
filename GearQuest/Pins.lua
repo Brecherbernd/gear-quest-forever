@@ -10,6 +10,16 @@ local PIN_ICONS = {
     raid_trash = { path = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7" },
     profession = { path = "Interface\\QuestFrame\\UI-QuestLog-BookIcon" },
     quest_reward = { path = "Interface\\GossipFrame\\AvailableQuestIcon" },
+    -- The round mark on a dungeon quest in the quest log. The atlas is that
+    -- same picture. The sheet is the fallback when the client has no atlas.
+    quest_dungeon = {
+        atlases = {
+            "questlog-questtypeicon-dungeon",
+            "QuestLog-QuestTypeIcon-Dungeon",
+        },
+        path = "Interface\\QuestFrame\\QuestTypeIcons",
+        coord = { 0.421875, 0.5625, 0, 0.28125 },
+    },
     rare_npc = {
         atlas = "nameplates-icon-elite-silver",
         path = "Interface\\TargetingFrame\\UI-TargetingFrame-Rare",
@@ -25,10 +35,19 @@ local function ApplyPinIcon(icon, kind, owner)
     local spec = PIN_ICONS[kind] or PIN_ICONS.unsourced
     icon:SetVertexColor(1, 1, 1, 1)
     icon:SetTexCoord(0, 1, 0, 1)
-    if spec.atlas and icon.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(spec.atlas) then
-        icon:SetAtlas(spec.atlas, false)
+    local atlasName = spec.atlas
+    if not atlasName and spec.atlases and C_Texture and C_Texture.GetAtlasInfo then
+        for i = 1, #spec.atlases do
+            if C_Texture.GetAtlasInfo(spec.atlases[i]) then
+                atlasName = spec.atlases[i]
+                break
+            end
+        end
+    end
+    if atlasName and icon.SetAtlas and C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlasName) then
+        icon:SetAtlas(atlasName, false)
         if owner and owner.SetNormalAtlas then
-            owner:SetNormalAtlas(spec.atlas)
+            owner:SetNormalAtlas(atlasName)
         end
         icon:Show()
         return

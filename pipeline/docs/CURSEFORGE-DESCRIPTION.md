@@ -34,7 +34,7 @@ On the AddOn List, **GearQuest Forever** uses that same loot sack. Each class ro
 
 *Screenshot 1 — the log, one slot open.*
 
-Each row is a piece for that slot, two lines tall, with a larger icon and a gap before the next hunt. The grey number is its rank. It matches the (i) list, including #4 and later once you already have an earlier piece. The first line is the item name. The second line says **New at this level**, or **Since level N** when that hunt was already on the list. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line. A small source icon sits at the right of each hunt, drawn a little soft. It is the same picture as the filter and the map pin. Hovering it names the source. Boss drop is the skull, Dungeon & Raid trash is the red raid mark, a quest is the yellow exclamation, a vendor is the sack, a world drop is the sunset, a profession is the book, a rare is the silver dragon, a container is the chest, and Unsourced is an orange circle.
+Each row is a piece for that slot, two lines tall, with a larger icon and a gap before the next hunt. The grey number is its rank. It matches the (i) list, including #4 and later once you already have an earlier piece. The first line is the item name. The second line says **New at this level**, or **Since level N** when that hunt was already on the list. **(Set piece)**, **(Guide)**, and **(Tracked)** stay on that second line. A small source icon sits at the right of each hunt, drawn a little soft. It is the same picture as the filter and the map pin. Hovering it names the source. Boss drop is the skull, Dungeon & Raid trash is the red raid mark, a regular quest is the yellow exclamation, a dungeon quest is the client's dungeon-quest icon, also in front of the parchment title, a vendor is the sack, a world drop is the sunset, a profession is the book, a rare is the silver dragon, a container is the chest, and Unsourced is an orange circle.
 
 **Recommended** sits after the item name. It marks up to three rank #1 upgrades, the ones that beat what you are wearing by the most. **- Rank #1 BiS acquired** means you already have the best piece in that slot.
 
@@ -74,7 +74,7 @@ Open a hunt for the source, the quest level, the craft, and the materials. **Tra
 
 A vendor hunt names the person at the pin you are closest to. **Dirty Leather Bracers** in Mulgore is **Varia Hardhide**, not the Undercity cloth merchant. Walk to another town that sells it and the name follows. The tracker uses the same name.
 
-The reward name uses the item's rarity color, and the full name wraps onto the next line. A rare such as **Feline Mantle** or **Garb of Florid Feathers** is blue. The strip behind the name is dark enough to read it. A quest with no earlier step says **No prequests. You can pick this quest up without finishing another quest first.** A chain lists every step through the reward, and a finished step is green. **Lion-stamped Gloves** list Lost Necklace, Pie for Billy, Back to Billy, then Goldtooth. **Deviate Scale Belt** is the pattern from Deviate Eradication, at the Wailing Caverns entrance in the Barrens, then crafted with Leatherworking.
+The reward name uses the item's rarity color, and the full name wraps onto the next line. A rare such as **Feline Mantle** or **Garb of Florid Feathers** is blue. The strip behind the name is dark enough to read it. A quest with no earlier step says **No prequests. You can pick this quest up without finishing another quest first.** **Stopping the Cycle** is the exception: it lists Old Habits through Death to the Dragonmaw, and the pin is the Tattered Spellbook in the Wetlands. A chain lists every step through the reward, and a finished step is green. **Lion-stamped Gloves** list Lost Necklace, Pie for Billy, Back to Billy, then Goldtooth. **Deviate Scale Belt** is the pattern from Deviate Eradication, at the Wailing Caverns entrance in the Barrens, then crafted with Leatherworking.
 
 A quest reward says the level it can be picked up, and the level GearQuest recommends you pick it up. The recommendation is four under the item level, and it is never lower than the level the quest actually starts. **Replica Crescent Necklace** recommends 25. A boss drop or dungeon trash hunt says **Recommended dungeon entry at level N.** N is four under the item level, and it stops at 60. **Garb of Florid Feathers** is item level 31, so that line says 27. The line is green once the level you are viewing has reached it, and red before that. A craft says the skill in green when you can make it, and red when you cannot. A burnt mark means the item is new in Forever.
 
@@ -96,7 +96,7 @@ Track a hunt and an arrow can point the way. On another continent it points at t
 
 ### Play your way
 
-*Screenshot 4 — the seven play-style cards.*
+*Screenshot 4 — the eight play-style cards.*
 
 **No Dungeons** hides dungeon and raid hunts, including a quest that steps inside one. A world drop stays.
 
@@ -112,7 +112,9 @@ Track a hunt and an arrow can point the way. On another continent it points at t
 
 **Focus Zone** keeps a hunt only when the zone you are standing in is that hunt's zone or one of its spots. Quests, vendors, crafts, world drops, and dungeon drops all follow. A hunt with no place stays hidden. Walk into another zone and the list changes. The card sits under Manageable Dungeons.
 
-The two dungeon cards turn each other off. The other five can be on with either. The button reads **Play style*** while one is on.
+**Their Cities** hides hunts filed in a dungeon inside the other faction's capital. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. The card sits under Manageable Quests, beside Focus Zone. It can be on with either dungeon card.
+
+The two dungeon cards turn each other off. The other six can be on with either. The button reads **Play style*** while one is on.
 
 ---
 
@@ -120,7 +122,7 @@ The two dungeon cards turn each other off. The other five can be on with either.
 
 *Screenshot 5 — the filter menu, with a dungeon flyout open.*
 
-Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash are separate lists. Each flyout has **Select all** and **Deselect all** for the boxes on that list. The button on the main filter still changes every source at once. The rank number does not change because a filter is on. Horde does not get a checkbox for The Stockade or Hall of Thanes. Alliance does not get one for Ragefire Chasm or Ruins of Lordaeron. Those hunts are not on that faction's list.
+Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash are separate lists. Quest reward opens Regular quest and Dungeon quest. A dungeon quest is one that sends you into an instance. Unchecking Quest reward hides both. A regular quest keeps the yellow exclamation. A dungeon quest uses the same icon the quest log uses for a dungeon quest, on the hunt, in front of the parchment title, in that flyout, and on the map. Each flyout has **Select all** and **Deselect all** for the boxes on that list. The button on the main filter still changes every source at once. The rank number does not change because a filter is on. Hall of Thanes, The Stockade, Ragefire Chasm, and Ruins of Lordaeron are on both faction lists. **Their Cities** hides the other faction's city dungeons. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade.
 
 ---
 
@@ -128,7 +130,7 @@ Hide a source, a profession, or one dungeon. Boss drop and Dungeon & Raid trash 
 
 *Screenshot 6 — an item tooltip with the GearQuest score.*
 
-Hover gear in your bags, on the character panel, in chat, or on a hunt. The item itself is the game client's tooltip. GearQuest adds the score under it: best in the slot is 100, worst is 0. The arrow compares it to what you have equipped. A random green shows the base piece, and one line names the jackpot roll and the chance. When the client has no tooltip for that item, the hover shows the Wowhead Forever tooltip, and two red lines under it say Wowhead Forever lists the item and this game client does not have it yet. The parchment says the same.
+Hover gear in your bags, on the character panel, in chat, or on a hunt. The item itself is the game client's tooltip. GearQuest adds the score under it: best in the slot is 100, worst is 0. The arrow compares it to what you have equipped. A random green shows the base piece, and one line names the jackpot roll and the chance. When the client has no tooltip for that item, the hover shows the Wowhead Forever tooltip, and two red lines under it say Wowhead Forever lists the item and this game client does not have it yet. The parchment says the same. Food, reagents, quest items, and trade goods get no GearQuest score line. Bags, quivers, and ammo stay skipped.
 
 *Screenshot 7 — the score bar in the log header.*
 
@@ -285,7 +287,7 @@ Take them on a character around level 20–30 so the log is full but not a raid 
 | 1 | The log with one slot expanded. Show the item icon, the grey #N, one **- Recommended**, and one **- Rank #1 BiS acquired** if you have one. | The first thing people need to read. |
 | 2 | One parchment. A quest reward is best, so the pickup level and Source are both visible. Include Track, Show on map, and Remove. | Stops "where do I get this?" |
 | 3 | The world map with one pin, and a second crop of the guide arrow on the tracker. Two images under one caption is fine. | Stops "put it on the map." |
-| 4 | Play style open, all seven cards, names under the pictures, Focus Zone under Manageable Dungeons. | The filter people cannot find. |
+| 4 | Play style open, all eight cards, names under the pictures, Focus Zone under Manageable Dungeons and Their Cities under Manageable Quests. | The filter people cannot find. |
 | 5 | The filter menu with the boss-drop or trash dungeon flyout open. | Shows that dungeons are a list, not one checkbox. |
 | 6 | A bag or character-panel tooltip with the GearQuest score and a green or red arrow. | "Is this an upgrade?" |
 | 7 | The log header score bar, not simulating. | Separate from the tooltip score. |

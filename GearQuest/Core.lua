@@ -9,7 +9,7 @@ end
 GQ = GQ or {}
 _G.GearQuest = GQ
 
-GQ.VERSION = "1.0.9"
+GQ.VERSION = "1.1.0"
 GQ.ADDON_NAME = ADDON_NAME
 
 -- General -> Hide chat messages. Off until the player checks it.
@@ -172,6 +172,7 @@ local SOURCE_LABELS = {
     boss_drop = "Boss drop",
     raid_trash = "Dungeon & Raid trash",
     quest_reward = "Quest reward",
+    quest_dungeon = "Dungeon quest",
     vendor = "Vendor",
     profession = "Profession",
     auction_house = "Auction House",

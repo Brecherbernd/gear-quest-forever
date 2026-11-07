@@ -732,7 +732,7 @@ When the hovered piece is gear and it is not the ranked row, say why
 - **Not ranked at your level. Ranked from N to M.** / **Ranked at level N.**
 - **Not ranked for &lt;spec label&gt;.**
 - **Not ranked for your class.** / **Not ranked for your faction.**
-- **GearQuest has no score for this item.**
+- **GearQuest has no score for this item.** Food, reagents, quest items, trade goods, bags, quivers, and ammo get no line at all.
 
 Simulation mode does not score. The line is **Turn off simulation mode to
 see your GearQuest Score for this item.** The Simulator page button says
@@ -797,32 +797,39 @@ The source **Filter** closes on a click outside the menu. The Profession
   has the same flyout, but only for dungeons that have a boss-drop hunt in
   the current level window, including ranks below the top 3. Dungeon & Raid
   trash has the same flyout for trash hunts in that window, and those boxes
-  are separate from Boss drop. Hall of Thanes and The Stockade are Alliance
-  city dungeons, so those hunts stay off the Horde list and off the Horde
-  flyouts. Ragefire Chasm and Ruins of Lordaeron are Horde city dungeons, so
-  those hunts stay off the Alliance list and off the Alliance flyouts. Boss
-  drops, trash, rares, and quest rewards filed in that dungeon follow the
-  same gate (`CITY_DUNGEON_FACTION` in `score.py`). A piece whose hunt is
-  filed in another dungeon stays, even when one dropper is also in the city
-  dungeon. Ranks close up. Excavation Site stays on both. Other is bosses
+  are separate from Boss drop. Hall of Thanes and The Stockade are inside
+  Alliance cities. Ragefire Chasm and Ruins of Lordaeron are inside Horde
+  cities. Those hunts are on both faction lists. **Their Cities** hides the
+  other faction's city dungeons. Alliance hides Ragefire Chasm and Ruins of
+  Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash,
+  rares, and quest rewards filed in that dungeon follow the play style. A
+  piece filed in another dungeon stays. Rank numbers stay the unfiltered
+  order. The flyout still lists a dungeon that has a hunt in the band.
+  Excavation Site stays on both. Other is bosses
   that are not in an instance. The flyouts do not scroll. A cleared box
   stays cleared. Select all / Deselect all on the filter menu covers the source
-  list and the profession, boss, trash, and vendor sub-filters. Each of those
+  list and the profession, boss, trash, vendor, and quest sub-filters. Quest reward
+  opens Regular quest and Dungeon quest. A dungeon quest is one that sends you
+  into an instance, the same test as No Dungeons. Unchecking Quest reward hides
+  both. Unchecking one box hides only that kind. Each of those
   flyouts has the same button, and it covers only the boxes on that flyout. Menu text uses the Filter button's font.
   Each main-list row draws the source icon after the checkbox and before
-  the name, 18px, the same art as the world-map pin. Flyout rows keep the
-  chevron and do not get an icon. The row's hit width includes the icon.
+  the name, 18px, the same art as the world-map pin. The Quest reward flyout
+  shows the yellow exclamation on Regular quest and the client's dungeon-quest
+  icon on Dungeon quest. Other flyout rows keep the chevron and do not get an
+  icon. The row's hit width includes the icon.
   Each hunt row draws that same picture at the right, 14px, alpha 0.7
   (`row.sourceMark`). Hovering it names the source. A click still selects
   the hunt, and the mouse wheel still scrolls the list. Unsourced is
   `GearQuest/Art/GQ-Unsourced.png`, the orange circle.
-  Checking Profession, Boss drop, or Dungeon & Raid trash opens that flyout
+  Checking Profession, Boss drop, Dungeon & Raid trash, Vendor, or Quest reward opens that flyout
   on the click. You do not have to leave the row and come back.
 - **Play style** is the button at the bottom of the log
-  (`GearQuestForeverDB.ui`). While any of the seven is on, the button reads
-  **Play style***. Seven cards, names under the pictures, three then three,
-  then **Focus Zone** under **Manageable Dungeons**. **Get it now!** can be on
-  with either dungeon card, and with **Manageable Dungeons**, **Manageable Quests**, **Buy it**, and **Focus Zone**.
+  (`GearQuestForeverDB.ui`). While any of the eight is on, the button reads
+  **Play style***. Eight cards, names under the pictures, three then three,
+  then **Focus Zone** under **Manageable Dungeons** and **Their Cities** under
+  **Manageable Quests**. **Get it now!** can be on
+  with either dungeon card, and with **Manageable Dungeons**, **Manageable Quests**, **Buy it**, **Focus Zone**, and **Their Cities**.
   **No Dungeons!** and **Dungeon Enjoyer** turn each other off. A play
   style hides hunts across several sources. The filter still only chooses a source. Any of them widens the slot list the
   same way a filter does, so a later rank can show, and the rank box says why.
@@ -885,6 +892,14 @@ The source **Filter** closes on a click outside the menu. The Profession
     rows and builds the new zone one slot per frame, with an idle frame
     between slots, then swaps the list once. The art is
     `GearQuest/Art/GQ-Play-FocusZone.png`.
+  - **Their Cities** (`playTheirCities`) hides hunts filed in a dungeon
+    inside the other faction's capital. Alliance hides Ragefire Chasm and
+    Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. The
+    test is the stored zone, or `BossDungeonKey` when that key is one of
+    those four names. Boss drops, trash, rares, and quest rewards filed
+    there go. A piece filed in another dungeon stays. The rows stay in the
+    scored lists, so the rank number does not close up. The art is
+    `GearQuest/Art/GQ-Play-TheirCities.png`.
 - **Rank on the parchment.** Above the item title, a black box reads
   `Rank #N` from that piece's place on the rank list this character can
   see. A hunt the other faction cannot get is left out and the numbers
@@ -1188,6 +1203,11 @@ Hunt-id probe (`pipeline/scripts/probe_forever_hunt_tooltips.py`) labels 200 vs 
 - **Wolfsbane (267369).** Horde Retribution main hand rank 1 from level **20 through 26** (score 124 vs Hammerbone 103 at 20). Pin in `client_item_overrides.json`: `rlvl` 20, `tipClasses` Paladin, Holystorm proc text. Source is Diplomatic Incident, Danitha Morr, Bandarion Keep, Tirisfal Glades (`sources.json` `gateLevel` 20). Tirisfal is a Horde zone, so Alliance never sees it. Warrior was re-scored after the class lock so Arms/Fury/Protection no longer list it. The paladin hunt file is `Data.Paladin.generated.lua`. Levels 1–9 are `Data.Paladin.Early.1to9.generated.lua` and do not include Wolfsbane.
 - **Memory.** Do not list class hunt files in `GearQuestForever.toc`, and do not put those class addons in `## OptionalDeps` (that loads every class before `Core.lua` sets `_G.GearQuest`, so each file errors and the hunt list stays empty). Each class is a load-on-demand addon `GearQuestForever_<CLASS>` (`scripts/stage-class-addons.py` copies the lua and writes `AuditTips.lua`). Login loads the player's class only. `Preview:SetClass` expands the simulated class. Your class and the class on screen keep their expanded rows. Switching to another sim class drops the previous one's expanded rows (`ReleaseIdleHuntClasses`). The addon stays in the memory list until `/reload` (WoW cannot unload it); pick arrays stay so switching back does not rerun the file. The main `foreverAudit` keeps `status` / `name` / `quality` for every item. The long Wowhead `tip` for a class item ships in that class's `AuditTips.lua` and is applied when the class loads, so hunt tooltips stay the Forever text. Curated Data.lua items that are not in a class file keep their tip on the main audit.
 
+**7 Nov 2026 catalog.** Wowhead Forever listed 196 pieces that were not in the addon. All 196 return a classic nether tooltip 404, so all of them are stamped New in Forever (`new_in_forever.json` is 2,985). 33 are quest rewards and 163 stayed Unsourced. The gear list named no drop, seller, or recipe for those 163, and no farm was invented. They were added to `classic_item_ids.json` so the score pool keeps them, then all nine classes were rescored with `GQ_NO_GUIDES=1`. Weights were not changed. Wicked Ritualist's Kris (273832) is a quest item and was not added. Nine stored ids that are missing from the live gear list stay: Phoenix Bindings (210781), Invoker's Mantle (215365), Invoker's Cord (215366), Turtle Scale Gloves (217270), Golden Scale Gauntlets (217273), Greater Mystic Wand (217287), and the three Leafre rings (274978, 276765, 285326). A missing list row is not a 404. Leafre's Ring of Precise Spell Power stays required level 60.
+
+Quest rewards and the pickup level. Horde 30, A Tale Spun Around the Fire (96078, no series, chain 1): Ceremonial Mallet (279885), Sacrificial Sword (279886), I'lalai Flayer (279887). Alliance 30, Findings for the Explorer's League (95799): Ancient Voodoo Pouch (279880), Intrepid Explorer's Chainmail (279881). Alliance 30, The Web of Magic (95798): Apprentice Sorcerer's Slacks (279878), Rune-Etched Epaulets (279879). Alliance 35, The Lost Tablets of Will (1139, no series): Medal of Valor (270095), pin Ironforge 76.4, 10.8, required level 35. Horde 36, Death to the Executioner (95433): the series through the reward is Rise Up! (95432) then Death to the Executioner. Later steps stay off. Thud Hammer (275011). Horde 36, Farholde Scouting Report (93971): Head-Harvest Crossbow (275040), Bloodied Sash (275041), no pin. Alliance 36, Fit for a Princess (95913): Apple of My Eye (95561) then Fit for a Princess. Stepped Out is after the reward. Fur-Lined Bracers (274931), Coyote Hide Wraps (274932), no pin. Horde 36, Jom-jom's Escape (94556): Jom-jom's Gabbar (274952), chain 1, and the page names no giver and no coordinate, so there is no pin. Alliance 36, Preventative Measures (95064): Farholde Horns (274959). Alliance 36, The Rog'mar Situation (95066): Orc Bone Bow (275052). Alliance 37, The Hidden Chamber (2240): Guardian Staff (270078), pin Ironforge 73.8, 13.0, faction Alliance. The earlier quest 2398 has no stored name, so the chain line stays quiet. Horde 38, A Token of Vengeance (94975): Semblance of Twilight (267090). Alliance 38, Drop the Hammer (94926): Pauldron of Order (275036). Alliance 38, Dunston Checks Out (94927): Prisoner Handwraps (275021), Bolder'ok Loincloth (275023), Dunston's Ogre Duster (275025). Horde 38, Gordunni Cobalt (2987): Orwin's Axe (287073), chain 1, pin Feralas 75.6, 44.2. Tome of Twilight, pickup 39. Alliance 94984 is A Small Favor (94907) then Tome of Twilight: Twilight Initiate's Belt (279854), Torn Cultist Cloak (279855). Horde 94972 has no series: Indoctrinated Choker (279859), Convert's Bindings (279860). Both 40, Eye of Mugg (Horde 94968, Alliance 94982, no series, no pins): Bigger Rock on Bigger Stick (279480), Rock on Stick (279852), Stick No Rock (279853), required level 40. Both 43, Tiara of the Deep (2846), chain Tabetha's Task (2861) then Tiara of the Deep: Dank Shoulderpads (270098). Four trainer pins: Undercity 84.4, 11.0, Ironforge 26.4, 9.4, Stormwind 38.4, 79.4, Orgrimmar 37.8, 86.6. The log shows the closest of the viewer's faction. Both 44, Divino-matic Rod (2768, chain 1): Magister Cowl (270099), pin Tanaris 52.4, 28.4. Both 50, Jammal'an the Prophet (1446, chain 1): Leggings of Freedom and Sorrow (270115), pin the Hinterlands 33.6, 75.2. Required level was lowered from the item-level floor to the quest's Requires level only when the tooltip had no Requires Level above 1. Do not run `apply_quest_req_levels.py` on the catalog.
+
+Stopping the Cycle (98297) rewards Subdued Dragon's Fang (281314), Trusty Sword (281313), and Fallen Dragon's Scepter (281312). Wowhead's series box is empty. The chain is still Old Habits (98223), Crocs of the Sky (98072), Crimson Crate Delivery (98240), Razormaw Needling (98245), Trying Times (98246), This Land Was Their Land (98230), Death to the Dragonmaw (98291), then Stopping the Cycle. Razormaw Needling's own series is the two steps before it. Word to Ironforge (98300) is after the reward and stays off. The pin is the Tattered Spellbook in the Wetlands at 53.4, 54.5, not Howin Kindfeather at 77.0, 45.4. Alliance. Do not write the chain back to 1, and do not move the pin back to the reward giver. `quest_faction.json` marks the three Alliance. A rescore is what drops them from a Horde list.
 **14 Oct 2026 index: 3,796** (10 Oct was 3,785). The listview armor column is base armor. Stored armor is base plus the green bonus, so a lower listview number is not a tooltip change. Live dataEnv 16 still matched Violet Sash, Gravewalker Boots, Desperate Barrier (1257), Feralheart Embrace, and Summit Guardian Polearm. Those rows were left as they were.
 
 Eleven ids were new to the index. Jewelcrafting Chisel (271965) and the paladin monster shield (286140) stay skipped. Blackthorne Maul (273830) is a quest objective, not a reward, and stays out. The other ten were inserted from the dataEnv 16 tooltip. Wowhead names no drop, quest, vendor, or recipe for them, so the source is unsourced and the hunt says the source is not listed yet. No coordinate was invented. `build_forever_new.py` stamped the uncached ids. New in Forever is 2,785.
@@ -1873,7 +1893,8 @@ does not clear the icon's anchors, so a filter icon keeps its own point.
 | Container | `Interface\GossipFrame\BankerGossipIcon` (chest) |
 | Dungeon & Raid trash | `Interface\TargetingFrame\UI-RaidTargetingIcon_7` (red raid mark) |
 | Profession | `Interface\QuestFrame\UI-QuestLog-BookIcon` |
-| Quest reward | `Interface\GossipFrame\AvailableQuestIcon` |
+| Quest reward | `Interface\GossipFrame\AvailableQuestIcon` (regular quests) |
+| Dungeon quest | atlas `questlog-questtypeicon-dungeon`, else the dungeon crop of `Interface\QuestFrame\QuestTypeIcons`. The hunt, the parchment title, the Quest reward flyout, and the map pin use it when the quest sends you into an instance. |
 | Rare NPC | atlas `nameplates-icon-elite-silver`, else a crop of `UI-TargetingFrame-Rare` |
 | Unsourced | `GearQuest/Art/GQ-Unsourced.png` (orange circle). The old ready-check mark is not used. |
 | Vendor | `Interface\Cursor\Buy` (the buy-cursor sack) |
