@@ -193,7 +193,7 @@ add("^Requires level (%d+)%.$", function(n)
     return "Niveau " .. n .. " requis."
 end)
 add("^Requires (.+) %- (%a+)%.$", function(faction, standing)
-    return "Réputation requise : " .. L[standing] .. " auprès de " .. Any(faction) .. "."
+    return "Réputation requise : " .. L[standing] .. " auprès de " .. GQ.TN("faction", faction) .. "."
 end)
 add("^Set piece of (.+) %((.+)%)%.$", function(set, z)
     return "Pièce de l'ensemble " .. Any(set) .. " (" .. Zone(z) .. ")."

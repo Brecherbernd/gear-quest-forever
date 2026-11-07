@@ -7,7 +7,7 @@ local _, GQ = ...
 -- Data tables stay English on purpose: several code paths search them.
 -- Translate at display time:
 --   GQ.TL(text)        a data text (instructions, lore, proc), sentence by sentence
---   GQ.TN(kind, name)  a proper noun: zone, npc, quest, item, object, enchant
+--   GQ.TN(kind, name)  a proper noun: zone, npc, quest, item, object, enchant, faction
 --   GQ.TX(text)        a label that may be UI text or a place name
 --
 -- GQ.LocaleText      whole English text -> translation
@@ -86,7 +86,7 @@ GQ.LocaleText = {}
 GQ.LocaleSentences = {}
 GQ.LocaleRules = {}
 GQ.LocaleObjectives = {}
-GQ.LocaleNames = { zone = {}, npc = {}, quest = {}, item = {}, object = {}, enchant = {} }
+GQ.LocaleNames = { zone = {}, npc = {}, quest = {}, item = {}, object = {}, enchant = {}, faction = {} }
 
 -- Zone names come from the client, in its own language, through the ids in
 -- Locales/Zones.lua (positive = area id, negative = uiMapId).

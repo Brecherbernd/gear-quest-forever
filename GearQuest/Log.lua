@@ -3086,6 +3086,14 @@ function GQ.Log:FactionStandingId(standings, faction)
     if have then
         return have
     end
+    -- The client lists factions in its own language; data names them in English.
+    local localized = GQ.TClient and GQ.TClient("faction", faction)
+    if localized and localized ~= faction then
+        have = standings[localized] or standings[string.lower(localized)]
+        if have then
+            return have
+        end
+    end
     local key = string.lower(faction)
     key = string.gsub(key, "^%s+", "")
     key = string.gsub(key, "%s+$", "")
@@ -3095,17 +3103,18 @@ end
 
 function GQ.Log:ReputationRequirementLine(faction, standing)
     local need = self:RepRank(standing)
+    local factionName = GQ.TN("faction", faction)
     local standings = self:PlayerFactionStandings()
     -- A failed read is not the same as a faction this character has never seen.
     if not standings then
-        return string.format(L["\nRequires %s with %s."], L[standing], faction)
+        return string.format(L["\nRequires %s with %s."], L[standing], factionName)
     end
     local have = self:FactionStandingId(standings, faction)
     if not have then
         return string.format(
             L["\nRequires %s with %s. |cff6e1212You have not met this faction yet.|r"],
             L[standing],
-            faction
+            factionName
         )
     end
     local haveName = L[self:RepStandingName(have) or "Unknown"]
@@ -3114,7 +3123,7 @@ function GQ.Log:ReputationRequirementLine(faction, standing)
     return string.format(
         L["\nRequires %s with %s. %sYour standing is %s.|r"],
         L[standing],
-        faction,
+        factionName,
         color,
         haveName
     )
