@@ -18,15 +18,69 @@ local _, GQ = ...
 -- GQ.LocaleObjectives the text after "Objective: " in instructions -> the
 --                    quest's objective as the client words it
 -- GQ.LocaleNames     English proper noun -> translation, by kind
+--
+-- GQ.LocaleActive is false on an English client, or when the player picks
+-- English in the settings (GQ.ApplyLanguageSetting, after /reload). The
+-- tables still load then: GQ.TClient gives the client's name for matching
+-- against what the client reports (zones, factions, maps).
 
 GQ.LOCALE = (GetLocale and GetLocale()) or "enUS"
 local ENGLISH = GQ.LOCALE == "enUS" or GQ.LOCALE == "enGB"
+GQ.LocaleActive = not ENGLISH
 
+local ui = {}
+GQ.LocaleUI = ui
+-- Text handed out before the saved settings exist: translation -> English key.
+local loadTimeKeys = {}
+local settingsKnown = false
 GQ.L = setmetatable({}, {
     __index = function(_, key)
+        if GQ.LocaleActive then
+            local translated = ui[key]
+            if translated ~= nil then
+                if not settingsKnown and loadTimeKeys[translated] == nil then
+                    loadTimeKeys[translated] = key
+                end
+                return translated
+            end
+        end
         return key
     end,
+    __newindex = function(_, key, value)
+        ui[key] = value
+    end,
 })
+
+-- Tables built while the files load take GQ.L text before the saved
+-- settings exist. GQ.LocaleTable marks them so English can be put back.
+local loadTimeTables = {}
+function GQ.LocaleTable(tbl)
+    loadTimeTables[#loadTimeTables + 1] = tbl
+    return tbl
+end
+
+local function RestoreEnglish(tbl, english, depth)
+    for key, value in pairs(tbl) do
+        if type(value) == "string" and english[value] then
+            tbl[key] = english[value]
+        elseif type(value) == "table" and depth < 3 then
+            RestoreEnglish(value, english, depth + 1)
+        end
+    end
+end
+
+-- Called once the saved settings exist. English keeps the client's own names
+-- (items, zones) that the game itself hands back in its language.
+function GQ.ApplyLanguageSetting(settings)
+    settingsKnown = true
+    GQ.LocaleActive = not ENGLISH and not (settings and settings.englishInterface)
+    if GQ.LocaleActive or ENGLISH then
+        return
+    end
+    for i = 1, #loadTimeTables do
+        RestoreEnglish(loadTimeTables[i], loadTimeKeys, 1)
+    end
+end
 
 GQ.LocaleText = {}
 GQ.LocaleSentences = {}
@@ -72,6 +126,15 @@ end
 GQ.LocaleLookup = Lookup
 
 function GQ.TN(kind, name)
+    if type(name) ~= "string" or not GQ.LocaleActive then
+        return name
+    end
+    return Lookup(kind, name) or name
+end
+
+-- The client's name for a data name, whatever the display language: for
+-- comparing with names the client reports (map names, faction list).
+function GQ.TClient(kind, name)
     if type(name) ~= "string" or ENGLISH then
         return name
     end
@@ -81,7 +144,7 @@ end
 -- A name of unknown kind, as found inside a sentence.
 local ANY_ORDER = { "npc", "zone", "quest", "item", "object" }
 function GQ.TAny(name)
-    if type(name) ~= "string" or ENGLISH then
+    if type(name) ~= "string" or not GQ.LocaleActive then
         return name
     end
     for i = 1, #ANY_ORDER do
@@ -162,7 +225,7 @@ end
 
 local cache = {}
 function GQ.TL(text)
-    if type(text) ~= "string" or ENGLISH or text == "" then
+    if type(text) ~= "string" or not GQ.LocaleActive or text == "" then
         return text
     end
     local whole = GQ.LocaleText[text]

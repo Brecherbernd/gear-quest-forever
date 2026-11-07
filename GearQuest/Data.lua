@@ -4637,7 +4637,7 @@ function GQ.Data:ShowClientWaitTooltip(tooltip, entry, missing)
     end
 end
 
-local SCORED_STAT_ORDER = {
+local SCORED_STAT_ORDER = GQ.LocaleTable({
     { key = "armor", label = L["Armor"] },
     { key = "str", label = L["Strength"] },
     { key = "agi", label = L["Agility"] },
@@ -4647,7 +4647,7 @@ local SCORED_STAT_ORDER = {
     { key = "sp", label = L["Spell Power"] },
     { key = "heal", label = L["Healing"] },
     { key = "ap", label = L["Attack Power"] },
-}
+})
 
 function GQ.Data:TooltipPlainText(tooltip)
     if not tooltip or not tooltip.GetName or not tooltip.NumLines then
@@ -5906,7 +5906,7 @@ function GQ.Data:BuildCandidatesForSlot(slotName)
     return results
 end
 
-GQ.Data.SLOT_LABELS = {
+GQ.Data.SLOT_LABELS = GQ.LocaleTable({
     Head = L["Head"],
     Neck = L["Neck"],
     Shoulder = L["Shoulder"],
@@ -5922,7 +5922,7 @@ GQ.Data.SLOT_LABELS = {
     MainHand = L["Main Hand"],
     SecondaryHand = L["Off Hand"],
     Ranged = L["Ranged"],
-}
+})
 
 GQ.Data.BASE_SLOTS = {
     "Head", "Neck", "Shoulder", "Back", "Chest", "Wrist", "Hands",

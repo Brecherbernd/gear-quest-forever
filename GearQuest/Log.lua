@@ -100,7 +100,7 @@ end
 local LIST_ROW_RIGHT_PAD = 6
 local LIST_ROW_ITEM_LEFT = 20
 local LIST_ROW_NOTABLE_LEFT = 24
-local LIST_NEW_LABEL = L[" |cffFFD200New|r"]
+local LIST_NEW_LABEL = " |cffFFD200New|r" -- through L at use: the language is known after load
 local LIST_TOOLTIP_X_GAP = 20
 local NOTABLE_LIST_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 local SCROLLBAR_WIDTH = 18
@@ -211,7 +211,7 @@ local function BuildListItemTags(entry, status, includeNewLabel, slotName)
     end
 
     if includeNewLabel and entry and GQ.Data:IsEntryNewForPlayer(entry) then
-        tags = tags .. LIST_NEW_LABEL
+        tags = tags .. L[LIST_NEW_LABEL]
     end
 
     if status == "tracked" then
@@ -2244,7 +2244,7 @@ function GQ.Log:ToggleSlotCollapsed(slotName)
     self:Refresh()
 end
 
-local SOURCE_FILTERS = {
+local SOURCE_FILTERS = GQ.LocaleTable({
     { id = "boss_drop", label = L["Boss drop"] },
     { id = "object_drop", label = L["Container"] },
     { id = "raid_trash", label = L["Dungeon & Raid trash"] },
@@ -2254,7 +2254,7 @@ local SOURCE_FILTERS = {
     { id = "unsourced", label = L["Unsourced"] },
     { id = "vendor", label = L["Vendor"] },
     { id = "world_drop", label = L["World drop"] },
-}
+})
 
 -- Every profession that has a hunt item, at any level and for any class.
 -- The branch stays this full list so a box you clear stays cleared when you
@@ -2324,11 +2324,11 @@ GQ.Log.BOSS_DUNGEON = {
 -- Vendor flyout. Checked means show. Ordinary is a purchase with no faction
 -- standing and no honor cost. An item that needs both standing and honor
 -- hides when either of those boxes is off.
-GQ.Log.VENDOR_KINDS = {
+GQ.Log.VENDOR_KINDS = GQ.LocaleTable({
     { id = "reputation", label = L["Reputation"] },
     { id = "honor", label = L["Honor (PvP)"] },
     { id = "gold", label = L["Ordinary"] },
-}
+})
 
 -- Sellers whose stock is battleground marks, arena points, or PvP rank gear.
 -- A general merchant who happens to sell one rank-named piece is not on this
@@ -2730,7 +2730,7 @@ function GQ.Log:ZoneNamesMatch(a, b)
         return true
     end
     -- Data zones are English; a non-English client names the player's zone in its language.
-    local localized = GQ.TN and GQ.TN("zone", a)
+    local localized = GQ.TClient and GQ.TClient("zone", a)
     return localized ~= a and string.lower(localized) == string.lower(b)
 end
 
@@ -10021,6 +10021,137 @@ function GQ.Log:LayoutSimulatorPage(frame)
     self:LayoutSimulatorContent(frame)
 end
 
+-- The game's language, or English (the addon's own). Only on a client whose
+-- language the addon has text for. The choice applies after a reload.
+local LANGUAGE_NAMES = {
+    frFR = "Français", deDE = "Deutsch", esES = "Español", esMX = "Español (AL)", itIT = "Italiano",
+    ptBR = "Português", ruRU = "Русский", koKR = "한국어", zhCN = "简体中文", zhTW = "繁體中文",
+}
+
+function GQ.Log:CreateLanguageDropdown(frame, detail)
+    local locale = GQ.LOCALE or "enUS"
+    if locale == "enUS" or locale == "enGB" or not next(GQ.LocaleUI or {}) then
+        return
+    end
+    local options = {
+        { value = false, text = LANGUAGE_NAMES[locale] or locale },
+        { value = true, text = "English" },
+    }
+    local function Current()
+        local settings = GearQuestForeverDB and GearQuestForeverDB.settings
+        return settings and settings.englishInterface and true or false
+    end
+    local function TextFor(value)
+        return value and options[2].text or options[1].text
+    end
+
+    StaticPopupDialogs.GEARQUEST_RELOAD_LANGUAGE = {
+        text = L["Language saved. Reload the interface now to apply it?"],
+        button1 = YES or "Yes",
+        button2 = NO or "No",
+        OnAccept = function()
+            ReloadUI()
+        end,
+        timeout = 0,
+        whileDead = true,
+        hideOnEscape = true,
+    }
+
+    -- Same pieces as the log's Filter button and weapon flyout.
+    local btn = CreateFrame("Button", "GearQuestLanguageButton", detail, "UIPanelButtonTemplate")
+    btn:SetSize(96, 22)
+    btn:SetPoint("TOPRIGHT", detail, "TOPRIGHT", -16, -14)
+    btn:SetText(TextFor(Current()))
+    frame.settingsLanguageDrop = btn
+
+    local label = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
+    label:SetPoint("RIGHT", btn, "LEFT", -8, 0)
+    label:SetText(L["Language"])
+    label:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
+    frame.settingsLanguageLabel = label
+    if frame.settingsPageTitle then
+        frame.settingsPageTitle:SetPoint("RIGHT", label, "LEFT", -8, 0)
+    end
+
+    local menu = CreateFrame("Frame", "GearQuestLanguageMenu", btn, "BackdropTemplate")
+    menu:SetFrameStrata("TOOLTIP")
+    menu:EnableMouse(true)
+    menu:SetClampedToScreen(true)
+    menu:SetBackdrop({
+        bgFile = "Interface\\Buttons\\WHITE8X8",
+        edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+        tile = true, tileSize = 16, edgeSize = 16,
+        insets = { left = 4, right = 4, top = 4, bottom = 4 },
+    })
+    if menu.SetBackdropColor then
+        menu:SetBackdropColor(0.07, 0.06, 0.05, 1)
+    end
+    if menu.SetBackdropBorderColor then
+        menu:SetBackdropBorderColor(0.78, 0.72, 0.58, 1)
+    end
+    menu:SetPoint("TOPRIGHT", btn, "BOTTOMRIGHT", 4, -2)
+    local catcher = CreateFrame("Frame", nil, UIParent)
+    catcher:SetAllPoints(UIParent)
+    catcher:SetFrameStrata("FULLSCREEN_DIALOG")
+    catcher:EnableMouse(true)
+    catcher:Hide()
+    catcher:SetScript("OnMouseDown", function()
+        menu:Hide()
+    end)
+    menu:SetScript("OnShow", function(self)
+        catcher:SetFrameLevel(math.max(self:GetFrameLevel() - 1, 0))
+        catcher:Show()
+    end)
+    menu:SetScript("OnHide", function()
+        catcher:Hide()
+    end)
+
+    local width = 96
+    menu.checks = {}
+    for i = 1, #options do
+        local option = options[i]
+        local check = CreateFrame("CheckButton", nil, menu, "UICheckButtonTemplate")
+        check:SetSize(22, 22)
+        check:SetPoint("TOPLEFT", menu, "TOPLEFT", 8, -8 - ((i - 1) * 20))
+        check.label = check:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        check.label:SetPoint("LEFT", check, "RIGHT", 2, 0)
+        check.label:SetText(option.text)
+        check.label:SetTextColor(1, 0.82, 0)
+        local labelWidth = check.label:GetStringWidth() or 60
+        check:SetHitRectInsets(0, -(labelWidth + 12), -1, -1)
+        width = math.max(width, 36 + labelWidth)
+        check:SetScript("OnClick", function()
+            menu:Hide()
+            btn:SetText(option.text)
+            if Current() == option.value then
+                return
+            end
+            GearQuestForeverDB.settings = GearQuestForeverDB.settings or {}
+            GearQuestForeverDB.settings.englishInterface = option.value
+            StaticPopup_Show("GEARQUEST_RELOAD_LANGUAGE")
+        end)
+        check.value = option.value
+        menu.checks[i] = check
+    end
+    menu:SetSize(width + 12, 16 + #options * 20)
+    menu:Hide()
+
+    btn:SetScript("OnClick", function()
+        if menu:IsShown() then
+            menu:Hide()
+            return
+        end
+        local current = Current()
+        for i = 1, #menu.checks do
+            menu.checks[i]:SetChecked(menu.checks[i].value == current)
+        end
+        menu:Show()
+    end)
+    btn:SetScript("OnHide", function()
+        menu:Hide()
+    end)
+end
+
 local function CreateSettingsCheck(parent, label, frameName)
     local ok, btn = pcall(CreateFrame, "CheckButton", frameName or "GearQuestHideMinimapCheck", parent, "UICheckButtonTemplate")
     if not ok or not btn then
@@ -10213,6 +10344,7 @@ function GQ.Log:CreateChatSetting(frame, detail, anchor)
     frame.settingsChatHint = hint
 end
 
+
 function GQ.Log:EnsureSettingsPage(frame)
     self:EnsureLogPages(frame)
     local page = frame.settingsPage
@@ -10341,6 +10473,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     pageTitle:SetText(L["General"])
     pageTitle:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsPageTitle = pageTitle
+    self:CreateLanguageDropdown(frame, detail)
 
     local SETTINGS_NOTE_FONTS = {
         "QuestFontNormalSmall",
@@ -11197,6 +11330,8 @@ function GQ.Log:SetSettingsSection(section)
         frame.settingsChatLabelHit,
         frame.settingsChatCheck,
         frame.settingsChatHint,
+        frame.settingsLanguageDrop,
+        frame.settingsLanguageLabel,
     }, section == "general")
     setShown({
         frame.settingsToastLabelHit,

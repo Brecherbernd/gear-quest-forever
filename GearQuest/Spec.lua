@@ -19,7 +19,7 @@ local SPEC_BY_TAB = {
 }
 
 -- classFile -> spec options (id, label, icon, default for leveling BiS, comingLater)
-GQ.Spec.CLASS_SPECS = {
+GQ.Spec.CLASS_SPECS = GQ.LocaleTable({
     WARRIOR = {
         { id = "arms", label = L["Arms"], icon = "Interface\\Icons\\Ability_Warrior_SavageBlow", default = true },
         { id = "fury", label = L["Fury"], icon = "Interface\\Icons\\Ability_Warrior_InnerRage" },
@@ -71,7 +71,7 @@ GQ.Spec.CLASS_SPECS = {
         { id = "balance", label = L["Balance"], icon = "Interface\\Icons\\Spell_Nature_StarFall" },
         { id = "restoration", label = L["Restoration"], icon = "Interface\\Icons\\Spell_Nature_HealingTouch" },
     },
-}
+})
 
 local SPEC_ALIASES = {
     -- Paladin

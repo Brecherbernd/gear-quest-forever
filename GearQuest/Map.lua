@@ -29,7 +29,7 @@ local function FindMapId(zoneName)
     local bestScore = -1
     -- Data names zones in English. A non-English client names its maps in
     -- its own language, so match the client's name for the zone too.
-    local localName = GQ.TN and GQ.TN("zone", zoneName) or zoneName
+    local localName = GQ.TClient and GQ.TClient("zone", zoneName) or zoneName
     if C_Map and C_Map.GetMapInfo then
         for id = 1, 3000 do
             local info = C_Map.GetMapInfo(id)

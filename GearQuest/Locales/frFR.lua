@@ -545,6 +545,9 @@ L["Grand Marshal (Rank 14)"] = "Connétable (rang 14)"
 L["High Warlord (Rank 14)"] = "Grand seigneur de guerre (rang 14)"
 
 -- Tutorial pages (PortraitGuide.lua). {b}...{/b} is bold, {info} the info icon.
+L["Language"] = "Langue"
+L["Language saved. Reload the interface now to apply it?"] = "Langue enregistrée. Recharger l'interface maintenant pour l'appliquer ?"
+
 GQ.LocaleGuidePages = {
     "Salutations, aventurier !\n\nJ'ai parcouru Azeroth toute ma vie et j'ai déniché plein de bon équipement ! Hum... Je veux bien partager une ou deux traques avec vous... Oh et puis zut... Je vous les donne toutes !\n\nAlors, prêt à partir en quête d'équipement ? Attendez... Ça sonnait mal, on recommence.\n\n{b}ÊTES-VOUS PRÊT POUR UNE GEAR QUEST ?{/b}",
     "Bien, commençons.\n\nVoici le {b}Journal GearQuest{/b}. Vous y trouverez la {b}liste{/b} des traques {b}Actives{/b}, celles que vous avez {b}Terminées{/b}, et celles qui ne vous plaisaient pas et que vous avez {b}Retirées{/b}... Je ne vois pas pourquoi vous feriez ça, mais bon...\n\nLe {b}Journal{/b} vous montre le meilleur équipement pour votre faction, votre spécialisation et bien sûr votre niveau. Par défaut, la {b}liste{/b} montre le {b}top 3{/b} des pièces classées pour chaque emplacement. Vous les retrouvez aussi d'un clic droit sur un emplacement de votre fiche personnage.",

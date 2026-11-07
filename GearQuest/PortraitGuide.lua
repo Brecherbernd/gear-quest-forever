@@ -7,7 +7,7 @@ local GUIDE = GQ.PortraitGuide
 
 -- The automatic intro is once for the whole account. The portrait can start it again.
 local GUIDE_VERSION = 8
-local GUIDE_NAME = L["The GearQuest Knight"]
+local GUIDE_NAME = "The GearQuest Knight" -- through L at use
 
 -- The counter is the length of this list. Add a page here, and a matching
 -- sound in Sounds/, when the next line is ready.
@@ -119,7 +119,7 @@ if GQ.LocaleGuidePages then
         local text = GQ.LocaleGuidePages[i]
         if text then
             text = text:gsub("{info}", INFO_ICON)
-            PAGES[i].text = (text:gsub("{b}(.-){/b}", Bold))
+            PAGES[i].localText = (text:gsub("{b}(.-){/b}", Bold))
         end
     end
 end
@@ -913,7 +913,7 @@ function GUIDE:Refresh()
     end
     self.page = index
     local page = PAGES[index]
-    bubble.body:SetText(page and page.text or "")
+    bubble.body:SetText(page and (GQ.LocaleActive and page.localText or page.text) or "")
     local textHeight = bubble.body:GetStringHeight() or 0
     if textHeight < 20 then
         textHeight = 84
@@ -1223,7 +1223,7 @@ function GUIDE:Ensure(frame)
     title:SetPoint("RIGHT", bubble, "RIGHT", -36, 0)
     title:SetJustifyH("LEFT")
     title:SetWordWrap(false)
-    title:SetText(GUIDE_NAME)
+    title:SetText(L[GUIDE_NAME])
     title:SetTextColor(0.28, 0.12, 0.04)
     bubble.title = title
 

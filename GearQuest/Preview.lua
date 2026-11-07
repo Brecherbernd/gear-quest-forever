@@ -293,7 +293,7 @@ function GQ.Preview:GetLabel()
 end
 
 function GQ.Preview:FormatClassName(classFile)
-    local localized = LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[classFile]
+    local localized = GQ.LocaleActive and LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[classFile]
     if localized then
         return localized
     end

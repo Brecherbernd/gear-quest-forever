@@ -10,7 +10,7 @@ local MAX_HEIGHT = 1000
 local DEFAULT_WIDTH = 100
 local MIN_DESC_WORDS = 10
 local MAX_DESC_WORDS = 30
-local TITLE_TEXT = L["GearQuest Tracker"]
+local TITLE_TEXT = "GearQuest Tracker" -- through L at use
 local TITLE_COLOR = { 1, 0.82, 0 }
 local ENTRY_NAME_COLOR = { 1, 1, 1 }
 local ENTRY_DESC_COLOR = { 1, 1, 1, 0.72 }
@@ -323,7 +323,7 @@ function GQ.Tracker:BeginExpand()
 
     local width, height = self:GetSavedSize()
     width = self:ApplyFrameWidth(width)
-    self.title:SetText(TITLE_TEXT)
+    self.title:SetText(L[TITLE_TEXT])
     self:UpdateCollapseButton()
     width, height = self:SetFrameSize(width, height)
     self:UpdateCollapseVisuals()
@@ -1168,7 +1168,7 @@ function GQ.Tracker:Refresh(widthOverride, heightOverride)
     width = self:ApplyFrameWidth(width)
     local collapsed = self:IsCollapsed()
 
-    self.title:SetText(TITLE_TEXT)
+    self.title:SetText(L[TITLE_TEXT])
     self:UpdateCollapseButton()
 
     if collapsed then
@@ -1287,7 +1287,7 @@ function GQ.Tracker:Init()
     title:SetJustifyH("LEFT")
     title:SetWordWrap(true)
     title:SetTextColor(TITLE_COLOR[1], TITLE_COLOR[2], TITLE_COLOR[3])
-    title:SetText(TITLE_TEXT)
+    title:SetText(L[TITLE_TEXT])
 
     local collapseBtn = CreateFrame("Button", nil, frame)
     collapseBtn:SetSize(COLLAPSE_BUTTON_SIZE, COLLAPSE_BUTTON_SIZE)

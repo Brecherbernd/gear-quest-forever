@@ -164,9 +164,14 @@ svBindFrame:SetScript("OnEvent", function(_, event, addonName)
         return
     end
     GQ:BindSavedVariableGlobals()
+    -- The language setting needs the saved settings, so it waits for them.
+    if not GQ._languageApplied and GQ.ApplyLanguageSetting and type(GearQuestForeverDB) == "table" then
+        GQ._languageApplied = true
+        GQ.ApplyLanguageSetting(GearQuestForeverDB.settings)
+    end
 end)
 
-local SOURCE_LABELS = {
+local SOURCE_LABELS = GQ.LocaleTable({
     world_drop = L["World drop"],
     unsourced = L["Unsourced"],
     rare_npc = L["Rare NPC"],
@@ -177,7 +182,7 @@ local SOURCE_LABELS = {
     profession = L["Profession"],
     auction_house = L["Auction House"],
     object_drop = L["Container"],
-}
+})
 
 local SOURCE_COLORS = {
     world_drop = "|cff66ccff",
