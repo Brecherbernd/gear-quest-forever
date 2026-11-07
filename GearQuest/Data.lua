@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Data = GQ.Data or {}
 
@@ -1217,7 +1218,7 @@ function GQ.Data:AppendDatamineNotice(tooltip, entry)
     if not tooltip or not self:NeedsDatamineNotice(entry) then
         return
     end
-    tooltip:AddLine("Has not been datamined yet", 1, 0.82, 0)
+    tooltip:AddLine(L["Has not been datamined yet"], 1, 0.82, 0)
 end
 
 function GQ.Data:PruneMissingForever()
@@ -1436,12 +1437,12 @@ function GQ.Data:GetItemDisplayName(itemId)
 
     local fact = self:GetItemFact(itemId)
     if fact and fact.name and not self:IsPlaceholderItemName(fact.name, itemId) then
-        return fact.name
+        return GQ.TN("item", fact.name)
     end
 
     local audit = self:GetForeverAudit(itemId)
     if audit and audit.name and not self:IsPlaceholderItemName(audit.name, itemId) then
-        return audit.name
+        return GQ.TN("item", audit.name)
     end
 
     local prof = PROFESSION_ITEM_NAMES[itemId]
@@ -1466,10 +1467,7 @@ function GQ.Data:GetEntryDisplayName(entry)
     local base = self:GetItemDisplayName(entry.itemId) or ("Item " .. tostring(entry.itemId))
     local suffix = entry.suffix
     if suffix and suffix ~= "" then
-        suffix = tostring(suffix)
-        if suffix:sub(1, 1) == " " then
-            return base .. suffix
-        end
+        suffix = L[(tostring(suffix):gsub("^%s+", ""))]
         return base .. " " .. suffix
     end
 
@@ -2467,7 +2465,7 @@ function GQ.Data:AppendImbueOrProc(tooltip, entry)
     end
     if entry.proc and entry.proc ~= "" and not self:TooltipAlreadySays(tooltip, entry.proc) then
         tooltip:AddLine(" ")
-        tooltip:AddLine(entry.proc, 1, 1, 1, true)
+        tooltip:AddLine(GQ.TL(entry.proc), 1, 1, 1, true)
     end
 end
 
@@ -2551,7 +2549,7 @@ function GQ.Data:ShowForeverItemTooltip(tooltip, entry)
     tooltip:SetText(displayName, r, g, b)
 
     if audit.status == "missing" then
-        tooltip:AddLine("Not found on Wowhead Forever", 1, 0.2, 0.2)
+        tooltip:AddLine(L["Not found on Wowhead Forever"], 1, 0.2, 0.2)
     end
 
     local lines = self:ForeverTooltipLines(audit.tip)
@@ -2572,7 +2570,7 @@ function GQ.Data:ShowForeverItemTooltip(tooltip, entry)
     local suffixHint = self:GetSuffixHint(entry)
     if suffixHint then
         tooltip:AddLine(" ")
-        tooltip:AddLine("Target random enchant: " .. suffixHint, 0.7, 0.9, 1)
+        tooltip:AddLine(L["Target random enchant: "] .. suffixHint, 0.7, 0.9, 1)
     end
     self:AppendDatamineNotice(tooltip, entry)
     self:ApplyImbueTooltipLines(tooltip, entry.itemId)
@@ -2584,16 +2582,16 @@ function GQ.Data:GetSuffixHint(entry)
         return nil
     end
 
-    local parts = { entry.suffix }
+    local parts = { L[entry.suffix] }
     if entry.suffixRange and entry.suffixRange ~= "" then
-        parts[#parts + 1] = entry.suffixRange
+        parts[#parts + 1] = GQ.TL(self:FormatSuffixRangeText(entry.suffixRange) or entry.suffixRange)
     elseif entry.suffixId then
-        parts[#parts + 1] = "tier " .. tostring(entry.suffixId)
+        parts[#parts + 1] = string.format(L["tier %s"], tostring(entry.suffixId))
     end
 
     local hint = table.concat(parts, ", ")
     if entry.suffixChance then
-        hint = hint .. " (slim ~" .. tostring(entry.suffixChance) .. "% roll -- BiS if you get it)"
+        hint = hint .. string.format(L[" (slim ~%s%% roll -- BiS if you get it)"], tostring(entry.suffixChance))
     end
 
     return hint
@@ -3041,16 +3039,16 @@ function GQ.Data:AccessLine(entry)
     local function onyxiaLine()
         local faction = GQ.GetEffectiveFaction and GQ:GetEffectiveFaction()
         if faction == "Horde" then
-            return "Onyxia's Lair requires the Drakefire Amulet. That chain ends with Blood of the Black Dragon Champion."
+            return L["Onyxia's Lair requires the Drakefire Amulet. That chain ends with Blood of the Black Dragon Champion."]
         end
-        return "Onyxia's Lair requires the Drakefire Amulet. That chain ends with Drakefire Amulet."
+        return L["Onyxia's Lair requires the Drakefire Amulet. That chain ends with Drakefire Amulet."]
     end
     local function dalaranLine()
         local faction = GQ.GetEffectiveFaction and GQ:GetEffectiveFaction()
         if faction == "Horde" then
-            return "City of Dalaran has an attunement. Start with Key to the City from Magus Wordeen Voidglare in Tarren Mill. Heart of Disruption awards the Dalaran Sewer Key for the entrance on the northwest side of the city. One person in the group needs it. Defeating Shade of the Archmage and finishing Shrewd Negotiations makes the city guards neutral. Most citizens still will not offer their services."
+            return L["City of Dalaran has an attunement. Start with Key to the City from Magus Wordeen Voidglare in Tarren Mill. Heart of Disruption awards the Dalaran Sewer Key for the entrance on the northwest side of the city. One person in the group needs it. Defeating Shade of the Archmage and finishing Shrewd Negotiations makes the city guards neutral. Most citizens still will not offer their services."]
         end
-        return "City of Dalaran has an attunement. Pick up An Alarming Request from Emissary Jacques at the Southshore Town Hall in Hillsbrad Foothills. The Alliance entrance is in front of the city in Alterac Mountains. Image of Archmage Modera teleports you in, and the dungeon pipe is inside at Cantrips & Crows. The outside sewer on the northwest shore is the Horde entrance."
+        return L["City of Dalaran has an attunement. Pick up An Alarming Request from Emissary Jacques at the Southshore Town Hall in Hillsbrad Foothills. The Alliance entrance is in front of the city in Alterac Mountains. Image of Archmage Modera teleports you in, and the dungeon pipe is inside at Cantrips & Crows. The outside sewer on the northwest shore is the Horde entrance."]
     end
     local function accessFor(name)
         if name == "Onyxia's Lair" then
@@ -3164,11 +3162,11 @@ function GQ.Data:QuestChainLines(entry)
     end
     if steps < 2 then
         if steps == 1 then
-            return "No prequests. You can pick this quest up without finishing another quest first.", nil
+            return L["No prequests. You can pick this quest up without finishing another quest first."], nil
         end
         return nil, nil
     end
-    return "Part of a quest chain.", string.format("%d quests until you get this.", math.floor(steps))
+    return L["Part of a quest chain."], string.format(L["%d quests until you get this."], math.floor(steps))
 end
 
 function GQ.Data:VisibleCoordinateSpots(itemId)
@@ -3400,9 +3398,9 @@ function GQ.Data:CoordinateLine(itemId)
         return nil
     end
     local row = self.coordinates and self.coordinates[itemId]
-    local line = string.format("Coordinates: %s %.1f, %.1f", spot.map or "", spot.x or 0, spot.y or 0)
+    local line = string.format(L["Coordinates: %s %.1f, %.1f"], GQ.TN("zone", spot.map or ""), spot.x or 0, spot.y or 0)
     if row and row.note and row.note ~= "" then
-        line = line .. " (" .. row.note .. ")"
+        line = line .. " (" .. L[row.note] .. ")"
     end
     return line, spots
 end
@@ -3757,7 +3755,7 @@ function GQ.Data:ProfessionMaterialsLine(entry)
             local name = row and row[3]
             local count = row and row[2] or 1
             if name and name ~= "" then
-                parts[#parts + 1] = string.format("%s (%d)", name, count)
+                parts[#parts + 1] = string.format("%s (%d)", GQ.TN("item", name), count)
             end
         end
         if #parts == 0 then
@@ -3770,10 +3768,10 @@ function GQ.Data:ProfessionMaterialsLine(entry)
     if not required then
         return nil
     end
-    local line = "Materials: " .. required .. "."
+    local line = string.format(L["Materials: %s."], required)
     local optional = formatReagentList(known.optional)
     if optional then
-        line = line .. " Optional: " .. optional .. "."
+        line = line .. string.format(L[" Optional: %s."], optional)
     end
     return line
 end
@@ -4126,7 +4124,7 @@ function GQ.Data:FormatSuffixRangeText(text)
     text = text:gsub("spArcane", "Arcane Spell Power")
     text = text:gsub("spHoly", "Holy Spell Power")
     text = text:gsub("(%d)%s+sp%f[%A]", "%1 Spell Power")
-    return text
+    return GQ.TL((text:gsub("^%s+", "")))
 end
 
 function GQ.Data:AppendSuffixRangeLines(tooltip, entry)
@@ -4157,7 +4155,9 @@ function GQ.Data:TooltipShowsEntrySuffix(tooltip, entry)
     end
 
     local suffix = tostring(entry.suffix):gsub("^%s+", "")
+    -- The client titles the item in its own language.
     return title:lower():find(suffix:lower(), 1, true) ~= nil
+        or title:lower():find(L[suffix]:lower(), 1, true) ~= nil
 end
 
 function GQ.Data:GetItemQualityForDisplay(itemId)
@@ -4206,7 +4206,7 @@ function GQ.Data:ShowFactFallbackTooltip(tooltip, entry)
     local fact = self:GetItemFact(entry.itemId)
     local audit = self:GetForeverAudit(entry.itemId)
     if audit and audit.status == "missing" then
-        tooltip:AddLine("Not found on Wowhead Forever", 1, 0.2, 0.2)
+        tooltip:AddLine(L["Not found on Wowhead Forever"], 1, 0.2, 0.2)
     end
     if audit and audit.tip and audit.tip ~= "" then
         local lines = self:ForeverTooltipLines(audit.tip)
@@ -4226,7 +4226,7 @@ function GQ.Data:ShowFactFallbackTooltip(tooltip, entry)
         end
         local reqLevel = fact and fact.reqLevel
         if reqLevel and reqLevel > 0 then
-            tooltip:AddLine("Requires Level " .. tostring(reqLevel), 1, 1, 1)
+            tooltip:AddLine(string.format(L["Requires Level %s"], tostring(reqLevel)), 1, 1, 1)
         end
         if fact and fact.stats then
             for stat, value in pairs(fact.stats) do
@@ -4237,7 +4237,8 @@ function GQ.Data:ShowFactFallbackTooltip(tooltip, entry)
         end
         local instructions = self:GetEntryInstructions(entry) or (fact and fact.instructions)
         if instructions and instructions ~= "" then
-            instructions = self:SanitizeText(instructions) or instructions
+            instructions = self:SanitizeText(GQ.TL(instructions)) or instructions
+
             tooltip:AddLine(" ")
             tooltip:AddLine(instructions, 0.8, 0.8, 0.8, true)
         end
@@ -4469,7 +4470,7 @@ function GQ.Data:ShowSuffixFallbackTooltip(tooltip, entry)
     local suffixHint = self:GetSuffixHint(entry)
     if suffixHint then
         tooltip:AddLine(" ")
-        tooltip:AddLine("Target random enchant: " .. suffixHint, 0.7, 0.9, 1)
+        tooltip:AddLine(L["Target random enchant: "] .. suffixHint, 0.7, 0.9, 1)
     end
     self:AppendDatamineNotice(tooltip, entry)
 
@@ -4522,7 +4523,7 @@ function GQ.Data:AppendRandomEnchantLine(tooltip, entry)
         return
     end
     tooltip:AddLine(" ")
-    tooltip:AddLine("Target random enchant: " .. suffixHint, 0.7, 0.9, 1)
+    tooltip:AddLine(L["Target random enchant: "] .. suffixHint, 0.7, 0.9, 1)
 end
 
 function GQ.Data:EntryUsesRebuiltTooltip(entry)
@@ -4564,8 +4565,8 @@ function GQ.Data:AppendClientMissingLines(tooltip)
         return
     end
     tooltip:AddLine(" ")
-    tooltip:AddLine("Wowhead Forever lists this item.", 1, 0.2, 0.2)
-    tooltip:AddLine("This game client does not have it yet.", 1, 0.2, 0.2)
+    tooltip:AddLine(L["Wowhead Forever lists this item."], 1, 0.2, 0.2)
+    tooltip:AddLine(L["This game client does not have it yet."], 1, 0.2, 0.2)
 end
 
 -- The stored Wowhead tip, without the GearQuest rank lines. Used when the
@@ -4629,23 +4630,23 @@ function GQ.Data:ShowClientWaitTooltip(tooltip, entry, missing)
     tooltip:ClearLines()
     tooltip:SetText(displayName, r, g, b)
     if missing then
-        tooltip:AddLine("Wowhead Forever lists this item.", 1, 0.2, 0.2)
-        tooltip:AddLine("This game client does not have it yet.", 1, 0.2, 0.2)
+        tooltip:AddLine(L["Wowhead Forever lists this item."], 1, 0.2, 0.2)
+        tooltip:AddLine(L["This game client does not have it yet."], 1, 0.2, 0.2)
     else
         tooltip:AddLine(RETRIEVING_ITEM_INFO or "Retrieving item information", 1, 1, 1)
     end
 end
 
 local SCORED_STAT_ORDER = {
-    { key = "armor", label = "Armor" },
-    { key = "str", label = "Strength" },
-    { key = "agi", label = "Agility" },
-    { key = "sta", label = "Stamina" },
-    { key = "int", label = "Intellect" },
-    { key = "spi", label = "Spirit" },
-    { key = "sp", label = "Spell Power" },
-    { key = "heal", label = "Healing" },
-    { key = "ap", label = "Attack Power" },
+    { key = "armor", label = L["Armor"] },
+    { key = "str", label = L["Strength"] },
+    { key = "agi", label = L["Agility"] },
+    { key = "sta", label = L["Stamina"] },
+    { key = "int", label = L["Intellect"] },
+    { key = "spi", label = L["Spirit"] },
+    { key = "sp", label = L["Spell Power"] },
+    { key = "heal", label = L["Healing"] },
+    { key = "ap", label = L["Attack Power"] },
 }
 
 function GQ.Data:TooltipPlainText(tooltip)
@@ -4678,7 +4679,7 @@ function GQ.Data:AppendScoredStatLines(tooltip, itemId)
         if type(value) == "number" and value ~= 0 and not body:find(spec.label:lower(), 1, true) then
             local line
             if spec.key == "armor" then
-                line = string.format("%d Armor", value)
+                line = string.format(L["%d Armor"], value)
             elseif value > 0 then
                 line = string.format("+%d %s", value, spec.label)
             else
@@ -5906,21 +5907,21 @@ function GQ.Data:BuildCandidatesForSlot(slotName)
 end
 
 GQ.Data.SLOT_LABELS = {
-    Head = "Head",
-    Neck = "Neck",
-    Shoulder = "Shoulder",
-    Back = "Back",
-    Chest = "Chest",
-    Wrist = "Wrist",
-    Hands = "Hands",
-    Waist = "Waist",
-    Legs = "Legs",
-    Feet = "Feet",
-    Finger = "Finger",
-    Trinket = "Trinket",
-    MainHand = "Main Hand",
-    SecondaryHand = "Off Hand",
-    Ranged = "Ranged",
+    Head = L["Head"],
+    Neck = L["Neck"],
+    Shoulder = L["Shoulder"],
+    Back = L["Back"],
+    Chest = L["Chest"],
+    Wrist = L["Wrist"],
+    Hands = L["Hands"],
+    Waist = L["Waist"],
+    Legs = L["Legs"],
+    Feet = L["Feet"],
+    Finger = L["Finger"],
+    Trinket = L["Trinket"],
+    MainHand = L["Main Hand"],
+    SecondaryHand = L["Off Hand"],
+    Ranged = L["Ranged"],
 }
 
 GQ.Data.BASE_SLOTS = {
@@ -6465,7 +6466,7 @@ end
 
 function GQ.Data:GearScoreTooltipLine(entry)
     if GQ.IsPreviewEnabled and GQ:IsPreviewEnabled() then
-        return "|cffb0b0b0Turn off simulation mode to see your GearQuest Score for this item|r"
+        return L["|cffb0b0b0Turn off simulation mode to see your GearQuest Score for this item|r"]
     end
     if not entry then
         return nil
@@ -6490,9 +6491,9 @@ function GQ.Data:GearScoreTooltipLine(entry)
     local inBand = level >= (entry.minLevel or 1) and level <= (entry.maxLevel or level)
     local rankText
     if visibleRank then
-        rankText = string.format("Rank #%d for your level", visibleRank)
+        rankText = string.format(L["Rank #%d for your level"], visibleRank)
     elseif inBand and entry.curatedRank then
-        rankText = string.format("Rank #%d for your level", entry.curatedRank)
+        rankText = string.format(L["Rank #%d for your level"], entry.curatedRank)
     else
         rankText = nil
     end
@@ -6724,7 +6725,7 @@ function GQ.Data:GearScoreMissText(link)
     end
     local rows = self:GetEntriesByItemId(itemId)
     if #rows == 0 then
-        return remember("GearQuest has no score for this item.")
+        return remember(L["GearQuest has no score for this item."])
     end
 
     local classFile = GQ.GetEffectiveClass and GQ:GetEffectiveClass()
@@ -6768,7 +6769,7 @@ function GQ.Data:GearScoreMissText(link)
     end
 
     if forClass == 0 then
-        return remember("Not ranked for your class.")
+        return remember(L["Not ranked for your class."])
     end
     if forSpec == 0 then
         local specName = spec
@@ -6780,19 +6781,19 @@ function GQ.Data:GearScoreMissText(link)
                 end
             end
         end
-        return remember("Not ranked for " .. (specName or "your current spec") .. ".")
+        return remember(string.format(L["Not ranked for %s."], specName or L["your current spec"]))
     end
     if forSide == 0 then
-        return remember("Not ranked for your faction.")
+        return remember(L["Not ranked for your faction."])
     end
     if forLevel == 0 then
         if lo and hi and lo ~= hi then
-            return remember(string.format("Not ranked at your level. Ranked from %d to %d.", lo, hi))
+            return remember(string.format(L["Not ranked at your level. Ranked from %d to %d."], lo, hi))
         end
         if lo then
-            return remember(string.format("Not ranked at your level. Ranked at level %d.", lo))
+            return remember(string.format(L["Not ranked at your level. Ranked at level %d."], lo))
         end
-        return remember("Not ranked at your level.")
+        return remember(L["Not ranked at your level."])
     end
 
     local names = {}
@@ -6801,12 +6802,12 @@ function GQ.Data:GearScoreMissText(link)
     end
     table.sort(names)
     if #names == 1 then
-        return remember("Only " .. names[1] .. " is ranked for your level.")
+        return remember(string.format(L["Only %s is ranked for your level."], names[1]))
     end
     if #names > 1 then
-        return remember("Not this roll. Ranked for your level: " .. table.concat(names, ", ") .. ".")
+        return remember(string.format(L["Not this roll. Ranked for your level: %s."], table.concat(names, ", ")))
     end
-    return remember("Not ranked for your level.")
+    return remember(L["Not ranked for your level."])
 end
 
 function GQ.Data:HookItemScoreTooltips()
@@ -7341,50 +7342,50 @@ function GQ.Data:WeaponHeaderSuffix(slotName)
     local shield = SHIELD_SPECS[classFile]
     if shield and shield[spec] then
         if slotName == "SecondaryHand" then
-            return "Shield"
+            return L["Shield"]
         end
         return nil
     end
     if classFile == "HUNTER" then
         if slotName == "MainHand" then
-            return "Two-hand or dual wield"
+            return L["Two-hand or dual wield"]
         end
         return nil
     end
     local dual = DUAL_WIELD_SPECS[classFile]
     if dual and dual[spec] then
         if slotName == "MainHand" then
-            return "Dual wield"
+            return L["Dual wield"]
         end
         return nil
     end
     local twoHand = TWO_HAND_SPECS[classFile]
     if twoHand and twoHand[spec] then
         if slotName == "MainHand" then
-            return "Two-hand"
+            return L["Two-hand"]
         end
         return nil
     end
     if classFile == "SHAMAN" and spec == "enhancement" then
         if slotName == "MainHand" then
-            return "Two-hand or main hand"
+            return L["Two-hand or main hand"]
         end
         return nil
     end
     if classFile == "MAGE" or classFile == "PRIEST" or classFile == "WARLOCK" then
         if slotName == "MainHand" then
-            return "Staff or main hand"
+            return L["Staff or main hand"]
         end
         return nil
     end
     if classFile == "DRUID" then
         if slotName == "MainHand" then
-            return "Two-hand or main hand"
+            return L["Two-hand or main hand"]
         end
         return nil
     end
     if slotName == "MainHand" and self:GetWeaponRouteForBand() then
-        return "Two-hand or main hand"
+        return L["Two-hand or main hand"]
     end
     return nil
 end
@@ -7755,16 +7756,16 @@ function GQ.Data:SlotLabel(slotName)
     if slotName == "Ranged" then
         local classFile = GQ:GetEffectiveClass()
         if classFile == "SHAMAN" then
-            return "Totem"
+            return L["Totem"]
         end
         if classFile == "DRUID" then
-            return "Idol"
+            return L["Idol"]
         end
         if classFile == "PALADIN" then
-            return "Relic"
+            return L["Relic"]
         end
         if classFile == "MAGE" or classFile == "PRIEST" or classFile == "WARLOCK" then
-            return "Wand"
+            return L["Wand"]
         end
     end
     return self.SLOT_LABELS[slotName] or slotName
