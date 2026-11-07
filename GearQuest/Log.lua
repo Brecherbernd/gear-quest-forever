@@ -2725,7 +2725,12 @@ function GQ.Log:ZoneNamesMatch(a, b)
     if a == b then
         return true
     end
-    return string.lower(a) == string.lower(b)
+    if string.lower(a) == string.lower(b) then
+        return true
+    end
+    -- Data zones are English; a non-English client names the player's zone in its language.
+    local localized = GQ.TN and GQ.TN("zone", a)
+    return localized ~= a and string.lower(localized) == string.lower(b)
 end
 
 -- A hunt can be finished here when its zone, or any spot this faction can

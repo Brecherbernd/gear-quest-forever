@@ -26,10 +26,13 @@ local function FindMapId(zoneName)
     end
     local found = false
     local bestScore = -1
+    -- Data names zones in English. A non-English client names its maps in
+    -- its own language, so match the client's name for the zone too.
+    local localName = GQ.TN and GQ.TN("zone", zoneName) or zoneName
     if C_Map and C_Map.GetMapInfo then
         for id = 1, 3000 do
             local info = C_Map.GetMapInfo(id)
-            if info and info.name == zoneName then
+            if info and (info.name == zoneName or info.name == localName) then
                 local score = info.mapType == ZONE_MAP and 100 or 10
                 if MapAcceptsWorld(id) then
                     score = score + 50
