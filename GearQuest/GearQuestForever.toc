@@ -1,6 +1,7 @@
 ## Interface: 16001
 ## Title: GearQuest Forever
 ## Notes: Leveling gear upgrades for WoW Forever - click a slot, pick a hunt, track it in the log.
+## Notes-deDE: Ausrüstungsverbesserungen beim Leveln für WoW Forever – Platz anklicken, Hunt auswählen, im Log verfolgen.
 ## Notes-frFR: Améliorations d'équipement pour monter de niveau sur WoW Forever : cliquez sur un emplacement, choisissez une traque, suivez-la dans le journal.
 ## Author: Henrik8210
 ## Version: 1.1.0
@@ -17,6 +18,9 @@ Locales/frFR.sentences.lua
 Locales/frFR.names.lua
 Locales/frFR.db2.lua
 Locales/frFR.quests.lua
+Locales/deDE.lua
+Locales/deDE.rules.lua
+Locales/deDE.sentences.lua
 Core.lua
 Spec.lua
 CustomSpec.lua
