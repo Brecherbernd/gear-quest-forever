@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Map = GQ.Map or {}
 
@@ -26,10 +27,12 @@ local function FindMapId(zoneName)
     end
     local found = false
     local bestScore = -1
+    -- The data stores English zone names; a German client's maps carry German names.
+    local localName = L.Zone(zoneName)
     if C_Map and C_Map.GetMapInfo then
         for id = 1, 3000 do
             local info = C_Map.GetMapInfo(id)
-            if info and info.name == zoneName then
+            if info and (info.name == zoneName or info.name == localName) then
                 local score = info.mapType == ZONE_MAP and 100 or 10
                 if MapAcceptsWorld(id) then
                     score = score + 50
@@ -179,12 +182,12 @@ function GQ.Map:Show(entry)
     end
     local spot = self:SpotForEntry(entry)
     local mapId = spot and spot.mapId or self:ZoneMap(entry.zone)
-    local label = entry.questName or entry.npc or entry.zone or "GearQuest"
+    local label = entry.questName or entry.npc or L.Zone(entry.zone) or "GearQuest"
 
     OpenToMap(mapId)
 
     if not spot then
-        GQ:Chat(PREFIX .. "No exact spot for this item.")
+        GQ:Chat(PREFIX .. L["No exact spot for this item."])
         return
     end
 
@@ -193,6 +196,6 @@ function GQ.Map:Show(entry)
     if C_Timer and C_Timer.After then
         C_Timer.After(0, GuardWaypointClipboard)
     end
-    local where = string.format("%s %.1f, %.1f", spot.map or label, spot.x, spot.y)
-    GQ:Chat(PREFIX .. where .. (pinned and " — pin placed" or ""))
+    local where = string.format("%s %.1f, %.1f", L.Zone(spot.map) or label, spot.x, spot.y)
+    GQ:Chat(PREFIX .. where .. (pinned and L[" — pin placed"] or ""))
 end

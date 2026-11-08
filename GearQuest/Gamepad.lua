@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Log = GQ.Log or {}
 
@@ -1908,7 +1909,7 @@ function GQ.Log:GamepadFillBar(bar, prompts)
             chip:ClearAllPoints()
             chip:SetPoint("LEFT", bar, "LEFT", x, 0)
             chip:Show()
-            chip.label:SetText(prompt.text)
+            chip.label:SetText(L[prompt.text])
             chip.label:ClearAllPoints()
             chip.label:SetPoint("LEFT", chip, "RIGHT", 4, 0)
             chip.label:Show()

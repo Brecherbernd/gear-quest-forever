@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 -- Expands the generated BiS tables into GQ.Data.entries, the array that
 -- Indicator.lua, Log.lua and Tracker.lua already iterate. Nothing in those files
@@ -307,7 +308,7 @@ function GQ.Data:EnsureClassLoaded(classFile)
             if not self._classLoadFailed[classFile] then
                 self._classLoadFailed[classFile] = true
                 local label = classFile:sub(1, 1) .. classFile:sub(2):lower()
-                GQ:Chat("|cffff0000GearQuest|r: could not load " .. label .. " hunt data (" .. tostring(reason) .. "). Enable |cff00ff00GearQuest Forever: " .. label .. "|r in the addon list, then /reload.")
+                GQ:Chat("|cffff0000GearQuest|r: " .. L("could not load %s hunt data (%s). Enable |cff00ff00GearQuest Forever: %s|r in the addon list, then /reload.", label, tostring(reason), label))
             end
             return false
         end
@@ -332,7 +333,7 @@ function GQ.Data:EnsureClassLoaded(classFile)
         self._classLoadFailed = self._classLoadFailed or {}
         if not self._classLoadFailed[classFile] then
             self._classLoadFailed[classFile] = true
-            GQ:Chat("|cffff0000GearQuest|r: " .. classFile .. " hunt data loaded with no picks.")
+            GQ:Chat("|cffff0000GearQuest|r: " .. L("%s hunt data loaded with no picks.", classFile))
         end
         return false
     end

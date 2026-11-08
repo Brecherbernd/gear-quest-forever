@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Guide = GQ.Guide or {}
 
@@ -149,9 +150,9 @@ local function FormatYards(dist)
         return nil
     end
     if dist < HERE_YARDS then
-        return "Here"
+        return L["Here"]
     end
-    return string.format("%d yards", dist + 0.5)
+    return L("%d yards", dist + 0.5)
 end
 
 local function WrapPi(angle)
@@ -315,9 +316,9 @@ local CROSSINGS = {
 
 local function DockLabel(dock)
     if dock and dock.place and dock.place ~= "" then
-        return dock.kind .. " in " .. dock.place
+        return L("%s in %s", L[dock.kind], L.Zone(dock.place))
     end
-    return dock and dock.kind or ""
+    return dock and L[dock.kind] or ""
 end
 
 local crossingById = {}
@@ -639,7 +640,7 @@ local function UpdateGuide(frame)
     local sample = frame.aim
     local refresh = not sample or sample.spot ~= spot or now >= (frame.aimUntil or 0)
     if refresh then
-        sample = { spot = spot, text = spot and spot.map or "No pin", kind = "none" }
+        sample = { spot = spot, text = spot and L.Zone(spot.map) or L["No pin"], kind = "none" }
         local spotMap = spot and GQ.Data and GQ.Data.SpotMapId and GQ.Data:SpotMapId(spot)
         local px, py = spotMap and PositionOn(spotMap)
         if spot and px and py and spot.x and spot.y then
@@ -661,7 +662,7 @@ local function UpdateGuide(frame)
             sample.kind = "map"
             sample.east = sx - px
             sample.north = py - sy
-            sample.text = spot.map or sample.text
+            sample.text = L.Zone(spot.map) or sample.text
         end
     elseif spot and spotMap and spot.x and spot.y and C_Map and C_Map.GetBestMapForUnit then
         local playerMap = C_Map.GetBestMapForUnit("player")
@@ -728,7 +729,7 @@ local function UpdateGuide(frame)
                 sample.dy = dy
                 if dist < HERE_YARDS then
                     sample.kind = "here"
-                    sample.text = "Here"
+                    sample.text = L["Here"]
                 else
                     sample.kind = "world"
                     sample.text = dock.kind
@@ -749,7 +750,7 @@ local function UpdateGuide(frame)
                     sample.kind = "map"
                     sample.east = ssx - ppx
                     sample.north = ppy - ssy
-                    sample.text = spot.map or sample.text
+                    sample.text = L.Zone(spot.map) or sample.text
                 end
             end
         end
@@ -835,18 +836,18 @@ function GQ.Guide:Init()
         GameTooltip:SetText(name, GOLD_R, GOLD_G, GOLD_B)
         local spot = self.spot
         if spot and spot.map then
-            GameTooltip:AddLine(string.format("%s %.1f, %.1f", spot.map, spot.x or 0, spot.y or 0), 1, 1, 1)
+            GameTooltip:AddLine(string.format("%s %.1f, %.1f", L.Zone(spot.map), spot.x or 0, spot.y or 0), 1, 1, 1)
         end
         if self.crossing then
             local depart = self.crossing
             local dest = self.crossingTo
-            local line = depart.kind .. " in " .. (depart.place or depart.zone)
+            local line = L("%s in %s", L[depart.kind], L.Zone(depart.place or depart.zone))
             if dest and dest.place and dest.id ~= depart.id then
-                line = line .. " to " .. dest.place
+                line = line .. L(" to %s", L.Zone(dest.place))
             end
             GameTooltip:AddLine(line, 1, 1, 1)
         end
-        GameTooltip:AddLine("Drag to move", 0.75, 0.75, 0.75)
+        GameTooltip:AddLine(L["Drag to move"], 0.75, 0.75, 0.75)
         GameTooltip:Show()
     end)
     frame:SetScript("OnLeave", function()
@@ -886,7 +887,7 @@ function GQ.Guide:Init()
     end)
     close:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Remove the guide", 1, 1, 1)
+        GameTooltip:SetText(L["Remove the guide"], 1, 1, 1)
         GameTooltip:Show()
     end)
     close:SetScript("OnLeave", function()

@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.PortraitGuide = GQ.PortraitGuide or {}
 
@@ -6,7 +7,7 @@ local GUIDE = GQ.PortraitGuide
 
 -- The automatic intro is once for the whole account. The portrait can start it again.
 local GUIDE_VERSION = 8
-local GUIDE_NAME = "The GearQuest Knight"
+local GUIDE_NAME = GQ.L["The GearQuest Knight"]
 
 -- The counter is the length of this list. Add a page here, and a matching
 -- sound in Sounds/, when the next line is ready.
@@ -110,6 +111,56 @@ local PAGES = {
         highlight = "frame",
     },
 }
+
+-- Deutsche Seiten (die Sprachausgabe bleibt englisch).
+if L.IsGerman then
+    local DE = {
+        "Seid gegrüßt, Abenteurer!\n\n"
+            .. "Mein ganzes Leben lang bin ich durch Azeroth gestreift und habe jede Menge feiner Ausrüstung entdeckt! Ähem.. ich bin bereit, ein, zwei Hunts mit Euch zu teilen.. ach, zum Kuckuck.. ich teile sie alle!\n\n"
+            .. "Seid Ihr also bereit für eine Quest nach Ausrüstung? Moment.. das klang nicht richtig, versuchen wir das noch einmal.\n\n"
+            .. Bold("SEID IHR BEREIT FÜR EINE AUSRÜSTUNGSQUEST?"),
+        "Also gut, fangen wir an.\n\n"
+            .. "Das hier ist das " .. Bold("GearQuest-Log") .. ". Hier findet Ihr die " .. Bold("Liste") .. " der " .. Bold("aktiven") .. " Hunts, der Hunts, die Ihr " .. Bold("abgeschlossen") .. " habt, und der Hunts, die Euch nicht gefallen haben und die Ihr deshalb " .. Bold("entfernt") .. " habt.. Warum auch immer Ihr das tun solltet..\n\n"
+            .. "Das " .. Bold("Log") .. " zeigt Euch die beste Ausrüstung für Eure aktuelle Fraktion, Spezialisierung und natürlich Stufe. Standardmäßig zeigt die " .. Bold("Liste") .. " die " .. Bold("Top 3") .. " der bewerteten Ausrüstungsteile pro Platz - die bekommt Ihr auch per Rechtsklick auf einen Platz in Eurem Charakterfenster.",
+        "GearQuest trägt eine Menge Ausrüstung für Euch mit sich herum, damit es Euch auch dann noch brauchbare Optionen zeigen kann, wenn Ihr Filter setzt.\n\n"
+            .. "Alle bewerteten Optionen für Eure aktuelle Stufe seht Ihr, wenn Ihr mit dem Mauszeiger über das " .. Bold("Info-" .. INFO_ICON .. "-Symbol") .. " neben jedem Platztitel fahrt.\n\n"
+            .. "Wie viele Optionen Ihr pro Platz seht, könnt Ihr mit dem " .. Bold("Schieberegler") .. " direkt unter dieser Liste einstellen.",
+        "Mit dem " .. Bold("Filter") .. " könnt Ihr.. nun ja.. filtern. Wollt Ihr also nur Hunts aus dem Dungeon dieses Mistkerls Van Cleef sehen, geht das genauso wie viele andere Optionen.\n\n"
+            .. "Scrollt Ihr fast bis ans Ende der Liste, findet Ihr außerdem einen Filter für " .. Bold("Waffen") .. ".\n\n"
+            .. "Und schließlich gibt es noch " .. Bold("Spielstile") .. ", eine Art Kombination verschiedener Filter. " .. Bold("Fokuszone") .. " zeigt Euch zum Beispiel nur Hunts, die in der Zone verfügbar sind, in der Ihr Euch gerade befindet, während " .. Bold("Keine Dungeons!") .. " Euch niemals in einen Dungeon führt.",
+        "Gut, versucht jetzt, eine beliebige Hunt aus der Liste auszuwählen.\n\n"
+            .. "Dadurch wird der " .. Bold("Pergament") .. "-Bereich mit den Details der Hunt aktualisiert. Dort erfahrt Ihr den " .. Bold("Rang") .. " der Ausrüstung, wo Ihr sie bekommt, welche Voraussetzungen oder Empfehlungen es gibt, die " .. Bold("Quelle") .. " der Ausrüstung (danach könnt Ihr auch filtern) und zuletzt die " .. Bold("Belohnung") .. " - das schicke Ausrüstungsteil.\n\n"
+            .. "Ach, übrigens: Wenn Ihr auf irgendeiner Stufe eines Eurer bestbewerteten Teile erhaltet, gibt es eine Erfolgs-ähnliche Einblendung!",
+        "Unten in diesem Bereich findet Ihr 3 Schaltflächen.\n\n"
+            .. Bold("Verfolgen") .. " fügt diese Hunt Eurem GearQuest-Tracker hinzu und setzt ein Symbol auf Eure Weltkarte, das anzeigt, wohin Ihr müsst. Im Tracker könnt Ihr außerdem " .. Bold("Wegweiser aktivieren") .. " - dann erscheint über dem Tracker ein Pfeil, der Euch zum Ziel der Hunt führt. Seid Ihr auf dem anderen Kontinent, führt er Euch zuerst zu einem nahen Schiff oder Zeppelin.\n\n"
+            .. Bold("Auf Karte zeigen") .. " setzt kein Symbol, zeigt Euch aber direkt, wo das Ziel der Hunt liegt, und aktiviert den " .. Bold("Wegweiser") .. ".\n\n"
+            .. Bold("Entfernen") .. " entfernt.. nun ja.. die Hunt, damit Ihr sie nicht wieder seht. Ihr könnt sie jederzeit im Reiter " .. Bold("Entfernt") .. " wiederherstellen.",
+        "Der " .. Bold("GearQuest-Indexwert") .. " zeigt an, wie gut Ihr ausgerüstet seid - gemessen an der Spezialisierung, die Ihr gewählt habt.\n\n"
+            .. "Fahrt Ihr über die " .. Bold("Wertungsleiste") .. ", bekommt Ihr eine Liste Eurer getragenen Ausrüstung und wie jedes Teil abschneidet. Jedes Ausrüstungsteil wird anhand der Wertegewichtung Eurer aktuellen Spezialisierung bewertet und eingestuft.\n\n"
+            .. "In der " .. Bold("Spezialisierungsauswahl") .. " direkt darunter könnt Ihr eine andere Spezialisierung ausprobieren und seht, wie sich die " .. Bold("Wertungsleiste") .. " anhand der Ausrüstungsliste dieser Spezialisierung ändert.\n\n"
+            .. "Im Simulationsmodus funktioniert das übrigens nicht.",
+        "Ist eine " .. Bold("Spezialisierung") .. " gewählt, könnt Ihr über ihren Namen fahren, um zu sehen, nach welcher " .. Bold("Wertegewichtung") .. " sie bewertet wird.\n\n"
+            .. "Wenn Ihr also einer dieser ausrüstungsverliebten Jäger seid, greift Ihr normalerweise zu etwas mit " .. Bold("Beweglichkeit") .. ", oder mit Heilung, oder vielleicht zu einem Schild? Nein, im Ernst: Ihr solltet sehen, dass " .. Bold("Beweglichkeit") .. " höher gewichtet ist als zum Beispiel " .. Bold("Willenskraft") .. ".\n\n"
+            .. "Seid Ihr mit der " .. Bold("Wertegewichtung") .. " einer vorgefertigten Spezialisierung nicht einverstanden, könnt Ihr entweder Feedback geben oder.. Euch die Mühe sparen und Eure eigene " .. Bold("benutzerdefinierte Spezialisierung") .. " mit eigener Wertegewichtung anlegen.",
+        "Also gut, nur noch ein paar Punkte, dann dürft Ihr Hogger eins auf die Nase geben.. ähem.\n\n"
+            .. "Wechseln wir zum Reiter " .. Bold("Nachschlagen") .. ". In diesem Fenster könnt Ihr meine Ausrüstungsdatenbank mit allem durchsuchen, was mir im Laufe der Jahre untergekommen ist. Probiert eine " .. Bold("Suche") .. ", die für Eure Klasse relevant ist.\n\n"
+            .. "Habt Ihr etwas gefunden, fahrt über das " .. Bold("Info-" .. INFO_ICON .. "-Symbol") .. ", um zu sehen, wann das Teil für die Spezialisierungen Eurer Klasse relevant ist.\n\n"
+            .. "Findet Ihr die gesuchte Ausrüstung nicht, versucht, eine Klasse zu " .. Bold("simulieren") .. ", für die das Teil relevant ist.",
+        "Da ich ihn schon ein paar Mal erwähnt habe, werfen wir jetzt einen Blick auf den " .. Bold("Simulator") .. ".\n\n"
+            .. "Mit dieser Funktion könnt Ihr jede beliebige " .. Bold("Klasse") .. ", " .. Bold("Spezialisierung") .. " und " .. Bold("Stufe") .. " " .. Bold("simulieren") .. " - für beide Fraktionen.\n\n"
+            .. "Also.. Wollt Ihr sehen, wie die Ausrüstungsliste für einen " .. Bold("Krieger") .. " der " .. Bold("Allianz") .. " auf " .. Bold("Stufe 37") .. " aussieht - so wie ich -, dann ist der " .. Bold("Simulator") .. " genau das Richtige für Euch!",
+        "Gut, eine letzte Sache. Ich möchte noch die " .. Bold("Einstellungen") .. " erwähnen, denn manche Abenteurer mögen diesen " .. Bold("Minikarten-Knopf") .. " nicht, andere wollen die " .. Bold("besten Verzauberungen") .. " im Tooltip der Ausrüstung sehen und vieles mehr.\n\n"
+            .. "Schaut Euch also die verschiedenen Einstellungen an, um Eure Reise angenehmer zu machen.\n\n"
+            .. "Oh, und einen Gruß an die großartige GearQuest-Community auf Discord? Keine Ahnung, was diese letzte Zeile bedeutet, der Typ hat mich nur gebeten, sie vorzulesen.",
+        "Also.. Worauf wartet Ihr noch?\n\n"
+            .. "Auf zur " .. Bold("Ausrüstungsquest... für immer!"),
+    }
+    for i = 1, #DE do
+        if PAGES[i] then
+            PAGES[i].text = DE[i]
+        end
+    end
+end
 
 -- The side handles stay on screen on every page, so their glow does too.
 local HANDLE_MARK = {
@@ -1173,8 +1224,8 @@ function GUIDE:Ensure(frame)
             self.glow:Show()
         end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("GearQuest guide", 1, 0.82, 0)
-        GameTooltip:AddLine("Click the portrait to hear him again.", 1, 1, 1, true)
+        GameTooltip:SetText(L["GearQuest guide"], 1, 0.82, 0)
+        GameTooltip:AddLine(L["Click the portrait to hear him again."], 1, 1, 1, true)
         GameTooltip:Show()
     end)
     hit:SetScript("OnLeave", function(self)
@@ -1236,7 +1287,7 @@ function GUIDE:Ensure(frame)
     close:SetScript("OnEnter", function(self)
         closeText:SetTextColor(0.55, 0.12, 0.08)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Close")
+        GameTooltip:SetText(L["Close"])
         GameTooltip:Show()
     end)
     close:SetScript("OnLeave", function()
@@ -1275,7 +1326,7 @@ function GUIDE:Ensure(frame)
     yes:SetSize(88, 22)
     yes:SetPoint("BOTTOM", bubble, "BOTTOM", 0, 10)
     yes:SetFrameLevel(bubble:GetFrameLevel() + 2)
-    yes:SetText("Yes!")
+    yes:SetText(L["Yes!"])
     yes:SetScript("OnClick", function()
         GUIDE:SetPage(2)
     end)
@@ -1302,9 +1353,9 @@ function GUIDE:Ensure(frame)
     mute:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         if GUIDE:VoiceOn() then
-            GameTooltip:SetText("Mute the guide")
+            GameTooltip:SetText(L["Mute the guide"])
         else
-            GameTooltip:SetText("Let the guide speak")
+            GameTooltip:SetText(L["Let the guide speak"])
         end
         GameTooltip:Show()
     end)
@@ -1324,9 +1375,9 @@ function GUIDE:Ensure(frame)
             label:SetTextColor(0.55, 0.12, 0.08)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             if text == "+" then
-                GameTooltip:SetText("Turn the guide up")
+                GameTooltip:SetText(L["Turn the guide up"])
             else
-                GameTooltip:SetText("Turn the guide down")
+                GameTooltip:SetText(L["Turn the guide down"])
             end
             GameTooltip:Show()
         end)

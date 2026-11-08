@@ -6,6 +6,7 @@
 -- of what the effect does, and they compete with the spec weights.
 
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Enchant = GQ.Enchant or {}
 
@@ -512,7 +513,7 @@ function GQ.Enchant:Text(link, entry)
     if not best or not bestScore or bestScore <= 0 then
         return nil
     end
-    return string.format("|cffffff00Recommended enchantment|r|cffffffff: %s - %s|r", best.name, best.effect)
+    return string.format("|cffffff00%s|r|cffffffff: %s - %s|r", L["Recommended enchantment"], best.name, L.Text(best.effect))
 end
 
 function GQ.Enchant:Add(tooltip, link, entry)

@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Spec = GQ.Spec or {}
 
@@ -220,7 +221,7 @@ function GQ.Spec:GetSpecLabel(specId, classFile)
 
     for _, opt in ipairs(options) do
         if opt.id == specId then
-            return opt.label
+            return L[opt.label]
         end
     end
     local custom = GQ.Custom and GQ.Custom.Option and GQ.Custom:Option(classFile, specId)
@@ -377,11 +378,11 @@ end
 function GQ.Spec:SetSelectedSpec(specId, classFile)
     classFile = NormalizeClassFile(classFile or GQ:GetEffectiveClass())
     if not classFile then
-        return false, "Could not determine your class."
+        return false, L["Could not determine your class."]
     end
     local options = self:GetOptions(classFile)
     if not options then
-        return false, "This class has no specialization options in GearQuest yet."
+        return false, L["This class has no specialization options in GearQuest yet."]
     end
 
     specId = self:ResolveSpecInput(specId, classFile)
@@ -404,11 +405,11 @@ function GQ.Spec:SetSelectedSpec(specId, classFile)
                 table.insert(names, opt.id)
             end
         end
-        return false, "Unknown spec. Use: " .. table.concat(names, ", ")
+        return false, L["Unknown spec. Use: "] .. table.concat(names, ", ")
     end
 
     if not self:IsSpecSelectable(matched.id, classFile) then
-        return false, matched.label .. " is coming later."
+        return false, L("%s is coming later.", L[matched.label])
     end
 
     if matched.custom and GQ.Custom and GQ.Custom.EnsureBuilt then
@@ -605,7 +606,7 @@ end
 function GQ.Spec:PrintSpecDebug()
     local classFile = NormalizeClassFile(GQ:GetEffectiveClass())
     if not classFile then
-        GQ:Chat("|cff66ccffGearQuest|r: Could not read your class.")
+        GQ:Chat("|cff66ccffGearQuest|r: " .. L["Could not read your class."])
         return
     end
 

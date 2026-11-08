@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 GQ.Log = GQ.Log or {}
 
@@ -99,7 +100,7 @@ end
 local LIST_ROW_RIGHT_PAD = 6
 local LIST_ROW_ITEM_LEFT = 20
 local LIST_ROW_NOTABLE_LEFT = 24
-local LIST_NEW_LABEL = " |cffFFD200New|r"
+local LIST_NEW_LABEL = L[" |cffFFD200New|r"]
 local LIST_TOOLTIP_X_GAP = 20
 local NOTABLE_LIST_ICON = "Interface\\GossipFrame\\AvailableQuestIcon"
 local SCROLLBAR_WIDTH = 18
@@ -202,11 +203,11 @@ local function BuildListItemTags(entry, status, includeNewLabel, slotName)
     local tags = ""
 
     if entry and entry.origin == "guide" then
-        tags = tags .. " |cff88ccff(Guide)|r"
+        tags = tags .. L[" |cff88ccff(Guide)|r"]
     end
 
     if entry and entry.setPiece then
-        tags = tags .. " |cff88ccff(Set piece)|r"
+        tags = tags .. L[" |cff88ccff(Set piece)|r"]
     end
 
     if includeNewLabel and entry and GQ.Data:IsEntryNewForPlayer(entry) then
@@ -214,7 +215,7 @@ local function BuildListItemTags(entry, status, includeNewLabel, slotName)
     end
 
     if status == "tracked" then
-        tags = tags .. " |cff00ff00(Tracked)|r"
+        tags = tags .. L[" |cff00ff00(Tracked)|r"]
     end
 
     return tags
@@ -408,7 +409,7 @@ local function FormatCompletedDate(timestamp)
         return nil
     end
     if date then
-        return date("%B %d, %Y at %H:%M", timestamp)
+        return date(L["%B %d, %Y at %H:%M"], timestamp)
     end
     return tostring(timestamp)
 end
@@ -478,6 +479,17 @@ local function GetCraftedTimestamp(itemId)
     return db.crafted[itemId] or db.crafted[tostring(itemId)]
 end
 
+-- True if msg starts with the fixed text of a Blizzard GlobalStrings format
+-- (e.g. LOOT_ITEM_SELF = "Ihr erhaltet Beute: %s."), so any client language works.
+local function StartsWithGlobalFormat(msg, globalName)
+    local fmt = _G[globalName]
+    if type(fmt) ~= "string" then
+        return false
+    end
+    local prefix = fmt:match("^(.-)%%")
+    return prefix ~= nil and prefix ~= "" and msg:sub(1, #prefix) == prefix
+end
+
 local function ExtractItemIdFromChatMessage(msg)
     if not msg then
         return nil
@@ -489,7 +501,9 @@ local function ExtractItemIdFromChatMessage(msg)
     end
 
     -- Only the local player's craft/loot lines — never party loot chat with item links.
-    if msg:find("You create", 1, true) then
+    if msg:find("You create", 1, true)
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_CREATED_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_CREATED_SELF_MULTIPLE") then
         local itemId = tonumber(msg:match("item:(%d+)"))
         if itemId then
             return itemId
@@ -516,7 +530,11 @@ local function ExtractItemIdFromChatMessage(msg)
         return nil
     end
 
-    if msg:find("You receive loot", 1, true) or msg:find("You loot", 1, true) then
+    if msg:find("You receive loot", 1, true) or msg:find("You loot", 1, true)
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_SELF_MULTIPLE")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_PUSHED_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_PUSHED_SELF_MULTIPLE") then
         return tonumber(msg:match("item:(%d+)"))
     end
 
@@ -573,7 +591,7 @@ local function ShowEquippedCompare(entry)
             if tip and tip.SetInventoryItem then
                 tip:SetOwner(GameTooltip, "ANCHOR_NONE")
                 tip:SetInventoryItem("player", invSlot)
-                tip:AddLine("Currently equipped", 1, 0.82, 0)
+                tip:AddLine(L["Currently equipped"], 1, 0.82, 0)
                 tip:Show()
                 tips[#tips + 1] = tip
             end
@@ -733,7 +751,7 @@ local function CreateRewardItemButton(parent, name)
     foreverTex:SetTexture("Interface\\AddOns\\" .. tostring(ADDON_NAME) .. "\\Art\\GQ-ForeverMark.png")
     foreverMark:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("New in Forever")
+        GameTooltip:SetText(L["New in Forever"])
         GameTooltip:Show()
     end)
     foreverMark:SetScript("OnLeave", function()
@@ -2244,15 +2262,15 @@ function GQ.Log:ToggleSlotCollapsed(slotName)
 end
 
 local SOURCE_FILTERS = {
-    { id = "boss_drop", label = "Boss drop" },
-    { id = "object_drop", label = "Container" },
-    { id = "raid_trash", label = "Dungeon & Raid trash" },
-    { id = "profession", label = "Profession" },
-    { id = "quest_reward", label = "Quest reward" },
-    { id = "rare_npc", label = "Rare NPC" },
-    { id = "unsourced", label = "Unsourced" },
-    { id = "vendor", label = "Vendor" },
-    { id = "world_drop", label = "World drop" },
+    { id = "boss_drop", label = L["Boss drop"] },
+    { id = "object_drop", label = L["Container"] },
+    { id = "raid_trash", label = L["Dungeon & Raid trash"] },
+    { id = "profession", label = L["Profession"] },
+    { id = "quest_reward", label = L["Quest reward"] },
+    { id = "rare_npc", label = L["Rare NPC"] },
+    { id = "unsourced", label = L["Unsourced"] },
+    { id = "vendor", label = L["Vendor"] },
+    { id = "world_drop", label = L["World drop"] },
 }
 
 -- Every profession that has a hunt item, at any level and for any class.
@@ -2324,16 +2342,16 @@ GQ.Log.BOSS_DUNGEON = {
 -- standing and no honor cost. An item that needs both standing and honor
 -- hides when either of those boxes is off.
 GQ.Log.VENDOR_KINDS = {
-    { id = "reputation", label = "Reputation" },
-    { id = "honor", label = "Honor (PvP)" },
-    { id = "gold", label = "Ordinary" },
+    { id = "reputation", label = L["Reputation"] },
+    { id = "honor", label = L["Honor (PvP)"] },
+    { id = "gold", label = L["Ordinary"] },
 }
 
 -- Quest reward flyout. A dungeon quest is one whose steps enter an instance.
 -- The same test as No Dungeons. A quest that stays outdoors is regular.
 GQ.Log.QUEST_KINDS = {
-    { id = "regular", label = "Regular quest" },
-    { id = "dungeon", label = "Dungeon quest" },
+    { id = "regular", label = L["Regular quest"] },
+    { id = "dungeon", label = L["Dungeon quest"] },
 }
 
 -- Sellers whose stock is battleground marks, arena points, or PvP rank gear.
@@ -2792,7 +2810,12 @@ function GQ.Log:ZoneNamesMatch(a, b)
     if a == b then
         return true
     end
-    return string.lower(a) == string.lower(b)
+    -- Data names are English; a German client reports German zone names.
+    local la, lb = L.Zone(a), L.Zone(b)
+    if la == b or a == lb then
+        return true
+    end
+    return string.lower(a) == string.lower(b) or string.lower(la) == string.lower(lb)
 end
 
 -- A hunt can be finished here when its zone, or any spot this faction can
@@ -3058,7 +3081,7 @@ function GQ.Log:AppendDungeonEntryLine(lines, entry)
     local level = GQ.GetEffectiveLevel and GQ:GetEffectiveLevel() or 1
     local color = level >= recommended and "|cff0c4a1c" or "|cff6e1212"
     table.insert(lines, string.format(
-        "\n%sRecommended dungeon entry at level %d.|r",
+        L["\n%sRecommended dungeon entry at level %d.|r"],
         color,
         math.floor(recommended)
     ))
@@ -3151,6 +3174,11 @@ function GQ.Log:FactionStandingId(standings, faction)
     key = string.gsub(key, "^%s+", "")
     key = string.gsub(key, "%s+$", "")
     key = string.gsub(key, "^the ", "")
+    if standings[key] == nil and L.Zone(faction) ~= faction then
+        -- German client: the reputation list carries the German faction name.
+        local de = string.lower(L.Zone(faction))
+        return standings[de]
+    end
     return standings[key]
 end
 
@@ -3159,25 +3187,25 @@ function GQ.Log:ReputationRequirementLine(faction, standing)
     local standings = self:PlayerFactionStandings()
     -- A failed read is not the same as a faction this character has never seen.
     if not standings then
-        return string.format("\nRequires %s with %s.", standing, faction)
+        return string.format(L["\nRequires %s with %s."], L[standing], L.Zone(faction))
     end
     local have = self:FactionStandingId(standings, faction)
     if not have then
         return string.format(
-            "\nRequires %s with %s. |cff6e1212You have not met this faction yet.|r",
-            standing,
-            faction
+            L["\nRequires %s with %s. |cff6e1212You have not met this faction yet.|r"],
+            L[standing],
+            L.Zone(faction)
         )
     end
     local haveName = self:RepStandingName(have) or "Unknown"
     local met = need and have >= need
     local color = met and "|cff0c4a1c" or "|cff6e1212"
     return string.format(
-        "\nRequires %s with %s. %sYour standing is %s.|r",
-        standing,
-        faction,
+        L["\nRequires %s with %s. %sYour standing is %s.|r"],
+        L[standing],
+        L.Zone(faction),
         color,
-        haveName
+        L[haveName]
     )
 end
 
@@ -3319,6 +3347,8 @@ function GQ.Log:ReadProfessionRanks()
         if type(name) ~= "string" or name == "" or not rank or rank <= 0 then
             return
         end
+        -- Hunts name professions in English; a German client reports "Schneiderei".
+        name = L.EnglishName(name)
         if not ranks[name] or rank > ranks[name] then
             ranks[name] = rank
         end
@@ -4844,14 +4874,14 @@ function GQ.Log:ObtainToastTitle(entry)
     end
     if rank then
         if upgrade then
-            return string.format("|cffffd200Rank #%d upgrade obtained!|r", rank)
+            return string.format(L["|cffffd200Rank #%d upgrade obtained!|r"], rank)
         end
-        return string.format("|cffffd200Rank #%d obtained|r", rank)
+        return string.format(L["|cffffd200Rank #%d obtained|r"], rank)
     end
     if upgrade then
-        return "|cffffd200Upgrade obtained!|r"
+        return L["|cffffd200Upgrade obtained!|r"]
     end
-    return "|cffffd200Hunt obtained|r"
+    return L["|cffffd200Hunt obtained|r"]
 end
 
 function GQ.Log:AnnounceObtained(entry)
@@ -4863,11 +4893,11 @@ function GQ.Log:AnnounceObtained(entry)
         GQ.Toast:ShowForEntry(entry)
     end
     local itemName = (GQ.Data and GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(entry))
-        or ("Item " .. tostring(entry.itemId))
+        or (L["Item "] .. tostring(entry.itemId))
     if entry.sourceType == "profession" then
-        GQ:Chat("|cff66ccffGearQuest|r: Completed — " .. itemName .. " crafted.")
+        GQ:Chat("|cff66ccffGearQuest|r: " .. L("Completed — %s crafted.", itemName))
     else
-        GQ:Chat("|cff66ccffGearQuest|r: Completed — " .. itemName .. " obtained.")
+        GQ:Chat("|cff66ccffGearQuest|r: " .. L("Completed — %s obtained.", itemName))
     end
 end
 
@@ -5614,7 +5644,7 @@ function GQ.Log:EnsureDetailReward(frame)
     if not frame.detailRewardHeader then
         frame.detailRewardHeader = CreateFontStringWithFallback(frame.detailChild, QUEST_DETAIL_HEADER_FONTS)
         frame.detailRewardHeader:SetPoint("TOPLEFT", frame.detailBody, "BOTTOMLEFT", 0, -16)
-        frame.detailRewardHeader:SetText("REWARD")
+        frame.detailRewardHeader:SetText(L["REWARD"])
         frame.detailRewardHeader:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
         frame.detailRewardHeader:Hide()
     end
@@ -6153,7 +6183,7 @@ function GQ.Log:RefreshSpecPickerRows()
             end)
             row.remove:SetScript("OnEnter", function(self)
                 GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText("Delete this custom spec", 1, 0.82, 0)
+                GameTooltip:SetText(L["Delete this custom spec"], 1, 0.82, 0)
                 GameTooltip:Show()
             end)
             row.remove:SetScript("OnLeave", function()
@@ -6196,7 +6226,7 @@ function GQ.Log:RefreshSpecPickerRows()
             row.icon:Hide()
             row.label:ClearAllPoints()
             row.label:SetPoint("LEFT", row, "LEFT", 4, 0)
-            row.label:SetText("|cffFFD200+ custom stat weights|r")
+            row.label:SetText(L["|cffFFD200+ custom stat weights|r"])
             row:SetScript("OnClick", function()
                 if GQ.Custom and GQ.Custom.ShowEditor then
                     GQ.Custom:ShowEditor(classFile)
@@ -6209,14 +6239,14 @@ function GQ.Log:RefreshSpecPickerRows()
                 specLabel = line.record.name
                 icon = GQ.Spec:GetSpecIcon(line.record.base, classFile)
                 row.customId = specId
-                row.tip = "Right-click to edit these weights."
+                row.tip = L["Right-click to edit these weights."]
                 if row.remove then
                     row.remove:Show()
                     row.label:SetPoint("RIGHT", row.remove, "LEFT", -2, 0)
                 end
             else
                 specId = line.opt.id
-                specLabel = line.opt.label
+                specLabel = L[line.opt.label]
                 icon = GQ.Spec:GetSpecIcon(specId, classFile)
             end
             row.specId = specId
@@ -6229,7 +6259,7 @@ function GQ.Log:RefreshSpecPickerRows()
             end
             if not selectable then
                 row:Disable()
-                row.label:SetText("|cff888888" .. specLabel .. " (coming later)|r")
+                row.label:SetText("|cff888888" .. specLabel .. L[" (coming later)"] .. "|r")
                 row:SetScript("OnClick", nil)
             else
                 row:Enable()
@@ -6246,11 +6276,11 @@ function GQ.Log:RefreshSpecPickerRows()
                     local picked = self.specId
                     local ok, err = GQ.Spec:SetSelectedSpec(picked, classFile)
                     if not ok then
-                        GQ:Chat("|cff66ccffGearQuest|r: " .. (err or "Could not change specialization."))
+                        GQ:Chat("|cff66ccffGearQuest|r: " .. (err or L["Could not change specialization."]))
                         return
                     end
                     GQ:Chat(string.format(
-                        "|cff66ccffGearQuest|r: Now viewing |cff00ff00%s|r upgrades.",
+                        L["|cff66ccffGearQuest|r: Now viewing |cff00ff00%s|r upgrades."],
                         GQ.Spec:GetSpecLabel(picked, classFile) or specLabel
                     ))
                     GQ.Log:HideSpecPicker()
@@ -6318,7 +6348,7 @@ function GQ.Log:WireSpecArrow(arrowFrame)
             self.gqHighlight:Show()
         end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Change specialization", 1, 1, 1)
+        GameTooltip:SetText(L["Change specialization"], 1, 1, 1)
         GameTooltip:Show()
     end)
     arrowFrame:SetScript("OnLeave", function(self)
@@ -6722,10 +6752,10 @@ function GQ.Log:UpdateContextStatus()
 
     local text
     if self:GetPageTab() == "settings" then
-        text = "Settings"
+        text = L["Settings"]
     elseif GQ.IsPreviewEnabled and GQ:IsPreviewEnabled() then
         local level = GQ:GetEffectiveLevel() or UnitLevel("player") or 1
-        local spec = (GQ.Spec and GQ.Spec.GetSelectedSpecLabel and GQ.Spec:GetSelectedSpecLabel()) or "Specialization"
+        local spec = (GQ.Spec and GQ.Spec.GetSelectedSpecLabel and GQ.Spec:GetSelectedSpecLabel()) or L["Specialization"]
         local classFile = GQ:GetEffectiveClass()
         local className = classFile
         if GQ.Preview and GQ.Preview.FormatClassName then
@@ -6737,15 +6767,15 @@ function GQ.Log:UpdateContextStatus()
             or UnitFactionGroup("player")
             or "Alliance"
         text = string.format(
-            "|cffe6bf47Simulation mode:|r Level %d %s %s of the %s Faction.",
+            L["|cffe6bf47Simulation mode:|r Level %d %s %s of the %s Faction."],
             level,
             spec,
             className,
-            faction
+            L[faction]
         )
     else
-        local spec = (GQ.Spec and GQ.Spec.GetSelectedSpecLabel and GQ.Spec:GetSelectedSpecLabel()) or "your spec"
-        text = "Viewing upgrades for your current level, class and faction — " .. spec .. "."
+        local spec = (GQ.Spec and GQ.Spec.GetSelectedSpecLabel and GQ.Spec:GetSelectedSpecLabel()) or L["your spec"]
+        text = L("Viewing upgrades for your current level, class and faction — %s.", spec)
     end
 
     self.frame.contextStatus:SetText(text)
@@ -6807,7 +6837,7 @@ function GQ.Log:GearScoreBarWords(score)
     elseif n >= 26 then
         word = "Fair"
     end
-    return n, word
+    return n, L[word]
 end
 
 function GQ.Log:EnsureGearScoreBar(frame)
@@ -6838,9 +6868,9 @@ function GQ.Log:EnsureGearScoreBar(frame)
         local r, g, b = GQ.Log:GearScoreFillColor(shown)
         local hex = string.format("%02x%02x%02x", (r or 1) * 255, (g or 1) * 255, (b or 1) * 255)
         GameTooltip:SetOwner(self, "ANCHOR_BOTTOM")
-        GameTooltip:SetText("GearQuest Score", 1, 0.82, 0)
-        GameTooltip:AddLine(string.format("%d / 100 · |cff%s%s|r", shown, hex, word), 1, 1, 1)
-        GameTooltip:AddLine("The average GearQuest index of the gear you are wearing.", 0.9, 0.9, 0.9, true)
+        GameTooltip:SetText(L["GearQuest Score"], 1, 0.82, 0)
+        GameTooltip:AddLine(string.format(L["%d / 100 · |cff%s%s|r"], shown, hex, word), 1, 1, 1)
+        GameTooltip:AddLine(L["The average GearQuest index of the gear you are wearing."], 0.9, 0.9, 0.9, true)
         local worn = self.rows
         if worn and #worn > 0 then
             GameTooltip:AddLine(" ")
@@ -6849,7 +6879,7 @@ function GQ.Log:EnsureGearScoreBar(frame)
                 local n = math.floor((row.index or 0) + 0.5)
                 local scoreText = string.format("|cffffffff%d|r", n)
                 if row.empty or not row.name then
-                    GameTooltip:AddLine(string.format("|cffffd100%s|r  |cff999999Empty|r  %s |cff999999(empty slot)|r", row.slot or "", scoreText))
+                    GameTooltip:AddLine(string.format(L["|cffffd100%s|r  |cff999999Empty|r  %s |cff999999(empty slot)|r"], row.slot or "", scoreText))
                 else
                     local qr, qg, qb = GetListItemQualityColor(row.itemId)
                     local qhex = string.format("%02x%02x%02x", math.floor((qr or 1) * 255 + 0.5), math.floor((qg or 1) * 255 + 0.5), math.floor((qb or 1) * 255 + 0.5))
@@ -6952,7 +6982,7 @@ function GQ.Log:UpdateGearScoreBar()
         math.floor((b or 1) * 255 + 0.5)
     )
     if shell.title then
-        shell.title:SetText(string.format("Your GearQuest Index Score is |cff%s%d %s|r", hex, n, word))
+        shell.title:SetText(string.format(L["Your GearQuest Index Score is |cff%s%d %s|r"], hex, n, word))
     end
     shell.status:SetStatusBarColor(r, g, b)
     shell.status:SetValue(score)
@@ -7039,7 +7069,7 @@ function GQ.Log:EnsureContextStatus(frame)
     if not frame.simHeaderOffBtn then
         local offBtn = CreateFrame("Button", "GearQuestSimHeaderOffButton", frame.contextStatusBar, "UIPanelButtonTemplate")
         offBtn:SetSize(168, 22)
-        offBtn:SetText("Turn off simulation")
+        offBtn:SetText(L["Turn off simulation"])
         offBtn:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log and GQ.IsPreviewEnabled and GQ:IsPreviewEnabled() then
@@ -7094,13 +7124,13 @@ function GQ.Log:UpdateFooterButtons()
     if track then
         track:Show()
         if tab == "completed" then
-            track:SetText("Remove")
+            track:SetText(L["Remove"])
             track:SetEnabled(selectedId ~= nil)
         elseif isTracked then
-            track:SetText("Untrack")
+            track:SetText(L["Untrack"])
             track:SetEnabled(selectedId ~= nil)
         else
-            track:SetText("Track")
+            track:SetText(L["Track"])
             track:SetEnabled(selectedId ~= nil)
         end
     end
@@ -7169,7 +7199,7 @@ function GQ.Log:EnsureSideTabs(frame)
     local rail = frame.sideTabRail
 
     if not frame.tabLog then
-        frame.tabLog = CreateHandleTab(rail, "GearQuestPageTabLog", "GearQuest Log", HANDLE_ART.log)
+        frame.tabLog = CreateHandleTab(rail, "GearQuestPageTabLog", L["GearQuest Log"], HANDLE_ART.log)
         frame.tabLog:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7178,7 +7208,7 @@ function GQ.Log:EnsureSideTabs(frame)
         end)
     else
         frame.tabLog:SetParent(rail)
-        frame.tabLog.gqLabel = frame.tabLog.gqLabel or "GearQuest Log"
+        frame.tabLog.gqLabel = frame.tabLog.gqLabel or L["GearQuest Log"]
         frame.tabLog.gqIconPath = HANDLE_ART.log
         frame.tabLog:SetSize(SIDE_TAB_WIDTH, SIDE_TAB_HEIGHT)
         if not frame.tabLog:GetScript("OnClick") then
@@ -7193,7 +7223,7 @@ function GQ.Log:EnsureSideTabs(frame)
 
 
     if not frame.tabLookup then
-        frame.tabLookup = CreateHandleTab(rail, "GearQuestPageTabLookup", "Lookup", HANDLE_ART.lookup)
+        frame.tabLookup = CreateHandleTab(rail, "GearQuestPageTabLookup", L["Lookup"], HANDLE_ART.lookup)
         frame.tabLookup:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7202,7 +7232,7 @@ function GQ.Log:EnsureSideTabs(frame)
         end)
     else
         frame.tabLookup:SetParent(rail)
-        frame.tabLookup.gqLabel = frame.tabLookup.gqLabel or "Lookup"
+        frame.tabLookup.gqLabel = frame.tabLookup.gqLabel or L["Lookup"]
         frame.tabLookup.gqIconPath = HANDLE_ART.lookup
         frame.tabLookup:SetSize(SIDE_TAB_WIDTH, SIDE_TAB_HEIGHT)
         if not frame.tabLookup:GetScript("OnClick") then
@@ -7216,7 +7246,7 @@ function GQ.Log:EnsureSideTabs(frame)
     end
 
     if not frame.tabSimulator then
-        frame.tabSimulator = CreateHandleTab(rail, "GearQuestPageTabSimulator", "Simulator", HANDLE_ART.simulator)
+        frame.tabSimulator = CreateHandleTab(rail, "GearQuestPageTabSimulator", L["Simulator"], HANDLE_ART.simulator)
         frame.tabSimulator:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7225,7 +7255,7 @@ function GQ.Log:EnsureSideTabs(frame)
         end)
     else
         frame.tabSimulator:SetParent(rail)
-        frame.tabSimulator.gqLabel = frame.tabSimulator.gqLabel or "Simulator"
+        frame.tabSimulator.gqLabel = frame.tabSimulator.gqLabel or L["Simulator"]
         frame.tabSimulator.gqIconPath = HANDLE_ART.simulator
         frame.tabSimulator:SetSize(SIDE_TAB_WIDTH, SIDE_TAB_HEIGHT)
         if not frame.tabSimulator:GetScript("OnClick") then
@@ -7239,7 +7269,7 @@ function GQ.Log:EnsureSideTabs(frame)
     end
 
     if not frame.tabSettings then
-        frame.tabSettings = CreateHandleTab(rail, "GearQuestPageTabSettings", "Settings", HANDLE_ART.settings)
+        frame.tabSettings = CreateHandleTab(rail, "GearQuestPageTabSettings", L["Settings"], HANDLE_ART.settings)
         frame.tabSettings:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7248,7 +7278,7 @@ function GQ.Log:EnsureSideTabs(frame)
         end)
     else
         frame.tabSettings:SetParent(rail)
-        frame.tabSettings.gqLabel = frame.tabSettings.gqLabel or "Settings"
+        frame.tabSettings.gqLabel = frame.tabSettings.gqLabel or L["Settings"]
         frame.tabSettings.gqIconPath = HANDLE_ART.settings
         frame.tabSettings:SetSize(SIDE_TAB_WIDTH, SIDE_TAB_HEIGHT)
         if not frame.tabSettings:GetScript("OnClick") then
@@ -7479,7 +7509,7 @@ function GQ.Log:EnsureOmitButtons(frame)
     if not frame.removeBtn then
         local btn = CreateFrame("Button", "GearQuestLogRemoveButton", frame.detailBg, "UIPanelButtonTemplate")
         btn:SetSize(78, 22)
-        btn:SetText("Remove")
+        btn:SetText(L["Remove"])
         btn:Hide()
         btn:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
@@ -7488,14 +7518,14 @@ function GQ.Log:EnsureOmitButtons(frame)
             end
             log:RemoveHunt(log.selectedEntry)
         end)
-        WireHuntButtonTooltip(btn, "The hunt will be removed.")
+        WireHuntButtonTooltip(btn, L["The hunt will be removed."])
         frame.removeBtn = btn
     end
 
     if not frame.restoreBtn then
         local btn = CreateFrame("Button", "GearQuestLogRestoreButton", frame.detailBg, "UIPanelButtonTemplate")
         btn:SetSize(84, 22)
-        btn:SetText("Restore")
+        btn:SetText(L["Restore"])
         btn:Hide()
         btn:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
@@ -7504,7 +7534,7 @@ function GQ.Log:EnsureOmitButtons(frame)
             end
             log:RestoreHunt(log.selectedEntry)
         end)
-        WireHuntButtonTooltip(btn, "Puts the hunt back into its rightful place.")
+        WireHuntButtonTooltip(btn, L["Puts the hunt back into its rightful place."])
         frame.restoreBtn = btn
     end
 end
@@ -7537,7 +7567,7 @@ function GQ.Log:EnsureHuntsPerSlot(frame)
     local label = host:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     label:SetPoint("LEFT", host, "LEFT", 8, 0)
     label:SetJustifyH("LEFT")
-    label:SetText("Hunts per gear slot")
+    label:SetText(L["Hunts per gear slot"])
     label:SetTextColor(1, 0.82, 0)
 
     local slider
@@ -7617,8 +7647,8 @@ function GQ.Log:EnsureHuntsPerSlot(frame)
     end)
     slider:HookScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText("Hunts per gear slot")
-        GameTooltip:AddLine("The list updates when you let go. Rank 1, 2, and 3 stay the best in slot.", 1, 1, 1, true)
+        GameTooltip:SetText(L["Hunts per gear slot"])
+        GameTooltip:AddLine(L["The list updates when you let go. Rank 1, 2, and 3 stay the best in slot."], 1, 1, 1, true)
         GameTooltip:Show()
     end)
     slider:HookScript("OnLeave", function()
@@ -7646,7 +7676,7 @@ function GQ.Log:EnsurePlayStyle(frame)
 
     local btn = CreateFrame("Button", "GearQuestPlayStyleButton", frame, "UIPanelButtonTemplate")
     btn:SetSize(118, 22)
-    btn:SetText("Play style")
+    btn:SetText(L["Play style"])
     btn:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", CONTENT_LEFT + LEFT_COLUMN_WIDTH + COLUMN_GAP, FOOTER_BUTTON_Y)
     btn:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -7687,7 +7717,7 @@ function GQ.Log:EnsurePlayStyle(frame)
     local heading = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     heading:SetPoint("TOP", panel, "TOP", 0, -14)
     heading:SetJustifyH("CENTER")
-    heading:SetText("Play Style")
+    heading:SetText(L["Play Style"])
     heading:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
     local headingFont, _, headingFlags = heading:GetFont()
     if headingFont then
@@ -7705,7 +7735,7 @@ function GQ.Log:EnsurePlayStyle(frame)
     if introFont then
         intro:SetFont(introFont, 15, introFlags)
     end
-    intro:SetText("A play style hides hunts that do not fit how you want to play. You can turn several on at once. Each one can cover several sources. The filter still only chooses a source.")
+    intro:SetText(L["A play style hides hunts that do not fit how you want to play. You can turn several on at once. Each one can cover several sources. The filter still only chooses a source."])
     panel.intro = intro
 
     local function cardTip(owner, heading, body)
@@ -7756,10 +7786,10 @@ function GQ.Log:EnsurePlayStyle(frame)
 
     local art = "Interface\\AddOns\\" .. tostring(ADDON_NAME) .. "\\Art\\"
     panel.noDungeonsCard = makeCard(
-        "No Dungeons!",
+        L["No Dungeons!"],
         art .. "GQ-Play-NoDungeon.png",
         intro, -190, -32,
-        "Hides hunts that send you into a dungeon or raid: boss drops, trash, and quests that enter an instance at any step. World bosses stay. Crafts you can buy stay. Turns off Dungeon Enjoyer.",
+        L["Hides hunts that send you into a dungeon or raid: boss drops, trash, and quests that enter an instance at any step. World bosses stay. Crafts you can buy stay. Turns off Dungeon Enjoyer."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7768,10 +7798,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.dungeonEnjoyerCard = makeCard(
-        "Dungeon Enjoyer",
+        L["Dungeon Enjoyer"],
         art .. "GQ-Play-Dungeon.png",
         intro, 0, -32,
-        "Shows only hunts from a dungeon or raid: boss drops, trash, and quests that enter an instance at any step. World bosses, crafts, vendors, and outdoor hunts stay hidden. Turns off No Dungeons!",
+        L["Shows only hunts from a dungeon or raid: boss drops, trash, and quests that enter an instance at any step. World bosses, crafts, vendors, and outdoor hunts stay hidden. Turns off No Dungeons!"],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7780,10 +7810,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.getItTodayCard = makeCard(
-        "Get it now!",
+        L["Get it now!"],
         art .. "GQ-Play-GetItNow.png",
         intro, 190, -32,
-        "Hides a hunt you cannot get yet. A vendor piece waits until you reach the standing stored on that item. A bind-on-pickup craft waits until you have that profession and the skill on the hunt. A bind-on-equip craft stays, unless the item itself requires the profession to wear. When you reach the standing or the skill, the hunt shows up on its own.",
+        L["Hides a hunt you cannot get yet. A vendor piece waits until you reach the standing stored on that item. A bind-on-pickup craft waits until you have that profession and the skill on the hunt. A bind-on-equip craft stays, unless the item itself requires the profession to wear. When you reach the standing or the skill, the hunt shows up on its own."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7792,10 +7822,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.manageableDungeonsCard = makeCard(
-        "Manageable Dungeons",
+        L["Manageable Dungeons"],
         art .. "GQ-Play-ManageableDungeons.png",
         panel.dungeonEnjoyerCard, -190, -36,
-        "Hides a boss drop, and dungeon and raid trash, until the level you are viewing is 4 under that item's level. An item of level 49 can show from 45. The wait stops at 60, so a raid drop with a higher item level still shows at 60. Other sources stay.",
+        L["Hides a boss drop, and dungeon and raid trash, until the level you are viewing is 4 under that item's level. An item of level 49 can show from 45. The wait stops at 60, so a raid drop with a higher item level still shows at 60. Other sources stay."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7804,10 +7834,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.manageableCard = makeCard(
-        "Manageable Quests",
+        L["Manageable Quests"],
         art .. "GQ-Play-Manageable.png",
         panel.dungeonEnjoyerCard, 0, -36,
-        "Hides a quest reward until the level you are viewing is 4 under that item's level. An item of level 49 can show from 45. The wait stops at 60, so a raid reward with a higher item level still shows at 60. Other sources stay.",
+        L["Hides a quest reward until the level you are viewing is 4 under that item's level. An item of level 49 can show from 45. The wait stops at 60, so a raid reward with a higher item level still shows at 60. Other sources stay."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7816,10 +7846,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.buyItCard = makeCard(
-        "Buy it",
+        L["Buy it"],
         art .. "GQ-Play-BuyIt.png",
         panel.dungeonEnjoyerCard, 190, -36,
-        "Keeps hunts you can buy. Vendor pieces stay. So does anything that binds when equipped, binds when used, or does not bind. Bind on pickup stays hidden, unless a vendor sells it. Get it now still waits on the standing.",
+        L["Keeps hunts you can buy. Vendor pieces stay. So does anything that binds when equipped, binds when used, or does not bind. Bind on pickup stays hidden, unless a vendor sells it. Get it now still waits on the standing."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7828,10 +7858,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.focusZoneCard = makeCard(
-        "Focus Zone",
+        L["Focus Zone"],
         art .. "GQ-Play-FocusZone.png",
         panel.manageableDungeonsCard, 0, -36,
-        "Shows only hunts with a spot in the zone you are standing in. Quests, vendors, crafts, world drops, and dungeon drops all follow that zone. A drop with a camp here stays, even when it also drops somewhere else. A hunt with no place stays hidden. Walk into another zone and the list changes.",
+        L["Shows only hunts with a spot in the zone you are standing in. Quests, vendors, crafts, world drops, and dungeon drops all follow that zone. A drop with a camp here stays, even when it also drops somewhere else. A hunt with no place stays hidden. Walk into another zone and the list changes."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7840,10 +7870,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.theirCitiesCard = makeCard(
-        "Their Cities",
+        L["Their Cities"],
         art .. "GQ-Play-TheirCities.png",
         panel.manageableCard, 0, -36,
-        "Hides hunts from dungeons inside the other faction's cities. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash, rares, and quest rewards filed in those dungeons go. A piece filed in another dungeon stays.",
+        L["Hides hunts from dungeons inside the other faction's cities. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash, rares, and quest rewards filed in those dungeons go. A piece filed in another dungeon stays."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -7855,7 +7885,7 @@ function GQ.Log:EnsurePlayStyle(frame)
     local closeBtn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     closeBtn:SetSize(100, 22)
     closeBtn:SetPoint("BOTTOM", panel, "BOTTOM", 0, 14)
-    closeBtn:SetText("Close")
+    closeBtn:SetText(L["Close"])
     closeBtn:SetScript("OnClick", function()
         panel:Hide()
     end)
@@ -8048,9 +8078,9 @@ function GQ.Log:UpdatePlayStyleButton()
         return
     end
     if self:PlayStyleActive() then
-        btn:SetText("Play style*")
+        btn:SetText(L["Play style*"])
     else
-        btn:SetText("Play style")
+        btn:SetText(L["Play style"])
     end
 end
 
@@ -8190,7 +8220,7 @@ function GQ.Log:ApplyPageTab()
         end
     end
     if self.frame.detailEmpty and page ~= "lookup" then
-        self.frame.detailEmpty:SetText("Select an upgrade to see how to get it.")
+        self.frame.detailEmpty:SetText(L["Select an upgrade to see how to get it."])
     end
     self:PlaceDetailPanel(self.frame)
     if self.frame.detailScroll then
@@ -8277,15 +8307,15 @@ function GQ.Log:EnsureTabBar(frame)
         frame.tabBar = tabBar
         tabBar.tabGroup = tabBar
 
-        local tabActive = CreateGoldTab(tabBar, "GearQuestLogTabActive", "Active", FILTER_TAB_WIDTH)
+        local tabActive = CreateGoldTab(tabBar, "GearQuestLogTabActive", L["Active"], FILTER_TAB_WIDTH)
         tabActive:SetPoint("TOPLEFT", tabBar, "TOPLEFT", 0, 0)
         frame.tabActive = tabActive
 
-        local tabCompleted = CreateGoldTab(tabBar, "GearQuestLogTabCompleted", "Completed", FILTER_TAB_WIDTH)
+        local tabCompleted = CreateGoldTab(tabBar, "GearQuestLogTabCompleted", L["Completed"], FILTER_TAB_WIDTH)
         tabCompleted:SetPoint("TOPLEFT", tabActive, "TOPRIGHT", 4, 0)
         frame.tabCompleted = tabCompleted
 
-        local tabRemoved = CreateGoldTab(tabBar, "GearQuestLogTabRemoved", "Removed", FILTER_TAB_WIDTH)
+        local tabRemoved = CreateGoldTab(tabBar, "GearQuestLogTabRemoved", L["Removed"], FILTER_TAB_WIDTH)
         tabRemoved:SetPoint("TOPLEFT", tabCompleted, "TOPRIGHT", 4, 0)
         frame.tabRemoved = tabRemoved
 
@@ -8320,7 +8350,7 @@ function GQ.Log:EnsureTabBar(frame)
         frame.tabBar:SetWidth(FILTER_TAB_WIDTH * 3 + 8)
         frame.tabBar:SetPoint("TOPLEFT", pageBar, "TOPLEFT", FILTER_TAB_LEFT, 0)
         if not frame.tabRemoved and frame.tabCompleted then
-            local tabRemoved = CreateGoldTab(frame.tabBar, "GearQuestLogTabRemoved", "Removed", FILTER_TAB_WIDTH)
+            local tabRemoved = CreateGoldTab(frame.tabBar, "GearQuestLogTabRemoved", L["Removed"], FILTER_TAB_WIDTH)
             tabRemoved:SetPoint("TOPLEFT", frame.tabCompleted, "TOPRIGHT", 4, 0)
             tabRemoved:SetScript("OnClick", function()
                 local log = _G.GearQuest and _G.GearQuest.Log
@@ -8389,9 +8419,9 @@ function GQ.Log:UpdateSourceFilterButton()
         return
     end
     if self:SourceFilterActive() then
-        btn:SetText("Filter*")
+        btn:SetText(L["Filter*"])
     else
-        btn:SetText("Filter")
+        btn:SetText(L["Filter"])
     end
 end
 
@@ -8404,7 +8434,7 @@ function GQ.Log:EnsureSourceFilter(frame)
     if not frame.sourceFilterBtn then
         local btn = CreateFrame("Button", "GearQuestSourceFilterButton", frame.logPage or pageBar, "UIPanelButtonTemplate")
         btn:SetSize(72, 22)
-        btn:SetText("Filter")
+        btn:SetText(L["Filter"])
         btn:SetScript("OnClick", function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -8504,7 +8534,7 @@ function GQ.Log:EnsureSourceFilter(frame)
     branch.empty = branch:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     ApplyFilterButtonFont(branch.empty)
     branch.empty:SetPoint("LEFT", branch, "LEFT", 12, 0)
-    branch.empty:SetText("No profession hunts")
+    branch.empty:SetText(L["No profession hunts"])
     branch:SetScript("OnEnter", function()
         local log = _G.GearQuest and _G.GearQuest.Log
         if log then
@@ -8536,7 +8566,7 @@ function GQ.Log:EnsureSourceFilter(frame)
 
     local selectBtn = CreateFrame("Button", nil, menu, "UIPanelButtonTemplate")
     selectBtn:SetHeight(22)
-    selectBtn:SetText("Deselect all")
+    selectBtn:SetText(L["Deselect all"])
     selectBtn:SetPoint("TOPLEFT", menu, "TOPLEFT", 10, -8)
     selectBtn:SetPoint("TOPRIGHT", menu, "TOPRIGHT", -10, -8)
     selectBtn:SetScript("OnClick", function()
@@ -8819,7 +8849,7 @@ function GQ.Log:EnsureSourceFilter(frame)
 
     local applyBtn = CreateFrame("Button", nil, menu, "UIPanelButtonTemplate")
     applyBtn:SetHeight(22)
-    applyBtn:SetText("Apply filter")
+    applyBtn:SetText(L["Apply filter"])
     applyBtn:SetPoint("BOTTOMLEFT", menu, "BOTTOMLEFT", 10, 10)
     applyBtn:SetPoint("BOTTOMRIGHT", menu, "BOTTOMRIGHT", -10, 10)
     applyBtn:SetScript("OnClick", function()
@@ -8997,7 +9027,7 @@ function GQ.Log:SyncSourceSelectButton(menu)
         return
     end
     local allOn = self:FilterDraftAllOn()
-    btn:SetText(allOn and "Deselect all" or "Select all")
+    btn:SetText(allOn and L["Deselect all"] or L["Select all"])
 end
 
 function GQ.Log:FilterBranchAnchor(check)
@@ -9103,7 +9133,7 @@ function GQ.Log:SyncBranchSelectLabel(branch, hidden, keys)
             break
         end
     end
-    btn:SetText(allOn and "Deselect all" or "Select all")
+    btn:SetText(allOn and L["Deselect all"] or L["Select all"])
 end
 
 function GQ.Log:ToggleBranchSelectAll(branch)
@@ -9188,7 +9218,7 @@ function GQ.Log:PopulateProfessionBranch(menu)
         end
         self:AnchorBranchCheck(branch, row, i)
         row.professionName = name
-        row.label:SetText(name)
+        row.label:SetText(L[name])
         row:SetChecked(not hidden[name])
         row:SetHitRectInsets(0, -((row.label:GetStringWidth() or 90) + 8), -2, -2)
         row:Show()
@@ -9444,7 +9474,7 @@ function GQ.Log:DismissQuestBranch()
 end
 
 function GQ.Log:SyncQuestRowLabel(check)
-    self:SyncFilterBranchMark(check, "Quest reward")
+    self:SyncFilterBranchMark(check, L["Quest reward"])
 end
 
 function GQ.Log:CreateQuestFilterBranch(menu)
@@ -9610,7 +9640,7 @@ function GQ.Log:ScheduleHideQuestBranch()
 end
 
 function GQ.Log:SyncBossDropRowLabel(check)
-    self:SyncFilterBranchMark(check, "Boss drop")
+    self:SyncFilterBranchMark(check, L["Boss drop"])
 end
 
 function GQ.Log:CreateDungeonFilterBranch(menu)
@@ -9642,7 +9672,7 @@ function GQ.Log:CreateDungeonFilterBranch(menu)
     branch.empty = branch:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     ApplyFilterButtonFont(branch.empty)
     branch.empty:SetPoint("LEFT", branch, "LEFT", 12, 0)
-    branch.empty:SetText("No boss hunts at this level")
+    branch.empty:SetText(L["No boss hunts at this level"])
     branch.empty:Hide()
     branch:SetScript("OnEnter", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -9708,7 +9738,7 @@ function GQ.Log:PopulateDungeonBranch(menu)
         end
         self:AnchorBranchCheck(branch, row, i)
         row.dungeonName = name
-        row.label:SetText(name)
+        row.label:SetText(L.Zone(name))
         row:SetChecked(not hidden[name])
         row:SetHitRectInsets(0, -((row.label:GetStringWidth() or 90) + 8), -2, -2)
         row:Show()
@@ -9789,7 +9819,7 @@ function GQ.Log:ScheduleHideDungeonBranch()
 end
 
 function GQ.Log:SyncTrashRowLabel(check)
-    self:SyncFilterBranchMark(check, "Dungeon & Raid trash")
+    self:SyncFilterBranchMark(check, L["Dungeon & Raid trash"])
 end
 
 function GQ.Log:CreateTrashFilterBranch(menu)
@@ -9821,7 +9851,7 @@ function GQ.Log:CreateTrashFilterBranch(menu)
     branch.empty = branch:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     ApplyFilterButtonFont(branch.empty)
     branch.empty:SetPoint("LEFT", branch, "LEFT", 12, 0)
-    branch.empty:SetText("No trash hunts at this level")
+    branch.empty:SetText(L["No trash hunts at this level"])
     branch.empty:Hide()
     branch:SetScript("OnEnter", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -9887,7 +9917,7 @@ function GQ.Log:PopulateTrashBranch(menu)
         end
         self:AnchorBranchCheck(branch, row, i)
         row.dungeonName = name
-        row.label:SetText(name)
+        row.label:SetText(L.Zone(name))
         row:SetChecked(not hidden[name])
         row:SetHitRectInsets(0, -((row.label:GetStringWidth() or 90) + 8), -2, -2)
         row:Show()
@@ -9998,7 +10028,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
 
     local classTitle = classInset:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     classTitle:SetPoint("TOPLEFT", classInset, "TOPLEFT", 10, -8)
-    classTitle:SetText("Classes")
+    classTitle:SetText(L["Classes"])
     frame.simClassTitle = classTitle
 
     frame.simClassButtons = {}
@@ -10076,7 +10106,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
     title:SetPoint("TOPLEFT", simChild, "TOPLEFT", 8, -8)
     title:SetPoint("RIGHT", simChild, "RIGHT", -8, 0)
     title:SetJustifyH("LEFT")
-    title:SetText("SIMULATOR")
+    title:SetText(L["SIMULATOR"])
     title:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.simTitle = title
 
@@ -10085,26 +10115,26 @@ function GQ.Log:EnsureSimulatorPage(frame)
     body:SetPoint("RIGHT", simChild, "RIGHT", -8, 0)
     body:SetJustifyH("LEFT")
     body:SetWordWrap(true)
-    body:SetText("Pick a class on the left, then set faction, specialization, and level. Simulate to browse that character's upgrades in the log.")
+    body:SetText(L["Pick a class on the left, then set faction, specialization, and level. Simulate to browse that character's upgrades in the log."])
     body:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.simBody = body
 
     local factionHeader = CreateFontStringWithFallback(simChild, QUEST_DETAIL_HEADER_FONTS)
     factionHeader:SetPoint("TOPLEFT", body, "BOTTOMLEFT", 0, -16)
-    factionHeader:SetText("FACTION")
+    factionHeader:SetText(L["FACTION"])
     factionHeader:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.simFactionHeader = factionHeader
 
     local allianceBtn = CreateFrame("Button", "GearQuestSimFactionAlliance", simChild, "UIPanelButtonTemplate")
     allianceBtn:SetSize(96, 22)
     allianceBtn:SetPoint("TOPLEFT", factionHeader, "BOTTOMLEFT", 0, -6)
-    allianceBtn:SetText("Alliance")
+    allianceBtn:SetText(L["Alliance"])
     frame.simAllianceBtn = allianceBtn
 
     local hordeBtn = CreateFrame("Button", "GearQuestSimFactionHorde", simChild, "UIPanelButtonTemplate")
     hordeBtn:SetSize(96, 22)
     hordeBtn:SetPoint("LEFT", allianceBtn, "RIGHT", 6, 0)
-    hordeBtn:SetText("Horde")
+    hordeBtn:SetText(L["Horde"])
     frame.simHordeBtn = hordeBtn
 
     allianceBtn:SetScript("OnClick", function()
@@ -10124,7 +10154,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
 
     local specHeader = CreateFontStringWithFallback(simChild, QUEST_DETAIL_HEADER_FONTS)
     specHeader:SetPoint("TOPLEFT", allianceBtn, "BOTTOMLEFT", 0, -16)
-    specHeader:SetText("SPECIALIZATION")
+    specHeader:SetText(L["SPECIALIZATION"])
     specHeader:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.simSpecHeader = specHeader
 
@@ -10173,7 +10203,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
 
     local levelHeader = CreateFontStringWithFallback(simChild, QUEST_DETAIL_HEADER_FONTS)
     levelHeader:SetPoint("TOPLEFT", specHeader, "BOTTOMLEFT", 0, -72)
-    levelHeader:SetText("LEVEL")
+    levelHeader:SetText(L["LEVEL"])
     levelHeader:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.simLevelHeader = levelHeader
 
@@ -10220,7 +10250,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
     local simulateBtn = CreateFrame("Button", "GearQuestSimApplyButton", simDetail, "UIPanelButtonTemplate")
     simulateBtn:SetSize(106, 22)
     simulateBtn:SetPoint("BOTTOMLEFT", simDetail, "BOTTOMLEFT", 16, 14)
-    simulateBtn:SetText("Simulate")
+    simulateBtn:SetText(L["Simulate"])
     frame.simApplyBtn = simulateBtn
     simulateBtn:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10232,7 +10262,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
     local resetBtn = CreateFrame("Button", "GearQuestSimResetButton", simDetail, "UIPanelButtonTemplate")
     resetBtn:SetSize(148, 22)
     resetBtn:SetPoint("LEFT", simulateBtn, "RIGHT", 6, 0)
-    resetBtn:SetText("Turn off simulation")
+    resetBtn:SetText(L["Turn off simulation"])
     frame.simResetBtn = resetBtn
     resetBtn:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10253,7 +10283,7 @@ function GQ.Log:EnsureSimulatorPage(frame)
             return
         end
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText("You are already seeing your character unsimulated.", 1, 1, 1, 1, true)
+        GameTooltip:SetText(L["You are already seeing your character unsimulated."], 1, 1, 1, 1, true)
         GameTooltip:Show()
     end)
     resetHover:SetScript("OnLeave", function()
@@ -10468,7 +10498,7 @@ end
 function GQ.Log:CreateGearScoreSetting(frame, detail, anchor)
     local label = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     label:SetJustifyH("LEFT")
-    label:SetText("GearQuest score on tooltips")
+    label:SetText(L["GearQuest score on tooltips"])
     label:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsScoreLabel = label
 
@@ -10512,13 +10542,13 @@ function GQ.Log:CreateGearScoreSetting(frame, detail, anchor)
     hint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     hint:SetJustifyH("LEFT")
     hint:SetWordWrap(true)
-    hint:SetText("Shows the rank, score, and comparison to your equipped gear on gear tooltips.")
+    hint:SetText(L["Shows the rank, score, and comparison to your equipped gear on gear tooltips."])
     hint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsScoreHint = hint
 
     local barLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     barLabel:SetJustifyH("LEFT")
-    barLabel:SetText("GearQuest score bar")
+    barLabel:SetText(L["GearQuest score bar"])
     barLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsScoreBarLabel = barLabel
 
@@ -10566,7 +10596,7 @@ function GQ.Log:CreateGearScoreSetting(frame, detail, anchor)
     barHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     barHint:SetJustifyH("LEFT")
     barHint:SetWordWrap(true)
-    barHint:SetText("Shows the score bar in the log header. Off restores the viewing-upgrades line.")
+    barHint:SetText(L["Shows the score bar in the log header. Off restores the viewing-upgrades line."])
     barHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsScoreBarHint = barHint
 end
@@ -10574,7 +10604,7 @@ end
 function GQ.Log:CreateChatSetting(frame, detail, anchor)
     local label = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     label:SetJustifyH("LEFT")
-    label:SetText("Hide chat messages")
+    label:SetText(L["Hide chat messages"])
     label:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsChatLabel = label
 
@@ -10627,7 +10657,7 @@ function GQ.Log:CreateChatSetting(frame, detail, anchor)
     hint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     hint:SetJustifyH("LEFT")
     hint:SetWordWrap(true)
-    hint:SetText("Stops every GearQuest line in chat, including login, obtain notices, and /gq replies. The log stays.")
+    hint:SetText(L["Stops every GearQuest line in chat, including login, obtain notices, and /gq replies. The log stays."])
     hint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsChatHint = hint
 end
@@ -10667,7 +10697,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     general.text = general:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     general.text:SetPoint("LEFT", general, "LEFT", 8, 0)
     general.text:SetJustifyH("LEFT")
-    general.text:SetText("General")
+    general.text:SetText(L["General"])
     general.text:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
     general:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10689,7 +10719,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     hunts.text = hunts:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     hunts.text:SetPoint("LEFT", hunts, "LEFT", 8, 0)
     hunts.text:SetJustifyH("LEFT")
-    hunts.text:SetText("Hunts")
+    hunts.text:SetText(L["Hunts"])
     hunts.text:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
     hunts:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10712,7 +10742,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     commands.text:SetPoint("LEFT", commands, "LEFT", 8, 0)
     commands.text:SetPoint("RIGHT", commands, "RIGHT", -8, 0)
     commands.text:SetJustifyH("LEFT")
-    commands.text:SetText("GearQuest Commands")
+    commands.text:SetText(L["GearQuest Commands"])
     commands.text:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
     commands:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10735,7 +10765,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     credits.text:SetPoint("LEFT", credits, "LEFT", 8, 0)
     credits.text:SetPoint("RIGHT", credits, "RIGHT", -8, 0)
     credits.text:SetJustifyH("LEFT")
-    credits.text:SetText("The GearQuest Community")
+    credits.text:SetText(L["The GearQuest Community"])
     credits.text:SetTextColor(GOLD[1], GOLD[2], GOLD[3])
     credits:SetScript("OnClick", function()
         local log = _G.GearQuest and _G.GearQuest.Log
@@ -10757,7 +10787,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     pageTitle:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     pageTitle:SetJustifyH("LEFT")
     pageTitle:SetWordWrap(true)
-    pageTitle:SetText("General")
+    pageTitle:SetText(L["General"])
     pageTitle:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsPageTitle = pageTitle
 
@@ -10770,7 +10800,7 @@ function GQ.Log:EnsureSettingsPage(frame)
 
     local label = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     label:SetJustifyH("LEFT")
-    label:SetText("Hide minimap icon")
+    label:SetText(L["Hide minimap icon"])
     label:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsMinimapLabel = label
 
@@ -10809,13 +10839,13 @@ function GQ.Log:EnsureSettingsPage(frame)
     hint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     hint:SetJustifyH("LEFT")
     hint:SetWordWrap(true)
-    hint:SetText("You can still open GearQuest with /gq while the icon is hidden.")
+    hint:SetText(L["You can still open GearQuest with /gq while the icon is hidden."])
     hint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsHint = hint
 
     local largeLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     largeLabel:SetJustifyH("LEFT")
-    largeLabel:SetText("Window size")
+    largeLabel:SetText(L["Window size"])
     largeLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsLargeLabel = largeLabel
 
@@ -10934,13 +10964,13 @@ function GQ.Log:EnsureSettingsPage(frame)
     largeHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     largeHint:SetJustifyH("LEFT")
     largeHint:SetWordWrap(true)
-    largeHint:SetText("100% is the normal window. 150% is half again as tall and wide. Each step is one percent. The filter and the spec menu follow this size.")
+    largeHint:SetText(L["100% is the normal window. 150% is half again as tall and wide. Each step is one percent. The filter and the spec menu follow this size."])
     largeHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsLargeHint = largeHint
 
     local artLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     artLabel:SetJustifyH("LEFT")
-    artLabel:SetText("Remove background art")
+    artLabel:SetText(L["Remove background art"])
     artLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsArtLabel = artLabel
 
@@ -10982,7 +11012,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     artHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     artHint:SetJustifyH("LEFT")
     artHint:SetWordWrap(true)
-    artHint:SetText("Shows the plain brown log background instead of the class art.")
+    artHint:SetText(L["Shows the plain brown log background instead of the class art."])
     artHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.settingsArtHint = artHint
 
@@ -10991,7 +11021,7 @@ function GQ.Log:EnsureSettingsPage(frame)
 
     local toastLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     toastLabel:SetJustifyH("LEFT")
-    toastLabel:SetText("Hide obtain popup")
+    toastLabel:SetText(L["Hide obtain popup"])
     toastLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsToastLabel = toastLabel
 
@@ -11034,14 +11064,14 @@ function GQ.Log:EnsureSettingsPage(frame)
     toastHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     toastHint:SetJustifyH("LEFT")
     toastHint:SetWordWrap(true)
-    toastHint:SetText("Stops the popup when you obtain a piece from the hunt list.")
+    toastHint:SetText(L["Stops the popup when you obtain a piece from the hunt list."])
     toastHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     toastHint:Hide()
     frame.settingsToastHint = toastHint
 
     local arrowLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     arrowLabel:SetJustifyH("LEFT")
-    arrowLabel:SetText("Hide upgrade arrows")
+    arrowLabel:SetText(L["Hide upgrade arrows"])
     arrowLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsArrowLabel = arrowLabel
 
@@ -11084,14 +11114,14 @@ function GQ.Log:EnsureSettingsPage(frame)
     arrowHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     arrowHint:SetJustifyH("LEFT")
     arrowHint:SetWordWrap(true)
-    arrowHint:SetText("Removes the green arrow from the quest log, quest giver, loot window, and vendors.")
+    arrowHint:SetText(L["Removes the green arrow from the quest log, quest giver, loot window, and vendors."])
     arrowHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     arrowHint:Hide()
     frame.settingsArrowHint = arrowHint
 
     local guideLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     guideLabel:SetJustifyH("LEFT")
-    guideLabel:SetText("Hide guide arrow")
+    guideLabel:SetText(L["Hide guide arrow"])
     guideLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsGuideLabel = guideLabel
 
@@ -11134,14 +11164,14 @@ function GQ.Log:EnsureSettingsPage(frame)
     guideHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     guideHint:SetJustifyH("LEFT")
     guideHint:SetWordWrap(true)
-    guideHint:SetText("Removes the arrow that points you toward a hunt. It stays hidden until this is off.")
+    guideHint:SetText(L["Removes the arrow that points you toward a hunt. It stays hidden until this is off."])
     guideHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     guideHint:Hide()
     frame.settingsGuideHint = guideHint
 
     local enchantLabel = CreateFontStringWithFallback(detail, QUEST_DETAIL_TITLE_FONTS)
     enchantLabel:SetJustifyH("LEFT")
-    enchantLabel:SetText("Recommended gear enchantment")
+    enchantLabel:SetText(L["Recommended gear enchantment"])
     enchantLabel:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.settingsEnchantLabel = enchantLabel
 
@@ -11181,7 +11211,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     enchantHint:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     enchantHint:SetJustifyH("LEFT")
     enchantHint:SetWordWrap(true)
-    enchantHint:SetText("Enable the recommended enchantment line on gear tooltips")
+    enchantHint:SetText(L["Enable the recommended enchantment line on gear tooltips"])
     enchantHint:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     enchantHint:Hide()
     frame.settingsEnchantHint = enchantHint
@@ -11225,7 +11255,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     discordBody:SetPoint("RIGHT", detail, "RIGHT", -16, 0)
     discordBody:SetJustifyH("LEFT")
     discordBody:SetWordWrap(true)
-    discordBody:SetText("Join the GearQuest community to talk about class specs, stat weights, and what to hunt next. Share how GearQuest is going for you. Bug reports and feature ideas are welcome there too. Get the latest news and insights, and comment on upcoming features before they are released.")
+    discordBody:SetText(L["Join the GearQuest community to talk about class specs, stat weights, and what to hunt next. Share how GearQuest is going for you. Bug reports and feature ideas are welcome there too. Get the latest news and insights, and comment on upcoming features before they are released."])
     discordBody:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     discordBody:Hide()
     frame.settingsDiscordBody = discordBody
@@ -11233,7 +11263,7 @@ function GQ.Log:EnsureSettingsPage(frame)
     local discordCopy = CreateFrame("Button", "GearQuestDiscordCopy", detail, "UIPanelButtonTemplate")
     discordCopy:SetSize(72, 22)
     discordCopy:SetPoint("TOPRIGHT", discordBody, "BOTTOMRIGHT", 0, -12)
-    discordCopy:SetText("Copy")
+    discordCopy:SetText(L["Copy"])
     discordCopy:Hide()
     frame.settingsDiscordCopy = discordCopy
 
@@ -11276,11 +11306,11 @@ function GQ.Log:EnsureSettingsPage(frame)
         KeepDiscordInvite(discordBox)
         discordBox:SetFocus()
         discordBox:HighlightText()
-        self:SetText("Ctrl+C")
+        self:SetText(L["Ctrl+C"])
         if C_Timer and C_Timer.After then
             C_Timer.After(1.6, function()
                 if self:GetText() == "Ctrl+C" then
-                    self:SetText("Copy")
+                    self:SetText(L["Copy"])
                 end
             end)
         end
@@ -11296,20 +11326,20 @@ function GQ.Log:EnsureSettingsPage(frame)
     frame.settingsCommandsChild = commandChild
 
     local commandEntries = {
-        { "/gq", "Opens or closes the GearQuest window. /gearquest does the same." },
-        { "/gq log", "Opens or closes the log. Same as /gq." },
-        { "/gq help", "Prints the command list in chat." },
-        { "/gq track", "Tracks the upgrade you have selected in the log." },
-        { "/gq untrack", "Stops tracking the selected upgrade." },
-        { "/gq set", "Shows the preview class, level, faction, and spec." },
-        { "/gq set on", "Shows upgrades for the preview character instead of yours." },
-        { "/gq set off", "Returns the lists to your own character." },
-        { "/gq set me", "Copies your class, level, and faction into the preview. /gq me does the same." },
-        { "/gq class hunter", "Sets the preview class. Use a class name, such as mage or shaman." },
-        { "/gq level 37", "Sets the preview level from 1 to 60. /gq lvl 37 does the same." },
-        { "/gq faction alliance", "Sets the preview faction to Alliance or Horde." },
-        { "/gq spec enhancement", "Sets the specialization. Available from level 10." },
-        { "/gq wipe data", "Clears tracked, completed, and obtained hunts for this character. Preview and these settings stay." },
+        { "/gq", L["Opens or closes the GearQuest window. /gearquest does the same."] },
+        { "/gq log", L["Opens or closes the log. Same as /gq."] },
+        { "/gq help", L["Prints the command list in chat."] },
+        { "/gq track", L["Tracks the upgrade you have selected in the log."] },
+        { "/gq untrack", L["Stops tracking the selected upgrade."] },
+        { "/gq set", L["Shows the preview class, level, faction, and spec."] },
+        { "/gq set on", L["Shows upgrades for the preview character instead of yours."] },
+        { "/gq set off", L["Returns the lists to your own character."] },
+        { "/gq set me", L["Copies your class, level, and faction into the preview. /gq me does the same."] },
+        { "/gq class hunter", L["Sets the preview class. Use a class name, such as mage or shaman."] },
+        { "/gq level 37", L["Sets the preview level from 1 to 60. /gq lvl 37 does the same."] },
+        { "/gq faction alliance", L["Sets the preview faction to Alliance or Horde."] },
+        { "/gq spec enhancement", L["Sets the specialization. Available from level 10."] },
+        { "/gq wipe data", L["Clears tracked, completed, and obtained hunts for this character. Preview and these settings stay."] },
     }
     local commandRows = {}
     local commandAnchor = nil
@@ -11557,13 +11587,13 @@ function GQ.Log:SetSettingsSection(section)
 
     local pageTitle = frame.settingsPageTitle
     if pageTitle then
-        local titleText = "General"
+        local titleText = L["General"]
         if section == "hunts" then
-            titleText = "Hunts"
+            titleText = L["Hunts"]
         elseif section == "commands" then
-            titleText = "GearQuest Commands"
+            titleText = L["GearQuest Commands"]
         elseif section == "credits" then
-            titleText = "The GearQuest Community"
+            titleText = L["The GearQuest Community"]
         end
         pageTitle:SetText(titleText)
     end
@@ -11644,7 +11674,7 @@ function GQ.Log:SetSettingsSection(section)
         frame.settingsDiscordBox:ClearFocus()
     end
     if frame.settingsDiscordCopy and showCredits then
-        frame.settingsDiscordCopy:SetText("Copy")
+        frame.settingsDiscordCopy:SetText(L["Copy"])
     end
     self:LayoutSettingsCommands(frame)
     self:LayoutSettingsGeneral(frame)
@@ -12068,7 +12098,7 @@ function GQ.Log:RefreshSimulator()
         if opt then
             specBtn:Show()
             specBtn.specLabel = opt.label
-            specBtn:SetText(opt.label)
+            specBtn:SetText(L[opt.label])
             specBtn.specId = opt.id
             self:SetSimulatorChoiceHighlight(specBtn, self.simSpec == opt.id)
         else
@@ -12083,16 +12113,16 @@ function GQ.Log:RefreshSimulator()
     if self.simSpec and GQ.Spec then
         for _, opt in ipairs(specOptions) do
             if opt.id == self.simSpec then
-                specLabel = ", " .. opt.label
+                specLabel = ", " .. L[opt.label]
                 break
             end
         end
     end
 
     local viewing = string.format(
-        "Simulate a level %s %s %s%s, then click Simulate to apply and open the log.",
+        L["Simulate a level %s %s %s%s, then click Simulate to apply and open the log."],
         tostring(level),
-        self.simFaction or "Alliance",
+        L[self.simFaction or "Alliance"],
         className,
         specLabel
     )
@@ -12138,13 +12168,13 @@ function GQ.Log:ApplySimulator()
         levelText = tostring(self.frame.simLevelEdit:GetText() or ""):gsub("%D", "")
     end
     if levelText == "" then
-        GQ:Chat(string.format("|cff66ccffGearQuest|r: Enter a level between 1 and %d.", GQ.MAX_PLAYER_LEVEL or 60))
+        GQ:Chat(string.format(L["|cff66ccffGearQuest|r: Enter a level between 1 and %d."], GQ.MAX_PLAYER_LEVEL or 60))
         return
     end
 
     local ok, err = GQ.Preview:ApplySimulation(self.simClass, levelText, self.simSpec, self.simFaction)
     if not ok then
-        GQ:Chat("|cff66ccffGearQuest|r: " .. (err or "Could not simulate."))
+        GQ:Chat("|cff66ccffGearQuest|r: " .. (err or L["Could not simulate."]))
         return
     end
 
@@ -12202,7 +12232,7 @@ function GQ.Log:WireControls(frame)
             return
         end
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
-        GameTooltip:SetText("Click to track this hunt. The Guide feature can be enabled.", 1, 1, 1, 1, true)
+        GameTooltip:SetText(L["Click to track this hunt. The Guide feature can be enabled."], 1, 1, 1, 1, true)
         GameTooltip:Show()
     end)
     frame.trackBtn:SetScript("OnLeave", function()
@@ -12544,7 +12574,7 @@ function GQ.Log:Init()
 
     frame.detailHeader = CreateFontStringWithFallback(frame.detailChild, QUEST_DETAIL_HEADER_FONTS)
     frame.detailHeader:SetPoint("TOPLEFT", frame.detailTitle, "BOTTOMLEFT", 0, -16)
-    frame.detailHeader:SetText("DESCRIPTION")
+    frame.detailHeader:SetText(L["DESCRIPTION"])
     frame.detailHeader:SetTextColor(DETAIL_TEXT_COLOR[1], DETAIL_TEXT_COLOR[2], DETAIL_TEXT_COLOR[3])
     frame.detailHeader:Hide()
 
@@ -12607,31 +12637,31 @@ function GQ.Log:Init()
 
     frame.detailEmpty = CreateFontStringWithFallback(frame.detailChild, QUEST_DETAIL_BODY_FONTS)
     frame.detailEmpty:SetPoint("TOPLEFT", frame.detailChild, "TOPLEFT", 8, -8)
-    frame.detailEmpty:SetText("Select an upgrade to see how to get it.")
+    frame.detailEmpty:SetText(L["Select an upgrade to see how to get it."])
     frame.detailEmpty:SetTextColor(LORE_TEXT_COLOR[1], LORE_TEXT_COLOR[2], LORE_TEXT_COLOR[3])
     frame.detailEmpty:Show()
 
     frame.trackBtn = CreateFrame("Button", "GearQuestLogTrackButton", frame.detailBg, "UIPanelButtonTemplate")
     frame.trackBtn:SetSize(106, 22)
-    frame.trackBtn:SetText("Track")
+    frame.trackBtn:SetText(L["Track"])
 
     frame.untrackBtn = CreateFrame("Button", "GearQuestLogUntrackButton", frame, "UIPanelButtonTemplate")
     frame.untrackBtn:SetSize(106, 22)
-    frame.untrackBtn:SetText("Untrack")
+    frame.untrackBtn:SetText(L["Untrack"])
     frame.untrackBtn:Hide()
 
     frame.mapBtn = CreateFrame("Button", "GearQuestLogMapButton", frame.detailBg, "UIPanelButtonTemplate")
     frame.mapBtn:SetSize(120, 22)
-    frame.mapBtn:SetText("Show on map")
+    frame.mapBtn:SetText(L["Show on map"])
     if frame.mapBtn.SetMotionScriptsWhileDisabled then
         frame.mapBtn:SetMotionScriptsWhileDisabled(true)
     end
     frame.mapBtn:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_TOP")
         if self.missingCoords then
-            GameTooltip:SetText("We are missing exact coordinates for this item.", 1, 1, 1, 1, true)
+            GameTooltip:SetText(L["We are missing exact coordinates for this item."], 1, 1, 1, 1, true)
         else
-            GameTooltip:SetText("See where you can find this on the world map, and let the guide show directions.", 1, 1, 1, 1, true)
+            GameTooltip:SetText(L["See where you can find this on the world map, and let the guide show directions."], 1, 1, 1, 1, true)
         end
         GameTooltip:Show()
     end)
@@ -12642,7 +12672,7 @@ function GQ.Log:Init()
     frame.exitBtn = CreateFrame("Button", "GearQuestLogExitButton", frame, "UIPanelButtonTemplate")
     frame.exitBtn:SetSize(106, 22)
     frame.exitBtn:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -CONTENT_RIGHT_GUTTER, FOOTER_BUTTON_Y)
-    frame.exitBtn:SetText("Exit")
+    frame.exitBtn:SetText(L["Exit"])
 
     self:EnsurePlayStyle(frame)
 
@@ -12876,7 +12906,7 @@ function GQ.Log:EnsureAcquiredLabel(row)
     end
     local label = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetJustifyH("LEFT")
-    label:SetText("- Rank #1 BiS acquired")
+    label:SetText(L["- Rank #1 BiS acquired"])
     label:SetTextColor(1, 1, 1)
     label:Hide()
     row.acquired = label
@@ -12896,8 +12926,8 @@ function GQ.Log:EnsureRecommendWidgets(row)
     info:SetScript("OnEnter", function(self)
         HideItemTooltip()
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("GearQuest Recommends", 1, 0.82, 0)
-        GameTooltip:AddLine("One of the best upgrades for your level. GearQuest marks up to three rank #1 pieces, the ones that improve what you are wearing the most.", 1, 1, 1, true)
+        GameTooltip:SetText(L["GearQuest Recommends"], 1, 0.82, 0)
+        GameTooltip:AddLine(L["One of the best upgrades for your level. GearQuest marks up to three rank #1 pieces, the ones that improve what you are wearing the most."], 1, 1, 1, true)
         GameTooltip:Show()
     end)
     info:SetScript("OnLeave", function()
@@ -12916,7 +12946,7 @@ function GQ.Log:EnsureRecommendWidgets(row)
 
     local label = row:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetJustifyH("LEFT")
-    label:SetText("Recommended")
+    label:SetText(L["Recommended"])
     label:SetTextColor(1, 0.82, 0)
     label:Hide()
     row.recommend = label
@@ -12940,7 +12970,7 @@ function GQ.Log:RecommendTailWidth(row, entry)
     end
     self:EnsureRecommendWidgets(row)
     local label = row.recommend
-    label:SetText("Recommended")
+    label:SetText(L["Recommended"])
     label:SetJustifyH("LEFT")
     local labelWidth = label:GetStringWidth() or 0
     if labelWidth < 20 then
@@ -13109,21 +13139,21 @@ function GQ.Log:PlaceHuntNotes(row, nameLeft, entry, status, showNewLabel)
         timingReady = GQ.Data:PreviousLevelShownKeys() ~= nil
     end
     if timingReady and showNewLabel and entry and GQ.Data:IsEntryNewForPlayer(entry) then
-        notes[#notes + 1] = "|cffFFD200New at this level|r"
+        notes[#notes + 1] = L["|cffFFD200New at this level|r"]
     elseif timingReady and entry and GQ.Data.EntryListSinceLevel then
         local since = GQ.Data:EntryListSinceLevel(entry)
         if since then
-            notes[#notes + 1] = "|cffd0d0d0Since level " .. since .. "|r"
+            notes[#notes + 1] = L["|cffd0d0d0Since level "] .. since .. "|r"
         end
     end
     if entry and entry.setPiece then
-        notes[#notes + 1] = "|cff88ccff(Set piece)|r"
+        notes[#notes + 1] = L["|cff88ccff(Set piece)|r"]
     end
     if entry and entry.origin == "guide" then
-        notes[#notes + 1] = "|cff88ccff(Guide)|r"
+        notes[#notes + 1] = L["|cff88ccff(Guide)|r"]
     end
     if status == "tracked" then
-        notes[#notes + 1] = "|cff00ff00(Tracked)|r"
+        notes[#notes + 1] = L["|cff00ff00(Tracked)|r"]
     end
     meta:SetFontObject("GameFontHighlightSmall")
     meta:SetJustifyH("LEFT")
@@ -13198,9 +13228,9 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
         row.text:ClearAllPoints()
         row.text:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
         row.text:SetPoint("RIGHT", row, "RIGHT", -24, 0)
-        local header = label or GQ.Data:SlotHeaderLabel(slotName)
+        local header = (label and L[label]) or GQ.Data:SlotHeaderLabel(slotName)
         if label == "Weapons" and self:WeaponFilterNarrowed() then
-            header = "Weapons*"
+            header = L["Weapons*"]
         elseif slotName == "Ranged" and self:HunterRangedFilter() and self:RangedFilterNarrowed() then
             header = header .. "*"
         end
@@ -13254,11 +13284,11 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
         row.text:SetPoint("RIGHT", row, "RIGHT", -6, 0)
         local listTab = self:GetListTab()
         if listTab == "completed" then
-            row.text:SetText("No completed hunts in this slot.")
+            row.text:SetText(L["No completed hunts in this slot."])
         elseif listTab == "removed" then
-            row.text:SetText("No removed hunts in this slot.")
+            row.text:SetText(L["No removed hunts in this slot."])
         else
-            row.text:SetText("No upgrades for your level yet.")
+            row.text:SetText(L["No upgrades for your level yet."])
         end
         row.text:SetTextColor(0.6, 0.6, 0.6)
         row.highlight:Hide()
@@ -13270,9 +13300,9 @@ function GQ.Log:ConfigureRow(row, yOffset, rowType, slotName, entry, label, hand
         row.text:SetPoint("LEFT", row, "LEFT", 8, 0)
         row.text:SetPoint("RIGHT", row, "RIGHT", -6, 0)
         if self:GetListTab() == "removed" then
-            row.text:SetText("No removed hunts.")
+            row.text:SetText(L["No removed hunts."])
         else
-            row.text:SetText("No completed hunts yet.")
+            row.text:SetText(L["No completed hunts yet."])
         end
         row.text:SetTextColor(0.6, 0.6, 0.6)
         row.highlight:Hide()
@@ -13391,11 +13421,11 @@ function GQ.Log:ProfessionSkillLine(profession, skill)
     local have = ranks and ranks[profession]
     if have and have > 0 then
         local color = have >= skill and "|cff0c4a1c" or "|cff6e1212"
-        yours = string.format(" %sYour %s is %d.|r", color, profession, have)
+        yours = string.format(L[" %sYour %s is %d.|r"], color, L[profession], have)
     elseif scanned then
-        yours = string.format(" |cff6e1212You don't have %s.|r", profession)
+        yours = string.format(L[" |cff6e1212You don't have %s.|r"], L[profession])
     end
-    return string.format("Requires %s (%d) to craft.%s", profession, skill, yours)
+    return string.format(L["Requires %s (%d) to craft.%s"], L[profession], skill, yours)
 end
 
 function GQ.Log:BuildDetailLines(entry)
@@ -13424,11 +13454,11 @@ function GQ.Log:BuildDetailLines(entry)
         and not intro:find("pattern drops", 1, true)
         and not intro:find("pattern is dropped", 1, true) then
         if intro:sub(1, 11) == "Drops from " then
-            intro = "The " .. patternProf .. " pattern drops from " .. intro:sub(12)
+            intro = L("The %s pattern drops from %s", L[patternProf], intro:sub(12))
         elseif intro:sub(1, 11) == "Dropped by " then
-            intro = "The " .. patternProf .. " pattern is dropped by " .. intro:sub(12)
+            intro = L("The %s pattern is dropped by %s", L[patternProf], intro:sub(12))
         else
-            intro = "The " .. patternProf .. " pattern is the drop. " .. intro
+            intro = L("The %s pattern is the drop. ", L[patternProf]) .. intro
         end
     end
     local lines = {}
@@ -13438,30 +13468,30 @@ function GQ.Log:BuildDetailLines(entry)
 
     local audit = GQ.Data and GQ.Data.GetForeverAudit and GQ.Data:GetForeverAudit(entry.itemId)
     if audit and audit.status == "missing" then
-        table.insert(lines, "\nNot found on Wowhead Forever - it may not exist in this game.")
+        table.insert(lines, L["\nNot found on Wowhead Forever - it may not exist in this game."])
     elseif GQ.Data and GQ.Data.NeedsDatamineNotice and GQ.Data:NeedsDatamineNotice(entry) then
-        table.insert(lines, "\nHas not been datamined yet")
+        table.insert(lines, L["\nHas not been datamined yet"])
     end
 
     if entry.itemId and GQ.Data and GQ.Data.IsClientItemMissing and GQ.Data:IsClientItemMissing(entry.itemId) then
-        table.insert(lines, "\nWowhead Forever lists this item. This game client does not have it yet.")
+        table.insert(lines, L["\nWowhead Forever lists this item. This game client does not have it yet."])
     end
 
     local suffixHint = GQ.Data:GetSuffixHint(entry)
     if suffixHint then
-        table.insert(lines, "\nRandom enchant: " .. suffixHint)
+        table.insert(lines, L["\nRandom enchant: "] .. suffixHint)
     end
 
     if entry.proc then
-        table.insert(lines, "\nWhy it's good: " .. entry.proc)
+        table.insert(lines, L["\nWhy it's good: "] .. entry.proc)
     end
 
     if GQ.Data:ShouldDisplayAsNotable(entry, entry and entry.slot) and entry.proc then
-        table.insert(lines, "\nWorth considering - the proc is the point.")
+        table.insert(lines, L["\nWorth considering - the proc is the point."])
     end
 
     if entry.origin == "guide" then
-        table.insert(lines, "\nRanked from the Wowhead Classic BiS guide.")
+        table.insert(lines, L["\nRanked from the Wowhead Classic BiS guide."])
     end
 
     local how = string.lower(lines[1] or "")
@@ -13476,8 +13506,8 @@ function GQ.Log:BuildDetailLines(entry)
             local isBoE = GQ.Equip and GQ.Equip.IsBindOnEquip and GQ.Equip:IsBindOnEquip(entry.itemId)
             if isBoE then
                 local ah = entry.sourceType == "profession"
-                    and "\nAlso available on the Auction House (crafted by others; binds when equipped)."
-                    or "\nAlso available on the Auction House (binds when equipped)."
+                    and L["\nAlso available on the Auction House (crafted by others; binds when equipped)."]
+                    or L["\nAlso available on the Auction House (binds when equipped)."]
                 table.insert(lines, ah)
             end
         end
@@ -13506,14 +13536,14 @@ function GQ.Log:BuildDetailLines(entry)
             end
         end
         if not hideCatalogZone then
-            table.insert(lines, "\nZone: " .. zoneName)
+            table.insert(lines, L["\nZone: "] .. zoneName)
         end
     end
     if entry.questName and not alreadySays(entry.questName) then
-        table.insert(lines, "Quest: " .. entry.questName)
+        table.insert(lines, L["Quest: "] .. entry.questName)
     end
     if entry.npc and not vendorLine and not alreadySays(entry.npc) then
-        table.insert(lines, "NPC: " .. entry.npc)
+        table.insert(lines, L["NPC: "] .. entry.npc)
     end
 
     -- The tooltip stays the Wowhead tip. How an imbued weapon is made lives
@@ -13552,7 +13582,7 @@ function GQ.Log:BuildDetailLines(entry)
     if src == "quest_reward" and GQ.Data and GQ.Data.QuestChainSteps then
         local chainSteps = GQ.Data:QuestChainSteps(entry)
         if chainSteps then
-            table.insert(lines, "\nPart of a quest chain.")
+            table.insert(lines, L["\nPart of a quest chain."])
             local useFlag = C_QuestLog and C_QuestLog.IsQuestFlaggedCompleted
             local completedMap
             if not useFlag and GetQuestsCompleted then
@@ -13565,6 +13595,7 @@ function GQ.Log:BuildDetailLines(entry)
                 local step = chainSteps[i]
                 local questId = step and tonumber(step[1])
                 local questName = step and step[2]
+                questName = L.QuestTitle(questId, questName)
                 if type(questName) == "string" and questName ~= "" then
                     local known, done = false, false
                     if useFlag and questId then
@@ -13578,9 +13609,9 @@ function GQ.Log:BuildDetailLines(entry)
                         done = completedMap[questId] and true or false
                     end
                     if known and done then
-                        table.insert(lines, questName .. " - |cff0c4a1ccompleted|r")
+                        table.insert(lines, questName .. L[" - |cff0c4a1ccompleted|r"])
                     elseif known then
-                        table.insert(lines, questName .. " - not completed yet")
+                        table.insert(lines, questName .. L[" - not completed yet"])
                     else
                         table.insert(lines, questName)
                     end
@@ -13615,7 +13646,7 @@ function GQ.Log:BuildDetailLines(entry)
             local level = GQ.GetEffectiveLevel and GQ:GetEffectiveLevel() or 1
             local color = level >= pickup and "|cff0c4a1c" or "|cff6e1212"
             table.insert(lines, string.format(
-                "\n%sThis quest can be picked up at level %d.|r",
+                L["\n%sThis quest can be picked up at level %d.|r"],
                 color,
                 math.floor(pickup)
             ))
@@ -13625,7 +13656,7 @@ function GQ.Log:BuildDetailLines(entry)
             local level = GQ.GetEffectiveLevel and GQ:GetEffectiveLevel() or 1
             local color = level >= recommended and "|cff0c4a1c" or "|cff6e1212"
             table.insert(lines, string.format(
-                "\n%sRecommended to pick this quest up at level %d.|r",
+                L["\n%sRecommended to pick this quest up at level %d.|r"],
                 color,
                 math.floor(recommended)
             ))
@@ -13658,7 +13689,7 @@ function GQ.Log:BuildDetailLines(entry)
             pvpRank = GQ.Data:PvpRankLabel(entry.name)
         end
         if type(pvpRank) == "string" and pvpRank ~= "" then
-            table.insert(lines, "\nRequires " .. pvpRank .. ".")
+            table.insert(lines, L["\nRequires "] .. pvpRank .. ".")
         end
     end
 
@@ -13669,7 +13700,7 @@ function GQ.Log:BuildDetailLines(entry)
         end
     end
 
-    table.insert(lines, "\nSource: " .. GQ:GetSourceLabel(self:SourceIconKind(entry)))
+    table.insert(lines, L["\nSource: "] .. GQ:GetSourceLabel(self:SourceIconKind(entry)))
 
     local record = GetHuntRecord(entry.id)
     local completed = record and NormalizeHuntStatus(record.status) == "completed"
@@ -13692,12 +13723,12 @@ function GQ.Log:BuildDetailLines(entry)
         end
         local completedText = type(when) == "number" and when > 0 and FormatCompletedDate(when)
         if completedText then
-            return lines, "Completed: " .. completedText
+            return L.TextLines(lines), L["Completed: "] .. completedText
         end
-        return lines, "Completed"
+        return L.TextLines(lines), L["Completed"]
     end
 
-    return lines
+    return L.TextLines(lines)
 end
 
 function GQ.Log:EnsureItemInfoListener()
@@ -13873,7 +13904,7 @@ end
 
 function GQ.Log:BestInSlotLine(place, slotLabel)
     if place == 1 then
-        return string.format("This is the best in slot %s for you.", slotLabel)
+        return string.format(L["This is the best in slot %s for you."], slotLabel)
     end
     local teen = place % 100
     local suffix = "th"
@@ -13887,7 +13918,7 @@ function GQ.Log:BestInSlotLine(place, slotLabel)
             suffix = "rd"
         end
     end
-    return string.format("This is the %d%s best in slot %s for you.", place, suffix, slotLabel)
+    return string.format(L["This is the %d%s best in slot %s for you."], place, L.IsGerman and "." or suffix, slotLabel)
 end
 
 function GQ.Log:GetSlotRankList(slotName, handKind)
@@ -14116,7 +14147,7 @@ function GQ.Log:ShowSlotRankTooltip(row)
         lines[#lines + 1] = { text = text, gap = gap or 0 }
     end
     if #entries == 0 then
-        add("|cff999999Nothing ranked for this slot.|r")
+        add(L["|cff999999Nothing ranked for this slot.|r"])
     else
         for i = 1, #entries do
             local entry = entries[i]
@@ -14139,10 +14170,10 @@ function GQ.Log:ShowSlotRankTooltip(row)
     panel.owner = row
     panel.title:SetText(title)
     panel.sub:SetWordWrap(true)
-    panel.sub:SetText(scoreSim and "Turn off simulation mode to see your GearQuest Score for this item" or "Ranked for your level.")
+    panel.sub:SetText(scoreSim and L["Turn off simulation mode to see your GearQuest Score for this item"] or L["Ranked for your level."])
     panel.probe:SetText(title)
     local width = panel.probe:GetStringWidth() or 160
-    panel.probe:SetText("Ranked for your level.")
+    panel.probe:SetText(L["Ranked for your level."])
     width = math.max(width, panel.probe:GetStringWidth() or 0)
     for i = 1, #lines do
         panel.probe:SetText(lines[i].text)
@@ -14226,11 +14257,11 @@ function GQ.Log:ShowRankBoxTooltip(box)
         local filterOn = self:SourceFilterActive()
         local playOn = self:PlayStyleActive()
         if filterOn and playOn then
-            extra = "You are seeing it in the list because a filter and a play style are both on."
+            extra = L["You are seeing it in the list because a filter and a play style are both on."]
         elseif filterOn then
-            extra = "You are seeing it in the list because a filter is on."
+            extra = L["You are seeing it in the list because a filter is on."]
         elseif playOn then
-            extra = "You are seeing it in the list because a play style is on."
+            extra = L["You are seeing it in the list because a play style is on."]
         end
     end
     GameTooltip:SetOwner(box, "ANCHOR_RIGHT")
@@ -14305,7 +14336,7 @@ function GQ.Log:LayoutDetailRank(rank, entry)
     end
     box.rank = rank
     box.entry = entry
-    box.text:SetText(string.format("Rank #%d", rank))
+    box.text:SetText(string.format(L["Rank #%d"], rank))
     local width = box.text:GetStringWidth() or 0
     if width < 8 then
         width = 7 * #box.text:GetText()
@@ -14333,17 +14364,17 @@ function GQ.Log:ShowCoordinateTooltip(button)
     end
     GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
     GameTooltip:ClearLines()
-    GameTooltip:SetText("Coordinates", 1, 0.82, 0, 1, true)
+    GameTooltip:SetText(L["Coordinates"], 1, 0.82, 0, 1, true)
     local limit = #spots
     if limit > 10 then
         limit = 10
     end
     for i = 1, limit do
         local spot = spots[i]
-        GameTooltip:AddLine(string.format("%s %.1f, %.1f", spot.map or "", spot.x or 0, spot.y or 0), 1, 1, 1, true)
+        GameTooltip:AddLine(string.format("%s %.1f, %.1f", L.Zone(spot.map) or "", spot.x or 0, spot.y or 0), 1, 1, 1, true)
     end
     if #spots > 10 then
-        GameTooltip:AddLine(string.format("And %d more.", #spots - 10), 0.75, 0.75, 0.75, true)
+        GameTooltip:AddLine(string.format(L["And %d more."], #spots - 10), 0.75, 0.75, 0.75, true)
     end
     GameTooltip:SetFrameStrata("TOOLTIP")
     GameTooltip:Show()
@@ -14797,8 +14828,8 @@ function GQ.Log:OffHandPairNote(entry)
     if not off then
         return nil
     end
-    local name = (GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(off)) or "the best off-hand"
-    return "(only when combined with " .. name .. ")"
+    local name = (GQ.Data.GetEntryDisplayName and GQ.Data:GetEntryDisplayName(off)) or L["the best off-hand"]
+    return L("(only when combined with %s)", name)
 end
 
 function GQ.Log:CollectWeaponPool()
@@ -15611,11 +15642,11 @@ function GQ.Log:FillWeaponMenu()
         local checked
         if line.kind == "style" then
             if line.id == "two" then
-                name = "Two-hand"
+                name = L["Two-hand"]
             elseif line.id == "main" then
-                name = "Main Hand"
+                name = L["Main Hand"]
             elseif line.id == "off" then
-                name = "Off Hand"
+                name = L["Off Hand"]
             else
                 name = line.id
             end
@@ -15630,7 +15661,7 @@ function GQ.Log:FillWeaponMenu()
                 check.label:SetTextColor(0.55, 0.55, 0.55)
             end
         end
-        check.label:SetText(name)
+        check.label:SetText(L[name])
         check:SetChecked(checked)
         check:ClearAllPoints()
         check:SetPoint("TOPLEFT", menu, "TOPLEFT", 8 + indent, -8 - ((i - 1) * 20))
@@ -15689,7 +15720,7 @@ function GQ.Log:FillRangedMenu()
         check.kind = "ranged"
         check.choiceId = typeId
         check.styleId = nil
-        check.label:SetText(typeId)
+        check.label:SetText(L[typeId])
         check.label:SetTextColor(1, 1, 1)
         check:SetChecked(self:RangedTypeChecked(typeId))
         check:ClearAllPoints()
@@ -16107,7 +16138,7 @@ function GQ.Log:LookupClassName()
     elseif classFile then
         name = classFile:sub(1, 1) .. classFile:sub(2):lower()
     end
-    return name or "this class", classFile
+    return name or L["this class"], classFile
 end
 
 function GQ.Log:LookupSpecLabel(entry, classFile)
@@ -16119,7 +16150,7 @@ function GQ.Log:LookupSpecLabel(entry, classFile)
         end
     end
     if not specId then
-        return "All specs"
+        return L["All specs"]
     end
     local options = GQ.Spec and GQ.Spec.GetOptions and GQ.Spec:GetOptions(classFile)
     if options then
@@ -16403,23 +16434,23 @@ function GQ.Log:LookupRankLines(item, classFile)
             local minLevel = row.ranges[r][1]
             local maxLevel = row.ranges[r][2]
             if minLevel == maxLevel then
-                parts[r] = "level " .. tostring(minLevel)
+                parts[r] = L("level %s", tostring(minLevel))
             else
-                parts[r] = "levels " .. tostring(minLevel) .. "-" .. tostring(maxLevel)
+                parts[r] = L("levels %s-%s", tostring(minLevel), tostring(maxLevel))
             end
         end
         local side
         if row.alliance and row.horde then
-            side = "Alliance and Horde"
+            side = L["Alliance and Horde"]
         elseif row.alliance then
-            side = "Alliance"
+            side = L["Alliance"]
         elseif row.horde then
-            side = "Horde"
+            side = L["Horde"]
         else
-            side = "Alliance and Horde"
+            side = L["Alliance and Horde"]
         end
         local rank = row.rank
-        local rankText = (type(rank) == "number" and rank > 0) and ("rank " .. tostring(rank)) or "ranked"
+        local rankText = (type(rank) == "number" and rank > 0) and L("rank %s", tostring(rank)) or L["ranked"]
         lines[#lines + 1] = string.format(
             "|cffe6bf47%s|r, %s, %s. %s.",
             row.spec,
@@ -16439,13 +16470,13 @@ function GQ.Log:ShowLookupRankTooltip(button, item)
     local lines = self:LookupRankLines(item, classFile)
     GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
     GameTooltip:ClearLines()
-    GameTooltip:SetText(item.name or "Item", 1, 0.82, 0)
+    GameTooltip:SetText(item.name or L["Item"], 1, 0.82, 0)
     local entry = item.entries and item.entries[1]
     if entry and entry.slot and GQ.Data and GQ.Data.SlotHeaderLabel then
         GameTooltip:AddLine(GQ.Data:SlotHeaderLabel(entry.slot), 0.8, 0.8, 0.8, true)
     end
     if #lines == 0 then
-        GameTooltip:AddLine("Not ranked in this class database.", 0.7, 0.7, 0.7, true)
+        GameTooltip:AddLine(L["Not ranked in this class database."], 0.7, 0.7, 0.7, true)
     else
         for i = 1, #lines do
             GameTooltip:AddLine(lines[i], 1, 1, 1, true)
@@ -16523,7 +16554,7 @@ function GQ.Log:EnsureLookupWidgets(frame)
     frame.lookupBox = box
 
     local search = CreateFrame("Button", "GearQuestLookupSearch", inset, "UIPanelButtonTemplate")
-    search:SetText("Search")
+    search:SetText(L["Search"])
     search:SetScript("OnClick", function()
         if GQ.Log then
             GQ.Log:RunLookup()
@@ -16549,7 +16580,7 @@ function GQ.Log:EnsureLookupWidgets(frame)
     empty:SetJustifyV("TOP")
     empty:SetWordWrap(true)
     empty:SetTextColor(0.7, 0.7, 0.7)
-    empty:SetText("No matches. Try another class in the Simulator, or change what you typed.")
+    empty:SetText(L["No matches. Try another class in the Simulator, or change what you typed."])
     empty:Hide()
     frame.lookupEmpty = empty
 
@@ -16636,7 +16667,7 @@ function GQ.Log:EnsureLookupWidgets(frame)
     local label = wait:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     label:SetPoint("TOP", icon, "BOTTOM", -8, -6)
     label:SetJustifyH("CENTER")
-    label:SetText("Searching for matching items")
+    label:SetText(L["Searching for matching items"])
     label:SetTextColor(1, 0.97, 0.88)
     wait.label = label
     local dots = wait:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
@@ -16981,13 +17012,13 @@ function GQ.Log:RefreshLookup()
     local name, classFile = self:LookupClassName()
     if frame.lookupIntro then
         frame.lookupIntro:SetText(string.format(
-            "You are currently looking through the %s GearQuest Forever database. We only store items that are relevant for this class. Use the Simulator to switch to another class to get the item database you wish.",
+            L["You are currently looking through the %s GearQuest Forever database. We only store items that are relevant for this class. Use the Simulator to switch to another class to get the item database you wish."],
             name
         ))
     end
     if frame.lookupPrompt then
         frame.lookupPrompt:SetText(string.format(
-            "Look up the item you are looking for (%s database)",
+            L["Look up the item you are looking for (%s database)"],
             name
         ))
     end
@@ -17009,7 +17040,7 @@ function GQ.Log:RefreshLookup()
         self:ClearDetail()
     end
     if frame.detailEmpty then
-        frame.detailEmpty:SetText("Select an item to see how to get it.")
+        frame.detailEmpty:SetText(L["Select an item to see how to get it."])
     end
     self:PaintLookupRows()
     self:LayoutLookupPage(frame)

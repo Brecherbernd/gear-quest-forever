@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Preview = GQ.Preview or {}
 
@@ -135,7 +136,7 @@ end
 function GQ.Preview:SetClass(classFile)
     local normalized = NormalizeClass(classFile)
     if not normalized then
-        return false, "Unknown class. Use: warrior, paladin, hunter, rogue, priest, shaman, mage, warlock, druid."
+        return false, L["Unknown class. Use: warrior, paladin, hunter, rogue, priest, shaman, mage, warlock, druid."]
     end
     local wasExpanded = GQ.Data and GQ.Data.IsClassExpanded and GQ.Data:IsClassExpanded(normalized)
     self:GetSettings().class = normalized
@@ -170,7 +171,7 @@ function GQ.Preview:SetLevel(level)
     level = tonumber(level)
     local maxLevel = GQ.MAX_PLAYER_LEVEL or 60
     if not level or level < 1 or level > maxLevel then
-        return false, string.format("Level must be a number between 1 and %d.", maxLevel)
+        return false, L("Level must be a number between 1 and %d.", maxLevel)
     end
     level = GQ:ClampPlayerLevel(level)
     self:GetSettings().level = level
@@ -197,7 +198,7 @@ end
 function GQ.Preview:SetFaction(faction)
     local normalized = NormalizeFaction(faction)
     if not normalized then
-        return false, "Unknown faction. Use: alliance or horde."
+        return false, L["Unknown faction. Use: alliance or horde."]
     end
     self:GetSettings().faction = normalized
     self:SetEnabled(true)
@@ -280,18 +281,21 @@ end
 
 function GQ.Preview:GetLabel()
     if not self:IsEnabled() then
-        return "using your character"
+        return L["using your character"]
     end
     local preview = self:GetSettings()
     return string.format(
-        "preview: lvl %d %s (%s)",
+        L["preview: lvl %d %s (%s)"],
         preview.level,
         self:FormatClassName(preview.class),
-        preview.faction
+        L[preview.faction]
     )
 end
 
 function GQ.Preview:FormatClassName(classFile)
+    if L.IsGerman and classFile and LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[classFile] then
+        return LOCALIZED_CLASS_NAMES_MALE[classFile]
+    end
     return classFile:sub(1, 1) .. classFile:sub(2):lower()
 end
 
@@ -303,10 +307,10 @@ function GQ.Preview:PrintNowViewing()
             specSuffix = string.format(", %s", GQ.Spec:GetSelectedSpecLabel())
         end
         GQ:Chat(string.format(
-            "|cff66ccffGearQuest|r: Now viewing upgrades as |cff00ff00your character|r — level %d %s (%s%s).",
+            L["|cff66ccffGearQuest|r: Now viewing upgrades as |cff00ff00your character|r — level %d %s (%s%s)."],
             UnitLevel("player"),
             self:FormatClassName(classFile),
-            UnitFactionGroup("player") or "?",
+            L[UnitFactionGroup("player") or "?"],
             specSuffix
         ))
         return
@@ -318,43 +322,43 @@ function GQ.Preview:PrintNowViewing()
         specSuffix = string.format(", %s", GQ.Spec:GetSelectedSpecLabel())
     end
     GQ:Chat(string.format(
-        "|cff66ccffGearQuest|r: Now viewing upgrades as a |cff00ff00level %d %s|r (%s%s). Right-click a gear slot on your character panel, or |cff00ff00/gq|r.",
+        L["|cff66ccffGearQuest|r: Now viewing upgrades as a |cff00ff00level %d %s|r (%s%s). Right-click a gear slot on your character panel, or |cff00ff00/gq|r."],
         preview.level,
         self:FormatClassName(preview.class),
-        preview.faction,
+        L[preview.faction],
         specSuffix
     ))
 end
 
 function GQ.Preview:PrintHelp()
-    GQ:Chat("|cff66ccffGearQuest|r commands:")
-    GQ:Chat("  |cff00ff00/gq set|r — show preview settings")
-    GQ:Chat("  |cff00ff00/gq class hunter|r — set preview class")
-    GQ:Chat("  |cff00ff00/gq level 37|r — set preview level")
-    GQ:Chat("  |cff00ff00/gq faction alliance|r — set preview faction")
-    GQ:Chat("  |cff00ff00/gq set on|r / |cff00ff00/gq set off|r — enable or disable preview")
-    GQ:Chat("  |cff00ff00/gq set me|r — copy your real character into preview")
-    GQ:Chat("  |cff00ff00/gq spec enhancement|r — set specialization (level 10+)")
-    GQ:Chat("  |cff00ff00/gq log|r — toggle GearQuest log window")
-    GQ:Chat("  |cff00ff00/gq wipe data|r — reset hunt progress (for testing obtain/toast)")
+    GQ:Chat(L["|cff66ccffGearQuest|r commands:"])
+    GQ:Chat(L["  |cff00ff00/gq set|r — show preview settings"])
+    GQ:Chat(L["  |cff00ff00/gq class hunter|r — set preview class"])
+    GQ:Chat(L["  |cff00ff00/gq level 37|r — set preview level"])
+    GQ:Chat(L["  |cff00ff00/gq faction alliance|r — set preview faction"])
+    GQ:Chat(L["  |cff00ff00/gq set on|r / |cff00ff00/gq set off|r — enable or disable preview"])
+    GQ:Chat(L["  |cff00ff00/gq set me|r — copy your real character into preview"])
+    GQ:Chat(L["  |cff00ff00/gq spec enhancement|r — set specialization (level 10+)"])
+    GQ:Chat(L["  |cff00ff00/gq log|r — toggle GearQuest log window"])
+    GQ:Chat(L["  |cff00ff00/gq wipe data|r — reset hunt progress (for testing obtain/toast)"])
 end
 
 function GQ.Preview:PrintStatus()
     local preview = self:GetSettings()
     if preview.enabled then
         GQ:Chat(string.format(
-            "|cff66ccffGearQuest|r preview |cff00ff00on|r — level %d, %s, %s.",
+            L["|cff66ccffGearQuest|r preview |cff00ff00on|r — level %d, %s, %s."],
             preview.level,
-            preview.class,
-            preview.faction
+            self:FormatClassName(preview.class),
+            L[preview.faction]
         ))
     else
         local _, classFile = UnitClass("player")
         GQ:Chat(string.format(
-            "|cff66ccffGearQuest|r preview |cff888888off|r — using your character (lvl %d %s, %s).",
+            L["|cff66ccffGearQuest|r preview |cff888888off|r — using your character (lvl %d %s, %s)."],
             UnitLevel("player"),
-            classFile,
-            UnitFactionGroup("player") or "?"
+            self:FormatClassName(classFile),
+            L[UnitFactionGroup("player") or "?"]
         ))
     end
     self:PrintHelp()
@@ -468,11 +472,11 @@ function GQ.Preview:HandleCommand(msg)
             local ok, err = GQ.Spec:SetSelectedSpec(value)
             if ok then
                 GQ:Chat(string.format(
-                    "|cff66ccffGearQuest|r: Now viewing |cff00ff00%s|r upgrades.",
+                    L["|cff66ccffGearQuest|r: Now viewing |cff00ff00%s|r upgrades."],
                     GQ.Spec:GetSelectedSpecLabel()
                 ))
             else
-                GQ:Chat("|cff66ccffGearQuest|r: " .. (err or "Could not set specialization."))
+                GQ:Chat("|cff66ccffGearQuest|r: " .. (err or L["Could not set specialization."]))
             end
         end
         return
@@ -611,10 +615,10 @@ function GQ.Preview:RefreshDialogSpecDropdown()
     dialog.specLabel:Show()
     dialog.specDrop:Show()
 
-    local label = "Specialization"
+    local label = L["Specialization"]
     for _, opt in ipairs(options) do
         if opt.id == dialog.selectedSpec then
-            label = opt.label
+            label = L[opt.label]
             break
         end
     end
@@ -628,12 +632,12 @@ function GQ.Preview:RefreshDialogSpecDropdown()
 
         for _, opt in ipairs(options) do
             local info = UIDropDownMenu_CreateInfo()
-            info.text = opt.label
+            info.text = L[opt.label]
             info.value = opt.id
             info.func = function()
                 dialog.selectedSpec = opt.id
                 UIDropDownMenu_SetSelectedValue(dialog.specDrop, opt.id)
-                UIDropDownMenu_SetText(dialog.specDrop, opt.label)
+                UIDropDownMenu_SetText(dialog.specDrop, L[opt.label])
             end
             info.checked = (dialog.selectedSpec == opt.id)
             UIDropDownMenu_AddButton(info)
@@ -697,7 +701,7 @@ function GQ.Preview:EnsureDialog()
     dialog.title = dialog:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     dialog.title:SetPoint("TOP", dialog, "TOP", 0, -14)
     dialog.title:SetWidth(SIM_DIALOG_WIDTH - 48)
-    dialog.title:SetText("Want to see BiS for another level or class?")
+    dialog.title:SetText(L["Want to see BiS for another level or class?"])
 
     dialog.closeBtn = CreateFrame("Button", nil, dialog, "UIPanelCloseButton")
     dialog.closeBtn:SetPoint("TOPRIGHT", dialog, "TOPRIGHT", -4, -4)
@@ -707,7 +711,7 @@ function GQ.Preview:EnsureDialog()
 
     dialog.classLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     dialog.classLabel:SetPoint("TOPLEFT", dialog, "TOPLEFT", 16, -44)
-    dialog.classLabel:SetText("Class")
+    dialog.classLabel:SetText(L["Class"])
 
     dialog.classDrop = CreateFrame("Frame", "GearQuestSimulateClassDropDown", dialog, "UIDropDownMenuTemplate")
     dialog.classDrop:SetPoint("TOPLEFT", dialog.classLabel, "BOTTOMLEFT", -16, -4)
@@ -715,7 +719,7 @@ function GQ.Preview:EnsureDialog()
 
     dialog.specLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     dialog.specLabel:SetPoint("TOPLEFT", dialog.classDrop, "BOTTOMLEFT", 16, -8)
-    dialog.specLabel:SetText("Specialization")
+    dialog.specLabel:SetText(L["Specialization"])
 
     dialog.specDrop = CreateFrame("Frame", "GearQuestSimulateSpecDropDown", dialog, "UIDropDownMenuTemplate")
     dialog.specDrop:SetPoint("TOPLEFT", dialog.specLabel, "BOTTOMLEFT", -16, -4)
@@ -723,7 +727,7 @@ function GQ.Preview:EnsureDialog()
 
     dialog.levelLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     dialog.levelLabel:SetPoint("TOPLEFT", dialog.specDrop, "BOTTOMLEFT", 16, -8)
-    dialog.levelLabel:SetText("Level")
+    dialog.levelLabel:SetText(L["Level"])
 
     dialog.levelEdit = CreateFrame("EditBox", nil, dialog, "InputBoxTemplate")
     dialog.levelEdit:SetSize(64, 20)
@@ -742,7 +746,7 @@ function GQ.Preview:EnsureDialog()
 
     dialog.factionLabel = dialog:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
     dialog.factionLabel:SetPoint("TOPLEFT", dialog.specDrop, "BOTTOMLEFT", 16, -36)
-    dialog.factionLabel:SetText("Faction")
+    dialog.factionLabel:SetText(L["Faction"])
 
     dialog.factionDrop = CreateFrame("Frame", "GearQuestSimulateFactionDropDown", dialog, "UIDropDownMenuTemplate")
     dialog.factionDrop:SetPoint("TOPLEFT", dialog.factionLabel, "BOTTOMLEFT", -16, -4)
@@ -754,12 +758,12 @@ function GQ.Preview:EnsureDialog()
         end
         for _, faction in ipairs({ "Alliance", "Horde" }) do
             local info = UIDropDownMenu_CreateInfo()
-            info.text = faction
+            info.text = L[faction]
             info.value = faction
             info.func = function()
                 dialog.selectedFaction = faction
                 UIDropDownMenu_SetSelectedValue(dialog.factionDrop, faction)
-                UIDropDownMenu_SetText(dialog.factionDrop, faction)
+                UIDropDownMenu_SetText(dialog.factionDrop, L[faction])
             end
             info.checked = (dialog.selectedFaction == faction)
             UIDropDownMenu_AddButton(info)
@@ -769,17 +773,17 @@ function GQ.Preview:EnsureDialog()
     dialog.submit = CreateFrame("Button", nil, dialog, "UIPanelButtonTemplate")
     dialog.submit:SetSize(96, 22)
     dialog.submit:SetPoint("BOTTOMLEFT", dialog, "BOTTOMLEFT", 20, 18)
-    dialog.submit:SetText("Simulate")
+    dialog.submit:SetText(L["Simulate"])
     dialog.submit:SetScript("OnClick", function()
         local classFile = dialog.selectedClass
         if not classFile then
-            GQ:Chat("|cff66ccffGearQuest|r: Choose a class.")
+            GQ:Chat("|cff66ccffGearQuest|r: " .. L["Choose a class."])
             return
         end
 
         local levelText = SanitizeLevelInput(dialog.levelEdit)
         if levelText == "" then
-            GQ:Chat(string.format("|cff66ccffGearQuest|r: Enter a level between 1 and %d.", GQ.MAX_PLAYER_LEVEL or 60))
+            GQ:Chat(string.format(L["|cff66ccffGearQuest|r: Enter a level between 1 and %d."], GQ.MAX_PLAYER_LEVEL or 60))
             return
         end
 
@@ -787,14 +791,14 @@ function GQ.Preview:EnsureDialog()
         if ok then
             GQ.Preview:HideDialog()
         else
-            GQ:Chat("|cff66ccffGearQuest|r: " .. (err or "Could not simulate."))
+            GQ:Chat("|cff66ccffGearQuest|r: " .. (err or L["Could not simulate."]))
         end
     end)
 
     dialog.reset = CreateFrame("Button", nil, dialog, "UIPanelButtonTemplate")
     dialog.reset:SetSize(80, 22)
     dialog.reset:SetPoint("BOTTOMRIGHT", dialog, "BOTTOMRIGHT", -20, 18)
-    dialog.reset:SetText("Reset")
+    dialog.reset:SetText(L["Reset"])
     dialog.reset:SetScript("OnClick", function()
         GQ.Preview:ApplyCurrentCharacter()
         GQ.Preview:PrintNowViewing()
@@ -860,7 +864,7 @@ function GQ.Preview:RefreshDialogFields()
     dialog.selectedFaction = self:GetEffectiveFaction() or "Alliance"
     if dialog.factionDrop then
         UIDropDownMenu_SetSelectedValue(dialog.factionDrop, dialog.selectedFaction)
-        UIDropDownMenu_SetText(dialog.factionDrop, dialog.selectedFaction)
+        UIDropDownMenu_SetText(dialog.factionDrop, L[dialog.selectedFaction])
     end
 end
 

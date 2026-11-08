@@ -1,4 +1,5 @@
 local ADDON_NAME, GQ = ...
+local L = GQ.L
 
 if not strtrim then
     function strtrim(s)
@@ -205,13 +206,13 @@ end
 
 function GQ:GetSourceLabel(sourceType)
     sourceType = self:NormalizeSourceType(sourceType)
-    return SOURCE_LABELS[sourceType] or sourceType
+    return L[SOURCE_LABELS[sourceType] or sourceType]
 end
 
 function GQ:GetSourceTag(sourceType)
     sourceType = self:NormalizeSourceType(sourceType)
     local color = SOURCE_COLORS[sourceType] or "|cffcccccc"
-    return color .. (SOURCE_LABELS[sourceType] or sourceType) .. "|r"
+    return color .. L[SOURCE_LABELS[sourceType] or sourceType] .. "|r"
 end
 
 -- InputDeviceInterfaceStyle is 0 for mouse. The gamepad UI is 1, or a value
@@ -250,7 +251,7 @@ function GQ:PLAYER_LOGIN()
     local function run(label, fn)
         local ok, err = pcall(fn)
         if not ok then
-            GQ:Chat("|cffff0000GearQuest|r: " .. label .. " failed: " .. tostring(err))
+            GQ:Chat("|cffff0000GearQuest|r: " .. L("%s failed: %s", label, tostring(err)))
         end
         return ok
     end
@@ -302,8 +303,8 @@ function GQ:PLAYER_LOGIN()
     run("Commands", function() self.Commands:Init() end)
 
     local previewNote = self.Preview:IsEnabled() and (" (" .. self:GetPreviewLabel() .. ")") or ""
-    GQ:Chat("|cff66ccffGearQuest|r v" .. self.VERSION .. " By Weber8210 loaded" .. previewNote .. ". Right-click a gear slot on your character panel, or |cff00ff00/gq|r.")
-    GQ:Chat("|cff66ccffGearQuest|r: Click the minimap icon to open GearQuest.")
+    GQ:Chat("|cff66ccffGearQuest|r v" .. self.VERSION .. L(" By Weber8210 loaded%s. Right-click a gear slot on your character panel, or |cff00ff00/gq|r.", previewNote))
+    GQ:Chat("|cff66ccffGearQuest|r: " .. L["Click the minimap icon to open GearQuest."])
     -- Login and /reload only print the welcome lines above. Milestone chat
     -- belongs to a real level-up, and a character already past that level
     -- is marked seen so a later check cannot repeat it.
@@ -557,13 +558,13 @@ function GQ:CheckLevelMilestones(previousLevel, newLevel)
     if fingerCount > 0 and crossesRing1 then
         self:NotifyMilestoneOnce(
             "ringSlot1",
-            "|cff66ccffGearQuest|r: You've reached level " .. newLevel .. " — one of your ring slots is now eligible for an upgrade! Open |cff00ff00/gq log|r to browse finger upgrades."
+            "|cff66ccffGearQuest|r: " .. L("You've reached level %s — one of your ring slots is now eligible for an upgrade! Open |cff00ff00/gq log|r to browse finger upgrades.", newLevel)
         )
     end
     if fingerCount >= 2 and crossesRing2 then
         self:NotifyMilestoneOnce(
             "ringSlot2",
-            "|cff66ccffGearQuest|r: You've reached level " .. newLevel .. " — your other ring slot is now eligible for an upgrade! Open |cff00ff00/gq log|r to browse finger upgrades."
+            "|cff66ccffGearQuest|r: " .. L("You've reached level %s — your other ring slot is now eligible for an upgrade! Open |cff00ff00/gq log|r to browse finger upgrades.", newLevel)
         )
     end
 
@@ -571,12 +572,10 @@ function GQ:CheckLevelMilestones(previousLevel, newLevel)
     if newLevel >= 10 and previousLevel < 10 then
         local classFile = GQ:GetEffectiveClass()
         if GQ.Spec and GQ.Spec.HasSpecs and GQ.Spec:HasSpecs(classFile) then
-            local defaultLabel = GQ.Spec:GetSpecLabel(GQ.Spec:GetDefaultSpec(classFile), classFile) or "your default spec"
+            local defaultLabel = GQ.Spec:GetSpecLabel(GQ.Spec:GetDefaultSpec(classFile), classFile) or L["your default spec"]
             self:NotifyMilestoneOnce(
                 "specSwitch",
-                "|cff66ccffGearQuest|r: Congratulations — you've reached level 10! Specializations are now available in GearQuest. Open |cff00ff00/gq log|r to browse spec-specific upgrades; |cff00ff00"
-                    .. defaultLabel
-                    .. "|r is selected by default."
+                "|cff66ccffGearQuest|r: " .. L("Congratulations — you've reached level 10! Specializations are now available in GearQuest. Open |cff00ff00/gq log|r to browse spec-specific upgrades; |cff00ff00%s|r is selected by default.", defaultLabel)
             )
         end
     end

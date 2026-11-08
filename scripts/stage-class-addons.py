@@ -165,6 +165,7 @@ def write_toc(folder: Path, title: str, files: list[str]) -> None:
         "## Interface: 16001",
         f"## Title: GearQuest Forever: {title}",
         "## Notes: Hunt lists for this class. GearQuest Forever loads this when you play or simulate it.",
+        "## Notes-deDE: Hunt-Listen für diese Klasse. GearQuest Forever lädt sie, wenn du die Klasse spielst oder simulierst.",
         "## Author: Henrik8210",
         f"## Version: {addon_version()}",
         f"## IconTexture: Interface\\Icons\\ClassIcon_{title}",

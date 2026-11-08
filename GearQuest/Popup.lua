@@ -1,4 +1,5 @@
 local _, GQ = ...
+local L = GQ.L
 
 GQ.Popup = GQ.Popup or {}
 
@@ -25,7 +26,7 @@ local function ShowUpgradeTooltip(button)
     if gq then
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(gq:GetSourceLabel(button.entry.sourceType), 1, 1, 1)
-        GameTooltip:AddLine("Left-click to see more details.", 0.7, 0.7, 0.7)
+        GameTooltip:AddLine(L["Left-click to see more details."], 0.7, 0.7, 0.7)
         GameTooltip:Show()
     end
 end
@@ -526,8 +527,8 @@ function GQ.Popup:ShowForSlot(slotName, slotButton)
 
     if #upgrades == 0 then
         self:Hide()
-        local hint = GQ:IsPreviewEnabled() and "" or " Try |cff00ff00/gq set|r to configure class, level, and faction."
-        GQ:Chat("|cff66ccffGearQuest|r: No upgrade hunts found for " .. slotLabel .. "." .. hint)
+        local hint = GQ:IsPreviewEnabled() and "" or L[" Try |cff00ff00/gq set|r to configure class, level, and faction."]
+        GQ:Chat("|cff66ccffGearQuest|r: " .. L("No upgrade hunts found for %s.", slotLabel) .. hint)
         return
     end
 
