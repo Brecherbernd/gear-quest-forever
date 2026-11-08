@@ -2,7 +2,56 @@
 
 Forked from [GearQuest](https://github.com/Henrik8210/gear-quest) `v0.1.1-beta.3-bcc` for **World of Warcraft: Forever**.
 
-## v1.0.9
+## v1.1.0
+
+The window title reads **GearQuest Forever v1.1.0**.
+
+**Their Cities**
+
+Hall of Thanes, The Stockade, Ragefire Chasm, and Ruins of Lordaeron are back on both faction lists, for every class. Boss drops, dungeon trash, rares, and quest rewards filed in those dungeons are hunts again. **Play style → Their Cities** hides the other faction's city dungeons. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. A piece filed in another dungeon stays. Rank numbers do not close up, and the Boss drop and Dungeon & Raid trash flyouts still list a dungeon that has a hunt in the band. The card sits under Manageable Quests, beside Focus Zone. It can be on with either dungeon card.
+
+**Regular quest and Dungeon quest**
+
+Quest reward opens two boxes. Regular quest keeps the yellow exclamation. Dungeon quest is a quest that sends you into an instance, the same test as No Dungeons. Unchecking Quest reward hides both. Unchecking one box hides only that kind. A dungeon quest uses the client's dungeon-quest icon on the hunt, in front of the parchment title, in the flyout, and on the map. Hovering it says Dungeon quest.
+
+**New Forever hunts**
+
+Wowhead Forever listed **196** new pieces. All of them are marked New in Forever. **33** are quest rewards. The other **163** stayed Unsourced, because the page did not name a drop, a seller, or a recipe. No farm was invented for them. When a hunt has more than one stored spot, the log still shows the one closest to you.
+
+Quest rewards, and the level the quest can be picked up:
+
+- **30, Horde, A Tale Spun Around the Fire:** Ceremonial Mallet, Sacrificial Sword, I'lalai Flayer.
+- **30, Alliance, Findings for the Explorer's League:** Ancient Voodoo Pouch, Intrepid Explorer's Chainmail.
+- **30, Alliance, The Web of Magic:** Apprentice Sorcerer's Slacks, Rune-Etched Epaulets.
+- **35, Alliance, The Lost Tablets of Will:** Medal of Valor. The pin is Ironforge.
+- **36, Horde, Death to the Executioner:** Thud Hammer. The prequest is Rise Up!
+- **36, Horde, Farholde Scouting Report:** Head-Harvest Crossbow, Bloodied Sash.
+- **36, Alliance, Fit for a Princess:** Fur-Lined Bracers, Coyote Hide Wraps. The prequest is Apple of My Eye.
+- **36, Horde, Jom-jom's Escape:** Jom-jom's Gabbar. The quest page names no giver and no coordinate, so this hunt has no pin.
+- **36, Alliance, Preventative Measures:** Farholde Horns.
+- **36, Alliance, The Rog'mar Situation:** Orc Bone Bow.
+- **37, Alliance, The Hidden Chamber:** Guardian Staff. The pin is Ironforge 73.8, 13.0.
+- **38, Horde, A Token of Vengeance:** Semblance of Twilight.
+- **38, Alliance, Drop the Hammer:** Pauldron of Order.
+- **38, Alliance, Dunston Checks Out:** Prisoner Handwraps, Bolder'ok Loincloth, Dunston's Ogre Duster.
+- **38, Horde, Gordunni Cobalt:** Orwin's Axe. The pin is Feralas.
+- **39, Tome of Twilight:** Alliance gets Twilight Initiate's Belt and Torn Cultist Cloak, after A Small Favor. Horde gets Indoctrinated Choker and Convert's Bindings, with no prequest.
+- **40, both factions, Eye of Mugg:** Bigger Rock on Bigger Stick, Rock on Stick, Stick No Rock.
+- **43, both factions, Tiara of the Deep:** Dank Shoulderpads. The prequest is Tabetha's Task. The pin is the closest of the four mage trainers, in Stormwind, Ironforge, Orgrimmar, and Undercity.
+- **44, both factions, Divino-matic Rod:** Magister Cowl. The pin is Tanaris.
+- **50, both factions, Jammal'an the Prophet:** Leggings of Freedom and Sorrow. The pin is the Hinterlands.
+
+Unsourced pieces you will see on the list, with no place and no source line, include the **Krol'dok Warplate** chest, helmet, gauntlets, legplates, and pauldrons around 45–46, the **Defias Enforcer** mask, prowlers, shoulderpads, chest, and legguards around 53–55, **Great Bear Claw**, **Staff of Wild Beasts**, and **Wild Malleus** at 60, and the trinkets **Razza's Heart**, **Mushgog's Crown of Thorns**, **Skarr's Broken Gauntlet**, and **Shen'dralar Relic**. Wicked Ritualist's Kris is a quest item, not a reward, and is not a hunt.
+
+**Stopping the Cycle**
+
+Alliance, picked up at **24**. The rewards are **Subdued Dragon's Fang** (one-hand dagger), **Trusty Sword** (two-hand sword), and **Fallen Dragon's Scepter** (staff). The parchment no longer says there are no prequests. The steps are Old Habits, Crocs of the Sky, Crimson Crate Delivery, Razormaw Needling, Trying Times, This Land Was Their Land, Death to the Dragonmaw, and then Stopping the Cycle. The pin is the Tattered Spellbook in the Wetlands at 53.4, 54.5, where Old Habits starts, not Howin Kindfeather. Word to Ironforge is the step after the reward, so it is not on the hunt.
+
+**Lookup, Removed, and tooltips**
+
+An empty Lookup search leaves the box and the Search button where you can click them. Enter runs the search. The Removed tab lists a hunt you removed even after it has left the current level's short list. You do not have to reload. Food, reagents, quest items, and trade goods get no GearQuest score line. Bags, quivers, and ammo stay skipped.
+
+### v1.0.9
 
 The window title reads **GearQuest Forever v1.0.9**.
 

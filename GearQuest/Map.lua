@@ -54,6 +54,9 @@ function GQ.Map:ZoneMap(zoneName)
 end
 
 function GQ.Map:KindFor(entry)
+    if GQ.Log and GQ.Log.SourceIconKind then
+        return GQ.Log:SourceIconKind(entry)
+    end
     local src = entry and entry.sourceType or ""
     if GQ.NormalizeSourceType then
         src = GQ:NormalizeSourceType(src) or src

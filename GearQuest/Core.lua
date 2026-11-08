@@ -10,7 +10,7 @@ end
 GQ = GQ or {}
 _G.GearQuest = GQ
 
-GQ.VERSION = "1.0.9"
+GQ.VERSION = "1.1.0"
 GQ.ADDON_NAME = ADDON_NAME
 
 -- General -> Hide chat messages. Off until the player checks it.
@@ -178,6 +178,7 @@ local SOURCE_LABELS = GQ.LocaleTable({
     boss_drop = L["Boss drop"],
     raid_trash = L["Dungeon & Raid trash"],
     quest_reward = L["Quest reward"],
+    quest_dungeon = L["Dungeon quest"],
     vendor = L["Vendor"],
     profession = L["Profession"],
     auction_house = L["Auction House"],

@@ -6698,14 +6698,21 @@ function GQ.Data:LinkIsGear(link, itemId)
     if itemId and #(self:GetEntriesByItemId(itemId) or {}) > 0 then
         return true
     end
-    if not GetItemInfo then
+    -- Instant does not request the tooltip. Food, reagents, and quest items
+    -- are not gear, so they get no "no score" line.
+    if not GetItemInfoInstant then
         return false
     end
-    local _, _, _, _, _, _, _, _, equipLoc = GetItemInfo(link or itemId)
-    if not equipLoc or equipLoc == "" then
+    local _, _, _, equipLoc, _, classID = GetItemInfoInstant(link or itemId)
+    if classID ~= 2 and classID ~= 4 then
         return false
     end
-    if equipLoc == "INVTYPE_BAG" or equipLoc == "INVTYPE_QUIVER" or equipLoc == "INVTYPE_AMMO" then
+    if not equipLoc or equipLoc == ""
+        or equipLoc == "INVTYPE_NON_EQUIP"
+        or equipLoc == "INVTYPE_NON_EQUIP_IGNORE"
+        or equipLoc == "INVTYPE_BAG"
+        or equipLoc == "INVTYPE_QUIVER"
+        or equipLoc == "INVTYPE_AMMO" then
         return false
     end
     return true
