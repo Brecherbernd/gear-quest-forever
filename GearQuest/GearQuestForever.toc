@@ -3,6 +3,13 @@
 ## Notes: Leveling gear upgrades for WoW Forever - click a slot, pick a hunt, track it in the log.
 ## Notes-deDE: Ausrüstungsverbesserungen beim Leveln für WoW Forever – Platz anklicken, Hunt auswählen, im Log verfolgen.
 ## Notes-frFR: Améliorations d'équipement pour monter de niveau sur WoW Forever : cliquez sur un emplacement, choisissez une traque, suivez-la dans le journal.
+## Notes-esES: Mejoras de equipo para subir de nivel en WoW Forever: haz clic en una ranura, elige una hunt y síguela en el registro.
+## Notes-esMX: Mejoras de equipo para subir de nivel en WoW Forever: haz clic en una ranura, elige una hunt y síguela en el registro.
+## Notes-ptBR: Melhorias de equipamento para upar no WoW Forever: clique em um compartimento, escolha uma hunt e acompanhe no registro.
+## Notes-ruRU: Улучшения экипировки для прокачки в WoW Forever: выберите ячейку, выберите hunt и отслеживайте ее в журнале.
+## Notes-koKR: WoW Forever 레벨업 장비 업그레이드 - 장비 칸을 클릭하고 hunt를 골라 기록에서 추적하세요.
+## Notes-zhCN: WoW Forever 升级装备提升——点击装备栏位，选择 hunt，在日志中追踪。
+## Notes-zhTW: WoW Forever 升級裝備提升——點擊裝備欄位，選擇 hunt，在日誌中追蹤。
 ## Author: Henrik8210
 ## Version: 1.1.0
 ## IconTexture: Interface\AddOns\GearQuestForever\Art\GearQuest-Icon
@@ -12,6 +19,7 @@
 
 Locales/Locale.lua
 Locales/Zones.lua
+Locales/Rules.lua
 Locales/frFR.lua
 Locales/frFR.rules.lua
 Locales/frFR.sentences.lua
@@ -21,6 +29,42 @@ Locales/frFR.quests.lua
 Locales/deDE.lua
 Locales/deDE.rules.lua
 Locales/deDE.sentences.lua
+Locales/deDE.names.lua
+Locales/deDE.db2.lua
+Locales/deDE.quests.lua
+Locales/esES.lua
+Locales/esES.rules.lua
+Locales/esES.names.lua
+Locales/esES.db2.lua
+Locales/esES.quests.lua
+Locales/esMX.names.lua
+Locales/esMX.db2.lua
+Locales/esMX.quests.lua
+Locales/ptBR.lua
+Locales/ptBR.rules.lua
+Locales/ptBR.names.lua
+Locales/ptBR.db2.lua
+Locales/ptBR.quests.lua
+Locales/ruRU.lua
+Locales/ruRU.rules.lua
+Locales/ruRU.names.lua
+Locales/ruRU.db2.lua
+Locales/ruRU.quests.lua
+Locales/koKR.lua
+Locales/koKR.rules.lua
+Locales/koKR.names.lua
+Locales/koKR.db2.lua
+Locales/koKR.quests.lua
+Locales/zhCN.lua
+Locales/zhCN.rules.lua
+Locales/zhCN.names.lua
+Locales/zhCN.db2.lua
+Locales/zhCN.quests.lua
+Locales/zhTW.lua
+Locales/zhTW.rules.lua
+Locales/zhTW.names.lua
+Locales/zhTW.db2.lua
+Locales/zhTW.quests.lua
 Core.lua
 Spec.lua
 CustomSpec.lua

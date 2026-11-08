@@ -36,7 +36,13 @@ names = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(names)
 
 # The client's own placeholders. Data.lua:SanitizeText fills the English ones.
-PLACEHOLDERS = {"frFR": {"<nom>": "<name>", "<classe>": "<class>"}}
+PLACEHOLDERS = {
+    "frFR": {"<nom>": "<name>", "<classe>": "<class>"},
+    "deDE": {"<Name>": "<name>", "<Klasse>": "<class>"},
+    "esES": {"<nombre>": "<name>", "<clase>": "<class>"},
+    "esMX": {"<nombre>": "<name>", "<clase>": "<class>"},
+    "ruRU": {"<имя>": "<name>", "<класс>": "<class>"},
+}
 
 
 def lua_elements(body: str) -> list:
