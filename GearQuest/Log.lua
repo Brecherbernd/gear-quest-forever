@@ -479,6 +479,17 @@ local function GetCraftedTimestamp(itemId)
     return db.crafted[itemId] or db.crafted[tostring(itemId)]
 end
 
+-- True when msg starts with the fixed text of a client format string, such
+-- as LOOT_ITEM_SELF ("Vous recevez le butin : %s."), so any language matches.
+local function StartsWithGlobalFormat(msg, globalName)
+    local fmt = _G[globalName]
+    if type(fmt) ~= "string" then
+        return false
+    end
+    local prefix = fmt:match("^(.-)%%")
+    return prefix ~= nil and prefix ~= "" and msg:sub(1, #prefix) == prefix
+end
+
 local function ExtractItemIdFromChatMessage(msg)
     if not msg then
         return nil
@@ -490,7 +501,9 @@ local function ExtractItemIdFromChatMessage(msg)
     end
 
     -- Only the local player's craft/loot lines — never party loot chat with item links.
-    if msg:find("You create", 1, true) then
+    if msg:find("You create", 1, true)
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_CREATED_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_CREATED_SELF_MULTIPLE") then
         local itemId = tonumber(msg:match("item:(%d+)"))
         if itemId then
             return itemId
@@ -517,7 +530,11 @@ local function ExtractItemIdFromChatMessage(msg)
         return nil
     end
 
-    if msg:find("You receive loot", 1, true) or msg:find("You loot", 1, true) then
+    if msg:find("You receive loot", 1, true) or msg:find("You loot", 1, true)
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_SELF_MULTIPLE")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_PUSHED_SELF")
+        or StartsWithGlobalFormat(msg, "LOOT_ITEM_PUSHED_SELF_MULTIPLE") then
         return tonumber(msg:match("item:(%d+)"))
     end
 
