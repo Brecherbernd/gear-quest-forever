@@ -3340,12 +3340,32 @@ function GQ.Log:ReadFactionStandings()
     return ranks
 end
 
+-- The client names professions in its own language. The data uses English.
+GQ.Log.PROFESSIONS = {
+    "Alchemy", "Blacksmithing", "Enchanting", "Engineering", "Fishing",
+    "Herbalism", "Leatherworking", "Tailoring",
+}
+function GQ.Log:EnglishProfession(name)
+    if not self.englishProfession then
+        self.englishProfession = {}
+        local ui = GQ.LocaleUI or {}
+        for i = 1, #self.PROFESSIONS do
+            local english = self.PROFESSIONS[i]
+            self.englishProfession[ui[english] or english] = english
+        end
+    end
+    return self.englishProfession[name] or name
+end
+
 function GQ.Log:ReadProfessionRanks()
     local ranks = {}
     local scanned = false
     local function note(name, rank)
         if issecretvalue and issecretvalue(name) then
             return
+        end
+        if type(name) == "string" then
+            name = self:EnglishProfession(name)
         end
         rank = tonumber(rank)
         if type(name) ~= "string" or name == "" or not rank or rank <= 0 then
