@@ -544,3 +544,7 @@ GQ.LocaleGuidePages = {
     "Bon, dernière chose. Je veux parler des {b}Réglages{/b}, parce que certains aventuriers n'aiment pas le {b}bouton de la minicarte{/b}, et d'autres veulent voir les {b}meilleurs enchantements{/b} dans l'infobulle des objets, entre autres.\n\nAlors jetez un œil aux différents réglages pour rendre votre voyage plus agréable.\n\nOh, et un grand bonjour à la formidable communauté GearQuest sur Discord ? Je ne sais pas ce que veut dire cette dernière phrase, le type m'a juste demandé de la lire.",
     "Alors... Qu'attendez-vous ?\n\nC'est parti pour la {b}Gear Quest... Forever !{/b}",
 }
+L["Regular quest"] = "Quête normale"
+L["Dungeon quest"] = "Quête de donjon"
+L["Their Cities"] = "Leurs cités"
+L["Hides hunts from dungeons inside the other faction's cities. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash, rares, and quest rewards filed in those dungeons go. A piece filed in another dungeon stays."] = "Masque les traques des donjons situés dans les cités de l'autre faction. L'Alliance masque le gouffre de Ragefeu et les ruines de Lordaeron. La Horde masque la salle des Thanes et la Prison. Les butins de boss, les monstres de donjon, les rares et les récompenses de quête rangés dans ces donjons disparaissent. Une pièce rangée dans un autre donjon reste."

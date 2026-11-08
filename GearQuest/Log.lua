@@ -2332,10 +2332,10 @@ GQ.Log.VENDOR_KINDS = GQ.LocaleTable({
 
 -- Quest reward flyout. A dungeon quest is one whose steps enter an instance.
 -- The same test as No Dungeons. A quest that stays outdoors is regular.
-GQ.Log.QUEST_KINDS = {
-    { id = "regular", label = "Regular quest" },
-    { id = "dungeon", label = "Dungeon quest" },
-}
+GQ.Log.QUEST_KINDS = GQ.LocaleTable({
+    { id = "regular", label = L["Regular quest"] },
+    { id = "dungeon", label = L["Dungeon quest"] },
+})
 
 -- Sellers whose stock is battleground marks, arena points, or PvP rank gear.
 -- A general merchant who happens to sell one rank-named piece is not on this
@@ -7855,10 +7855,10 @@ function GQ.Log:EnsurePlayStyle(frame)
         end
     )
     panel.theirCitiesCard = makeCard(
-        "Their Cities",
+        L["Their Cities"],
         art .. "GQ-Play-TheirCities.png",
         panel.manageableCard, 0, -36,
-        "Hides hunts from dungeons inside the other faction's cities. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash, rares, and quest rewards filed in those dungeons go. A piece filed in another dungeon stays.",
+        L["Hides hunts from dungeons inside the other faction's cities. Alliance hides Ragefire Chasm and Ruins of Lordaeron. Horde hides Hall of Thanes and The Stockade. Boss drops, trash, rares, and quest rewards filed in those dungeons go. A piece filed in another dungeon stays."],
         function()
             local log = _G.GearQuest and _G.GearQuest.Log
             if log then
@@ -9459,7 +9459,7 @@ function GQ.Log:DismissQuestBranch()
 end
 
 function GQ.Log:SyncQuestRowLabel(check)
-    self:SyncFilterBranchMark(check, "Quest reward")
+    self:SyncFilterBranchMark(check, L["Quest reward"])
 end
 
 function GQ.Log:CreateQuestFilterBranch(menu)
